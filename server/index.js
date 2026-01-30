@@ -8,7 +8,18 @@ const { createClient } = require('@supabase/supabase-js');
 const crypto = require('crypto');
 
 const app = express();
-app.use(cors());
+
+// --- EXPLICIT CORS CONFIGURATION ---
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  credentials: true
+}));
+
+// Handle preflight requests
+app.options('*', cors());
+
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
