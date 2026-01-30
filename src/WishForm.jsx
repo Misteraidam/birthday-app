@@ -85,9 +85,38 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
         ? getTemplatesForCelebration(formData.celebrationType)
         : TEMPLATES;
 
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadStatus, setUploadStatus] = useState('');
+
+    // --- COMPRESSION HELPER ---
+    const compressImage = async (base64Str, maxWidth = 1200, quality = 0.7) => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.src = base64Str;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height = (maxWidth / width) * height;
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+        });
+    };
+
     // --- UPLOAD HELPER ---
     const uploadToCloud = async (base64Data, filename) => {
         try {
+            setIsUploading(true);
+            setUploadStatus('Uploading...');
             const res = await fetch(`${API_BASE}/api/upload`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -105,6 +134,9 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
             console.error("Upload error:", e);
             alert("Error uploading media: " + e.message);
             return null;
+        } finally {
+            setIsUploading(false);
+            setUploadStatus('');
         }
     };
 
@@ -245,7 +277,9 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onloadend = async () => {
-                const url = await uploadToCloud(reader.result, file.name);
+                setUploadStatus('Processing...');
+                const compressed = await compressImage(reader.result);
+                const url = await uploadToCloud(compressed, file.name);
                 if (url) {
                     setCurrentChapter(prev => ({
                         ...prev,
@@ -419,6 +453,24 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                     </div>
                 </div>
             </header>
+
+            {/* Uploading Overlay */}
+            <AnimatePresence>
+                {isUploading && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex flex-col items-center justify-center gap-6"
+                    >
+                        <div className="relative">
+                            <div className="w-16 h-16 border-4 border-purple-500/30 rounded-full"></div>
+                            <div className="absolute inset-0 w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                        <p className="text-white font-bold tracking-widest uppercase text-xs">{uploadStatus}</p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <div className="pt-24 pb-32 px-6">
                 <div className="max-w-4xl mx-auto">
@@ -686,7 +738,9 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                             const reader = new FileReader();
                                                             reader.readAsDataURL(file);
                                                             reader.onloadend = async () => {
-                                                                const url = await uploadToCloud(reader.result, file.name);
+                                                                setUploadStatus('Processing...');
+                                                                const compressed = await compressImage(reader.result);
+                                                                const url = await uploadToCloud(compressed, file.name);
                                                                 if (url) setFormData({ ...formData, portalBg: url });
                                                             };
                                                         }
