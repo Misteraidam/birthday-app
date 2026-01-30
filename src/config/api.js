@@ -1,3 +1,4 @@
+// Celebration Portal API Configuration
 export const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '') || (
     window.location.hostname === 'localhost'
         ? 'http://localhost:8787'
