@@ -91,7 +91,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
     // --- COMPRESSION HELPER ---
     const compressImage = async (base64Str, maxWidth = 1200, quality = 0.7) => {
         return new Promise((resolve) => {
-            const img = new Image();
+            const img = new window.Image();
             img.src = base64Str;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
