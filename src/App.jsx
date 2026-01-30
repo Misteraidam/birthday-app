@@ -4,10 +4,8 @@ import WishForm from './WishForm';
 import PortalManager from './portals/PortalManager';
 import SuccessScreen from './components/SuccessScreen';
 import { DEMO_DATA } from './config/demoData';
+import { API_BASE } from './config/api';
 
-const API_BASE = window.location.hostname === 'localhost'
-  ? 'http://localhost:8787'
-  : (window.location.protocol === 'https:' ? 'https://' : 'http://') + window.location.hostname + (window.location.port ? `:${window.location.port}` : '');
 
 function App() {
   const [view, setView] = useState('landing'); // 'landing', 'create', 'portal', 'success'

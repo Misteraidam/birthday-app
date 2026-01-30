@@ -10,6 +10,7 @@ import { CELEBRATION_TYPES, TEMPLATES, getCelebrationType, getTemplatesForCelebr
 import CelebrationSelector from './components/CelebrationSelector';
 import PortalManager from './portals/PortalManager';
 import PaymentModal from './components/PaymentModal';
+import { API_BASE } from './config/api';
 
 export default function WishForm({ onGenerate, onBack, initialCelebrationType }) {
     // Multi-step form control (0: Celebration, 1: Details, 2: Chapters, 3: Template, 4: Preview)
@@ -87,10 +88,6 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
     // --- UPLOAD HELPER ---
     const uploadToCloud = async (base64Data, filename) => {
         try {
-            const API_BASE = window.location.hostname === 'localhost'
-                ? 'http://localhost:8787'
-                : (window.location.protocol === 'https:' ? 'https://' : 'http://') + window.location.hostname + (window.location.port ? `:${window.location.port}` : '');
-
             const res = await fetch(`${API_BASE}/api/upload`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

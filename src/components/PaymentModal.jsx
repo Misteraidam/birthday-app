@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PaystackButton } from 'react-paystack';
 import { X, Lock, Check } from 'lucide-react';
+import { API_BASE } from '../config/api';
 
 export default function PaymentModal({ show, onClose, onSuccess, amount = 50, email }) {
     const [promoCode, setPromoCode] = useState("");
@@ -39,9 +40,6 @@ export default function PaymentModal({ show, onClose, onSuccess, amount = 50, em
         // Call backend to validate
         try {
             // Note: Update URL if needed based on API_BASE
-            const API_BASE = window.location.hostname === 'localhost'
-                ? 'http://localhost:8787'
-                : (window.location.protocol === 'https:' ? 'https://' : 'http://') + window.location.hostname + (window.location.port ? `:${window.location.port}` : '');
             const res = await fetch(`${API_BASE}/api/validate-promo`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
