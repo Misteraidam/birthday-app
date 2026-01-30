@@ -1205,6 +1205,13 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                 </div>
             </div>
 
+            {/* Diagnostic Footer */}
+            <div className="py-4 border-t border-white/5 text-center">
+                <p className="text-[10px] text-white/20 uppercase tracking-widest font-mono">
+                    API Status: <span className="text-purple-400">{API_BASE}</span>
+                </p>
+            </div>
+
             {/* Payment Modal */}
             <PaymentModal
                 show={showPayment}
