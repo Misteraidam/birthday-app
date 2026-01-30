@@ -134,7 +134,7 @@ export default function PaymentModal({ show, onClose, onSuccess, amount = 50, em
                                         placeholder="Enter Promo Code"
                                         value={promoCode}
                                         onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                                        className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 uppercase font-mono text-sm"
+                                        className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 uppercase font-mono text-sm text-gray-900"
                                     />
                                     <button
                                         onClick={handleApplyPromo}
