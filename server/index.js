@@ -160,11 +160,12 @@ app.post('/api/upload', async (req, res) => {
     res.json({ url: urlData.publicUrl });
 
   } catch (e) {
-    console.error('UPLOAD ERROR:', e);
-    if (e.message && e.message.includes('Bucket not found')) {
-      return res.status(500).json({ error: 'bucket_missing', message: 'Please create "portals" bucket in Supabase.' });
+    console.error('UPLOAD_ERROR_DETAILED:', e);
+    const msg = e.message || 'Unknown upload error';
+    if (msg.includes('Bucket not found') || msg.includes('not found')) {
+      return res.status(500).json({ error: 'bucket_missing', message: 'The "portals" bucket was not found in Supabase Storage. Please create it and set it to PUBLIC.' });
     }
-    res.status(500).json({ error: 'upload_failed', details: e.message });
+    res.status(500).json({ error: 'upload_failed', details: msg });
   }
 });
 

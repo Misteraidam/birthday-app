@@ -133,7 +133,7 @@ export default function SuccessScreen({ portalId, formData, onBackToHome }) {
                     ctx.fillStyle = '#FFFFFF';
                     ctx.globalAlpha = 0.2;
                     ctx.font = 'italic 20px sans-serif';
-                    ctx.fillText('Powered by WishCraft Studio // 2026', canvas.width / 2, 1500);
+                    ctx.fillText('Powered by Celebration Portal Studio // 2026', canvas.width / 2, 1500);
 
                     const link = document.createElement('a');
                     link.download = `Invite-${formData.recipientName}.png`;

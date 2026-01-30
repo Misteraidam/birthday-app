@@ -73,7 +73,7 @@ export default function GoldenJubilee({ formData }) {
                         "{formData.secretMessage}"
                     </p>
                     <div className="mt-20 text-[10px] uppercase tracking-[1em] text-white/20">
-                        EST. 2026 // WISHCRAFT_GOLD_LABEL
+                        EST. 2026 // CELEBRATION_PORTAL_COLLECTION
                     </div>
                 </footer>
             )}
