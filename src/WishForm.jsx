@@ -1,0 +1,1166 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
+import {
+    ChevronRight, ChevronLeft, Plus, Image, X, Mic, StopCircle,
+    Edit2, Play, Download, Upload, Video, Music, Lock, Eye, EyeOff,
+    Calendar, GripVertical, Trash2, MessageSquare, ArrowLeft, Check,
+    Clock, Key, Scroll, Volume2, VolumeX, Camera, Pause, ExternalLink, Sparkles
+} from 'lucide-react';
+import { CELEBRATION_TYPES, TEMPLATES, getCelebrationType, getTemplatesForCelebration, getMusicInLibrary } from './config/celebrationConfig';
+import CelebrationSelector from './components/CelebrationSelector';
+import PortalManager from './portals/PortalManager';
+import PaymentModal from './components/PaymentModal';
+
+export default function WishForm({ onGenerate, onBack, initialCelebrationType }) {
+    // Multi-step form control (0: Celebration, 1: Details, 2: Chapters, 3: Template, 4: Preview)
+    const [step, setStep] = useState(initialCelebrationType ? 1 : 0);
+    const [musicSearch, setMusicSearch] = useState('');
+    const [musicResults, setMusicResults] = useState([]);
+    const [isSearchingMusic, setIsSearchingMusic] = useState(false);
+    const [activePreview, setActivePreview] = useState(null);
+    const audioRef = useRef(null);
+
+    // Form data state
+    const [formData, setFormData] = useState({
+        celebrationType: initialCelebrationType || null,
+        recipientName: "",
+        senderName: "",
+        birthday: "",
+        portalBg: null,
+        musicUrl: "",
+        secretMessage: "",
+        chapters: [],
+        template: null,
+        opener: 'none',
+        customOccasion: ""
+    });
+
+    // Current chapter being edited
+    const [currentChapter, setCurrentChapter] = useState({
+        id: null,
+        title: "",
+        content: "",
+        media: [],
+        videoMessage: null,
+        voiceNote: null,
+        musicUrl: "",
+        messageAnchors: [],
+    });
+
+    // Recording states
+    const [isRecordingAudio, setIsRecordingAudio] = useState(false);
+    const [isRecordingVideo, setIsRecordingVideo] = useState(false);
+    const [audioRecorder, setAudioRecorder] = useState(null);
+    const [videoRecorder, setVideoRecorder] = useState(null);
+    const videoPreviewRef = useRef(null);
+    const [editingChapterId, setEditingChapterId] = useState(null);
+    const [showPayment, setShowPayment] = useState(false);
+
+    // Initialize with celebration type defaults
+    useEffect(() => {
+        if (formData.celebrationType && formData.chapters.length === 0) {
+            const celebType = getCelebrationType(formData.celebrationType);
+            const defaultChapters = celebType.defaultChapters.map((ch, i) => ({
+                id: Date.now() + i,
+                title: ch.title,
+                content: "",
+                hint: ch.hint, // Store hint for placeholder
+                media: [],
+                videoMessage: null,
+                voiceNote: null,
+                musicUrl: "",
+                messageAnchors: [],
+            }));
+            setFormData(prev => ({
+                ...prev,
+                chapters: defaultChapters,
+                template: celebType.primaryTheme || prev.template
+            }));
+        }
+    }, [formData.celebrationType]);
+
+    const celebrationConfig = getCelebrationType(formData.celebrationType);
+    const availableTemplates = formData.celebrationType
+        ? getTemplatesForCelebration(formData.celebrationType)
+        : TEMPLATES;
+
+    // --- UPLOAD HELPER ---
+    const uploadToCloud = async (base64Data, filename) => {
+        try {
+            const API_BASE = window.location.hostname === 'localhost'
+                ? 'http://localhost:8787'
+                : (window.location.protocol === 'https:' ? 'https://' : 'http://') + window.location.hostname + (window.location.port ? `:${window.location.port}` : '');
+
+            const res = await fetch(`${API_BASE}/api/upload`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename, data: base64Data })
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.message || "Upload failed");
+            }
+
+            const json = await res.json();
+            return json.url; // Returns the Supabase Public URL
+        } catch (e) {
+            console.error("Upload error:", e);
+            alert("Error uploading media: " + e.message);
+            return null;
+        }
+    };
+
+    // --- AUDIO RECORDING ---
+    const startAudioRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const recorder = new MediaRecorder(stream);
+            const chunks = [];
+
+            recorder.ondataavailable = (e) => chunks.push(e.data);
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'audio/webm' });
+                const reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = async () => {
+                    const url = await uploadToCloud(reader.result, `audio-${Date.now()}.webm`);
+                    if (url) setCurrentChapter(prev => ({ ...prev, voiceNote: url }));
+                };
+            };
+
+            recorder.start();
+            setAudioRecorder(recorder);
+            setIsRecordingAudio(true);
+        } catch (err) {
+            console.error("Mic access denied:", err);
+            alert("Could not access microphone! Please check permissions.");
+        }
+    };
+
+    const stopAudioRecording = () => {
+        if (audioRecorder) {
+            audioRecorder.stop();
+            setIsRecordingAudio(false);
+            audioRecorder.stream.getTracks().forEach(track => track.stop());
+            setAudioRecorder(null);
+        }
+    };
+
+    // --- VIDEO RECORDING ---
+    const startVideoRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+
+            if (videoPreviewRef.current) {
+                videoPreviewRef.current.srcObject = stream;
+                videoPreviewRef.current.play();
+            }
+
+            const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+            const chunks = [];
+
+            recorder.ondataavailable = (e) => chunks.push(e.data);
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = async () => {
+                    const url = await uploadToCloud(reader.result, `video-${Date.now()}.webm`);
+                    if (url) setCurrentChapter(prev => ({ ...prev, videoMessage: url }));
+                };
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            recorder.start();
+            setVideoRecorder(recorder);
+            setIsRecordingVideo(true);
+        } catch (err) {
+            console.error("Camera access denied:", err);
+            alert("Could not access camera! Please check permissions.");
+        }
+    };
+
+    const stopVideoRecording = () => {
+        if (videoRecorder) {
+            videoRecorder.stop();
+            setIsRecordingVideo(false);
+            setVideoRecorder(null);
+        }
+    };
+
+    // --- CHAPTER MANAGEMENT ---
+    const saveChapter = () => {
+        if (!currentChapter.title) return;
+
+        if (editingChapterId) {
+            setFormData(prev => ({
+                ...prev,
+                chapters: prev.chapters.map(ch =>
+                    ch.id === editingChapterId ? { ...currentChapter, id: editingChapterId } : ch
+                )
+            }));
+            setEditingChapterId(null);
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                chapters: [...prev.chapters, { ...currentChapter, id: `ch-${Date.now()}` }]
+            }));
+        }
+
+        resetCurrentChapter();
+    };
+
+    const editChapter = (chapter) => {
+        setCurrentChapter(chapter);
+        setEditingChapterId(chapter.id);
+    };
+
+    const deleteChapter = (id) => {
+        setFormData(prev => ({
+            ...prev,
+            chapters: prev.chapters.filter(ch => ch.id !== id)
+        }));
+        if (editingChapterId === id) {
+            resetCurrentChapter();
+        }
+    };
+
+    const resetCurrentChapter = () => {
+        setCurrentChapter({
+            id: null,
+            title: "",
+            content: "",
+            media: [],
+            videoMessage: null,
+            voiceNote: null,
+            musicUrl: "",
+            messageAnchors: [],
+            revealSettings: { type: 'always', value: null }
+        });
+        setEditingChapterId(null);
+    };
+
+    // --- IMAGE HANDLING ---
+    const handleImageUpload = (e) => {
+        const files = Array.from(e.target.files);
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = async () => {
+                const url = await uploadToCloud(reader.result, file.name);
+                if (url) {
+                    setCurrentChapter(prev => ({
+                        ...prev,
+                        media: [...prev.media, { type: 'image', data: url, anchor: null }]
+                    }));
+                }
+            };
+        });
+    };
+
+    const removeMedia = (index) => {
+        setCurrentChapter(prev => ({
+            ...prev,
+            media: prev.media.filter((_, i) => i !== index)
+        }));
+    };
+
+    // --- EXPORT/IMPORT ---
+    const exportData = () => {
+        const dataStr = JSON.stringify(formData);
+        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+        const exportName = `${formData.recipientName || 'celebration'}_portal.json`;
+
+        const link = document.createElement('a');
+        link.setAttribute('href', dataUri);
+        link.setAttribute('download', exportName);
+        link.click();
+    };
+
+    const importData = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                setFormData(importedData);
+                alert("Portal loaded successfully!");
+            } catch (err) {
+                alert("Invalid file format");
+            }
+        };
+        reader.readAsText(file);
+    };
+
+    // --- GENERATE HANDLER ---
+    const handleGenerateClick = () => {
+        if (!formData.recipientName) {
+            alert("Please enter the recipient's name!");
+            setStep(1);
+            return;
+        }
+        if (formData.chapters.length === 0) {
+            alert("Please add at least one chapter!");
+            setStep(2);
+            return;
+        }
+        setShowPayment(true);
+    };
+
+    const handlePaymentSuccess = (paymentDetails) => {
+        setShowPayment(false);
+        // Add payment validation info to payload for backend verification
+        const dataWithPayment = {
+            ...formData,
+            payment: paymentDetails
+        };
+        onGenerate(dataWithPayment);
+    };
+
+    // --- MUSIC SEARCH ---
+    const searchMusic = async (query) => {
+        if (!query || query.length < 2) return;
+        setIsSearchingMusic(true);
+        try {
+            // Using Apple iTunes API - The most reliable global music search in 2026
+            // No CORS proxy needed, better performance, direct audio streams.
+            const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&limit=15`);
+            const json = await response.json();
+            setMusicResults(json.results || []);
+        } catch (err) {
+            console.error("Music search failed:", err);
+            // Fallback purely to local mood recommendations if API fails
+            setIsSearchingMusic(false);
+        } finally {
+            setIsSearchingMusic(false);
+        }
+    };
+
+    const toggleMusicPreview = (track) => {
+        if (activePreview?.trackId === track.trackId) {
+            audioRef.current.pause();
+            setActivePreview(null);
+        } else {
+            setActivePreview(track);
+            // Small timeout to ensure src is updated before playing
+            setTimeout(() => {
+                if (audioRef.current) {
+                    audioRef.current.src = track.previewUrl;
+                    audioRef.current.play().catch(e => console.error("Playback failed:", e));
+                }
+            }, 50);
+        }
+    };
+
+    // --- STEP LABELS ---
+    const isCustomFlow = formData.celebrationType === 'custom';
+    const steps = [
+        { num: 1, label: 'Occasion', target: 0 },
+        { num: 2, label: 'Basics', target: 1 },
+        { num: 3, label: 'Story', target: 2 },
+        ...(isCustomFlow ? [{ num: 4, label: 'Theme', target: 3 }] : []),
+        { num: isCustomFlow ? 5 : 4, label: 'Review', target: 4 }
+    ];
+
+    return (
+        <div className="min-h-screen bg-[#0A0A0A] text-white selection:bg-purple-500 selection:text-white">
+            {/* Header */}
+            <header className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-white/5">
+                <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+                    <button
+                        onClick={() => {
+                            if (step === 1) onBack();
+                            else if (step === 4 && !isCustomFlow) setStep(2); // Skip Step 3 on back
+                            else if (step > 0) setStep(step - 1);
+                            else onBack();
+                        }}
+                        className="flex items-center gap-2 text-white/60 hover:text-white transition"
+                    >
+                        <ArrowLeft size={18} />
+                        <span className="hidden md:inline text-sm font-medium">Back</span>
+                    </button>
+
+                    {/* Step Indicator */}
+                    <div className="flex items-center gap-1 md:gap-2">
+                        {steps.map((s, i) => (
+                            <React.Fragment key={s.num}>
+                                <button
+                                    onClick={() => setStep(s.target)}
+                                    disabled={s.target > step && !formData.celebrationType}
+                                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition ${step === s.target
+                                        ? 'bg-white text-black'
+                                        : step > s.target
+                                            ? 'bg-purple-500/30 text-purple-300'
+                                            : 'bg-white/10 text-white/40'
+                                        } disabled:cursor-not-allowed`}
+                                >
+                                    {step > i ? <Check size={12} /> : s.num}
+                                    <span className="hidden md:inline">{s.label}</span>
+                                </button>
+                                {i < steps.length - 1 && (
+                                    <div className={`w-8 h-0.5 ${step > i ? 'bg-purple-500/50' : 'bg-white/10'}`} />
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </div>
+
+                    {/* Tools */}
+                    <div className="flex gap-2">
+                        <label className="cursor-pointer p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition">
+                            <Upload size={16} />
+                            <input type="file" accept=".json" className="hidden" onChange={importData} />
+                        </label>
+                        <button
+                            onClick={exportData}
+                            className="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition"
+                        >
+                            <Download size={16} />
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div className="pt-24 pb-32 px-6">
+                <div className="max-w-4xl mx-auto">
+                    <AnimatePresence mode="wait">
+                        {/* Step 0: Celebration Type Selection */}
+                        {step === 0 && (
+                            <motion.div
+                                key="step-0"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                            >
+                                <CelebrationSelector
+                                    selected={formData.celebrationType}
+                                    onSelect={(type) => setFormData(prev => ({ ...prev, celebrationType: type }))}
+                                    onContinue={() => setStep(1)}
+                                    onBack={onBack}
+                                />
+                            </motion.div>
+                        )}
+
+                        {/* Step 1: Basic Details */}
+                        {step === 1 && (
+                            <motion.div
+                                key="step-1"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                className="space-y-8"
+                            >
+                                <div className="text-center mb-12">
+                                    <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+                                        style={{ background: celebrationConfig?.gradient || 'rgba(255,255,255,0.1)' }}
+                                    >
+                                        <span className="text-lg">{celebrationConfig?.icon}</span>
+                                        <span className="text-xs font-bold">{celebrationConfig?.name}</span>
+                                    </motion.div>
+
+                                    <h2 className="text-4xl md:text-5xl font-black mb-4">Who's this for?</h2>
+                                    <p className="text-white/50">Let's personalize their experience</p>
+                                </div>
+
+                                {/* Recipient Name */}
+                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
+                                    <label className="text-xs uppercase tracking-wider text-white/40 block mb-4">
+                                        Recipient's Name *
+                                    </label>
+                                    <input
+                                        className="w-full bg-transparent text-4xl md:text-5xl font-bold outline-none placeholder:text-white/20"
+                                        placeholder="Enter their name..."
+                                        value={formData.recipientName}
+                                        onChange={(e) => setFormData({ ...formData, recipientName: e.target.value })}
+                                        autoFocus
+                                    />
+                                </div>
+
+                                {/* Custom Occasion Type (Only for 'custom' type) */}
+                                {formData.celebrationType === 'custom' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        className="bg-white/5 backdrop-blur-sm border border-purple-500/30 rounded-3xl p-8"
+                                    >
+                                        <label className="text-xs uppercase tracking-wider text-purple-400 block mb-4 flex items-center gap-2">
+                                            <Sparkles size={14} /> What are we celebrating?
+                                        </label>
+                                        <input
+                                            className="w-full bg-transparent text-3xl md:text-4xl font-bold outline-none placeholder:text-white/10"
+                                            placeholder="e.g. New Home, Promotion, Graduation..."
+                                            value={formData.customOccasion}
+                                            onChange={(e) => setFormData({ ...formData, customOccasion: e.target.value })}
+                                        />
+                                        <p className="text-[10px] text-white/30 mt-2 font-medium tracking-wide">THIS WILL BE THE MAIN HEADING IN THE PORTAL</p>
+                                    </motion.div>
+                                )}
+
+                                {/* Sender Name & Date */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6">
+                                        <label className="text-xs uppercase tracking-wider text-white/40 block mb-3">
+                                            From (Your Name)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter your name..."
+                                            className="w-full bg-transparent text-xl font-bold outline-none placeholder:text-white/20"
+                                            value={formData.senderName}
+                                            onChange={(e) => setFormData({ ...formData, senderName: e.target.value })}
+                                        />
+                                    </div>
+
+                                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6">
+                                        <label className="text-xs uppercase tracking-wider text-white/40 block mb-3">
+                                            Special Date {celebrationConfig?.id === 'birthday' && '🎂'}
+                                        </label>
+                                        <input
+                                            type="date"
+                                            className="w-full bg-transparent text-xl font-bold outline-none [color-scheme:dark]"
+                                            value={formData.birthday || ""}
+                                            onChange={(e) => setFormData({ ...formData, birthday: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Background Music */}
+                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6">
+                                    <label className="text-xs uppercase tracking-wider text-white/40 block mb-4 flex items-center justify-between">
+                                        <div className="flex items-center gap-2"><Music size={14} /> Background Music</div>
+                                        {formData.musicUrl && <span className="text-[10px] text-green-400 font-bold">✓ Track Selected</span>}
+                                    </label>
+
+                                    {/* Mood Suggestion */}
+                                    <div className="mb-6">
+                                        <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3 font-black">Search World Music Library (Jamendo)</p>
+                                        <div className="flex gap-2">
+                                            <div className="relative flex-1">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Search mood, genre, or song (e.g. 'romantic', 'pop', 'lo-fi')..."
+                                                    className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-5 text-sm outline-none focus:border-purple-500/50 transition-all"
+                                                    value={musicSearch}
+                                                    onChange={(e) => setMusicSearch(e.target.value)}
+                                                    onKeyDown={(e) => e.key === 'Enter' && searchMusic(musicSearch)}
+                                                />
+                                                <button
+                                                    onClick={() => searchMusic(musicSearch)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 px-4 py-2 bg-purple-500 rounded-xl text-xs font-bold hover:bg-purple-600 transition-colors"
+                                                >
+                                                    {isSearchingMusic ? '...' : 'Search'}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Search Results */}
+                                        <AnimatePresence>
+                                            {musicResults.length > 0 && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0 }}
+                                                    className="mt-4 space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar"
+                                                >
+                                                    {musicResults.map(track => (
+                                                        <div
+                                                            key={track.id}
+                                                            className={`p-3 rounded-2xl border flex items-center justify-between gap-4 transition-all ${formData.musicUrl === track.audio
+                                                                ? 'bg-purple-500/20 border-purple-500'
+                                                                : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                                                }`}
+                                                        >
+                                                            <div className="flex items-center gap-3 overflow-hidden">
+                                                                <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 relative group">
+                                                                    <img src={track.artworkUrl100} alt="" className="w-full h-full object-cover opacity-60" />
+                                                                    <button
+                                                                        onClick={() => toggleMusicPreview(track)}
+                                                                        className="absolute inset-0 flex items-center justify-center bg-black/40 text-white"
+                                                                    >
+                                                                        {activePreview?.trackId === track.trackId ? <Pause size={14} fill="white" /> : <Play size={14} fill="white" />}
+                                                                    </button>
+                                                                </div>
+                                                                <div className="overflow-hidden">
+                                                                    <p className="text-xs font-black truncate">{track.trackName}</p>
+                                                                    <p className="text-[10px] text-white/40 truncate">{track.artistName}</p>
+                                                                </div>
+                                                            </div>
+                                                            <button
+                                                                onClick={() => setFormData({ ...formData, musicUrl: track.previewUrl })}
+                                                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${formData.musicUrl === track.previewUrl
+                                                                    ? 'bg-green-500 text-white'
+                                                                    : 'bg-white/10 text-white/60 hover:bg-white'
+                                                                    }`}
+                                                            >
+                                                                {formData.musicUrl === track.previewUrl ? 'Selected' : 'Select'}
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+
+                                        {/* Audio Preview Element (Persistent) */}
+                                        <audio
+                                            ref={audioRef}
+                                            className="hidden"
+                                            onEnded={() => setActivePreview(null)}
+                                        />
+                                    </div>
+
+                                    <div className="mb-6">
+                                        <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3 font-black">Quick Recommendations</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {getMusicInLibrary(celebrationConfig?.musicMood || 'joyful').map(track => (
+                                                <button
+                                                    key={track.id}
+                                                    onClick={() => setFormData({ ...formData, musicUrl: track.url })}
+                                                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${formData.musicUrl === track.url
+                                                        ? 'bg-purple-500 border-purple-400 text-white shadow-lg shadow-purple-500/20'
+                                                        : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+                                                        }`}
+                                                >
+                                                    {track.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Custom URL */}
+                                    <div className="space-y-3">
+                                        <p className="text-[10px] text-white/30 uppercase tracking-widest">Or use your own link (YouTube/SoundCloud/MP3)</p>
+                                        <div className="relative group">
+                                            <input
+                                                type="text"
+                                                placeholder="Paste URL here..."
+                                                className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-5 text-sm font-medium outline-none focus:border-purple-500/50 transition-all placeholder:text-white/10 font-mono"
+                                                value={formData.musicUrl || ""}
+                                                onChange={(e) => setFormData({ ...formData, musicUrl: e.target.value })}
+                                            />
+                                            {formData.musicUrl && (
+                                                <button
+                                                    onClick={() => window.open(formData.musicUrl, '_blank')}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-white/5 hover:bg-white/10 rounded-lg text-white/40 hover:text-white transition"
+                                                    title="Test Link"
+                                                >
+                                                    <ExternalLink size={16} />
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4 flex items-center gap-2 text-[10px] text-white/30 italic">
+                                        <Sparkles size={10} className="text-yellow-500" />
+                                        <span>Testing is recommended! Some YouTube songs are restricted for embedding.</span>
+                                    </div>
+                                </div>
+
+                                {/* Cover Image */}
+                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6">
+                                    <label className="text-xs uppercase tracking-wider text-white/40 block mb-4">
+                                        Cover Image (Optional)
+                                    </label>
+                                    <div className="flex items-center gap-4">
+                                        {formData.portalBg ? (
+                                            <div className="relative w-24 h-24 rounded-xl overflow-hidden">
+                                                <img src={formData.portalBg} alt="" className="w-full h-full object-cover" />
+                                                <button
+                                                    onClick={() => setFormData({ ...formData, portalBg: null })}
+                                                    className="absolute top-1 right-1 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center"
+                                                >
+                                                    <X size={12} />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <label className="w-24 h-24 rounded-xl border-2 border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition">
+                                                <Image size={24} className="text-white/30" />
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files[0];
+                                                        if (file) {
+                                                            const reader = new FileReader();
+                                                            reader.readAsDataURL(file);
+                                                            reader.onloadend = async () => {
+                                                                const url = await uploadToCloud(reader.result, file.name);
+                                                                if (url) setFormData({ ...formData, portalBg: url });
+                                                            };
+                                                        }
+                                                    }}
+                                                />
+                                            </label>
+                                        )}
+                                        <p className="text-sm text-white/40">Leave empty for auto-generated gradient</p>
+                                    </div>
+                                </div>
+
+                                {/* Navigation */}
+                                <div className="flex gap-4">
+                                    <button
+                                        onClick={() => setStep(0)}
+                                        className="flex-1 py-5 bg-white/10 text-white font-bold rounded-2xl hover:bg-white/20 transition flex items-center justify-center gap-2"
+                                    >
+                                        <ChevronLeft size={20} /> Back
+                                    </button>
+                                    <button
+                                        onClick={() => formData.recipientName && setStep(2)}
+                                        disabled={!formData.recipientName}
+                                        className="flex-1 py-5 bg-white text-black font-bold text-lg rounded-2xl flex items-center justify-center gap-2 hover:bg-white/90 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                        Continue <ChevronRight size={20} />
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* Step 2: Story Chapters */}
+                        {step === 2 && (
+                            <motion.div
+                                key="step-2"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                className="space-y-8"
+                            >
+                                <div className="text-center mb-12">
+                                    <h2 className="text-4xl md:text-5xl font-black mb-4">Build Your Story</h2>
+                                    <p className="text-white/50">
+                                        Craft chapters filled with memories for {formData.recipientName}
+                                    </p>
+                                </div>
+
+                                {/* Chapters List */}
+                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-sm font-bold uppercase tracking-wider text-white/60">
+                                            Chapters ({formData.chapters.length})
+                                        </h3>
+                                    </div>
+
+                                    <AnimatePresence mode="popLayout">
+                                        {formData.chapters.length > 0 ? (
+                                            <Reorder.Group
+                                                axis="y"
+                                                values={formData.chapters}
+                                                onReorder={(newOrder) => setFormData(prev => ({ ...prev, chapters: newOrder }))}
+                                                className="space-y-2"
+                                                key="chapter-list"
+                                            >
+                                                {formData.chapters.map((chapter) => (
+                                                    <Reorder.Item
+                                                        key={chapter.id}
+                                                        value={chapter}
+                                                        initial={{ opacity: 0, scale: 0.95 }}
+                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        exit={{ opacity: 0, scale: 0.95 }}
+                                                        className={`bg-white/5 border rounded-xl p-4 flex items-center gap-4 cursor-move ${editingChapterId === chapter.id
+                                                            ? 'border-purple-500 bg-purple-500/10'
+                                                            : 'border-white/10'
+                                                            }`}
+                                                    >
+                                                        <GripVertical size={16} className="text-white/30 flex-shrink-0" />
+
+                                                        <div className="flex-1 min-w-0" onClick={() => editChapter(chapter)}>
+                                                            <p className="font-medium truncate">{chapter.title}</p>
+                                                            <div className="flex items-center gap-2 mt-1">
+                                                                {chapter.media.length > 0 && (
+                                                                    <span className="text-xs text-white/40 flex items-center gap-1">
+                                                                        <Image size={10} /> {chapter.media.length}
+                                                                    </span>
+                                                                )}
+                                                                {chapter.voiceNote && (
+                                                                    <span className="text-xs text-green-400 flex items-center gap-1">
+                                                                        <Mic size={10} /> Voice
+                                                                    </span>
+                                                                )}
+                                                                {chapter.videoMessage && (
+                                                                    <span className="text-xs text-blue-400 flex items-center gap-1">
+                                                                        <Video size={10} /> Video
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-1">
+                                                            <button
+                                                                onClick={() => editChapter(chapter)}
+                                                                className="p-2 hover:bg-white/10 rounded-lg text-white/60 hover:text-white"
+                                                            >
+                                                                <Edit2 size={16} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => deleteChapter(chapter.id)}
+                                                                className="p-2 hover:bg-red-500/20 rounded-lg text-white/60 hover:text-red-400"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
+                                                    </Reorder.Item>
+                                                ))}
+                                            </Reorder.Group>
+                                        ) : (
+                                            <motion.div
+                                                key="empty-state"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                className="text-center py-8 text-white/40"
+                                            >
+                                                <p>No chapters yet. Add your first chapter below!</p>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+
+                                {/* Chapter Editor */}
+                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 space-y-6 relative overflow-hidden">
+                                    {editingChapterId && (
+                                        <div className="absolute top-0 inset-x-0 h-1 bg-purple-500 animate-pulse" />
+                                    )}
+
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-lg font-bold">
+                                            {editingChapterId ? 'Edit Chapter' : 'Add New Chapter'}
+                                        </h3>
+                                        {editingChapterId && (
+                                            <button
+                                                onClick={resetCurrentChapter}
+                                                className="text-xs text-white/40 hover:text-white"
+                                            >
+                                                Cancel Edit
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* Chapter Title */}
+                                    <input
+                                        placeholder="Chapter Title..."
+                                        className="w-full bg-white/5 border border-white/10 text-xl font-bold outline-none p-4 rounded-xl focus:border-purple-500 transition"
+                                        value={currentChapter.title}
+                                        onChange={(e) => setCurrentChapter({ ...currentChapter, title: e.target.value })}
+                                    />
+
+                                    {/* Chapter Content */}
+                                    <textarea
+                                        placeholder={currentChapter.hint || "Tell the story..."}
+                                        className="w-full bg-white/5 border border-white/10 p-4 rounded-xl h-32 focus:border-purple-500 outline-none transition resize-none"
+                                        value={currentChapter.content}
+                                        onChange={e => setCurrentChapter({ ...currentChapter, content: e.target.value })}
+                                    />
+
+                                    {/* Media Upload */}
+                                    <div>
+                                        <label className="text-xs uppercase tracking-wider text-white/40 block mb-3">
+                                            Photos & Media
+                                        </label>
+                                        <div className="flex flex-wrap gap-3">
+                                            {currentChapter.media.map((item, i) => (
+                                                <div key={i} className="relative w-24 h-24 rounded-xl overflow-hidden group">
+                                                    <img src={item.data} alt="" className="w-full h-full object-cover" />
+                                                    <button
+                                                        onClick={() => removeMedia(i)}
+                                                        className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+                                                    >
+                                                        <X size={20} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            <label className="w-24 h-24 rounded-xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center cursor-pointer hover:border-purple-500/50 transition bg-black/20">
+                                                <Plus size={20} className="text-white/30 mb-1" />
+                                                <span className="text-xs text-white/30">Add</span>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    multiple
+                                                    className="hidden"
+                                                    onChange={handleImageUpload}
+                                                />
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Voice Note */}
+                                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${currentChapter.voiceNote ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-white/40'
+                                                }`}>
+                                                <Mic size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-sm">Voice Note</p>
+                                                <p className="text-xs text-white/40">
+                                                    {currentChapter.voiceNote ? 'Audio recorded' : 'Add a voice message'}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {isRecordingAudio ? (
+                                            <button
+                                                onClick={stopAudioRecording}
+                                                className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-full font-bold text-xs flex items-center gap-2 animate-pulse"
+                                            >
+                                                <StopCircle size={14} /> Stop
+                                            </button>
+                                        ) : (
+                                            <div className="flex gap-2">
+                                                {currentChapter.voiceNote && (
+                                                    <button
+                                                        onClick={() => setCurrentChapter({ ...currentChapter, voiceNote: null })}
+                                                        className="p-2 hover:bg-white/10 rounded-full text-white/40"
+                                                    >
+                                                        <X size={14} />
+                                                    </button>
+                                                )}
+                                                <button
+                                                    onClick={startAudioRecording}
+                                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full font-bold text-xs flex items-center gap-2"
+                                                >
+                                                    <Mic size={14} /> {currentChapter.voiceNote ? 'Re-record' : 'Record'}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Video Message */}
+                                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${currentChapter.videoMessage ? 'bg-blue-500/20 text-blue-400' : 'bg-white/10 text-white/40'
+                                                    }`}>
+                                                    <Video size={20} />
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-sm">Video Message</p>
+                                                    <p className="text-xs text-white/40">Record a personal video</p>
+                                                </div>
+                                            </div>
+
+                                            {isRecordingVideo ? (
+                                                <button
+                                                    onClick={stopVideoRecording}
+                                                    className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-full font-bold text-xs flex items-center gap-2 animate-pulse"
+                                                >
+                                                    <StopCircle size={14} /> Stop Recording
+                                                </button>
+                                            ) : (
+                                                <div className="flex gap-2">
+                                                    {currentChapter.videoMessage && (
+                                                        <button
+                                                            onClick={() => setCurrentChapter({ ...currentChapter, videoMessage: null })}
+                                                            className="p-2 hover:bg-white/10 rounded-full text-white/40"
+                                                        >
+                                                            <X size={14} />
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        onClick={startVideoRecording}
+                                                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full font-bold text-xs flex items-center gap-2"
+                                                    >
+                                                        <Camera size={14} /> {currentChapter.videoMessage ? 'Re-record' : 'Record Video'}
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Video Preview */}
+                                        {(isRecordingVideo || currentChapter.videoMessage) && (
+                                            <div className="mt-4 rounded-xl overflow-hidden bg-black aspect-video">
+                                                {isRecordingVideo ? (
+                                                    <video ref={videoPreviewRef} className="w-full h-full object-cover" muted />
+                                                ) : currentChapter.videoMessage ? (
+                                                    <video src={currentChapter.videoMessage} controls className="w-full h-full object-cover" />
+                                                ) : null}
+                                            </div>
+                                        )}
+                                    </div>
+
+
+
+                                    {/* Save Chapter Button */}
+                                    <button
+                                        onClick={saveChapter}
+                                        disabled={!currentChapter.title}
+                                        className={`w-full py-4 font-bold rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${editingChapterId
+                                            ? 'bg-green-500 hover:bg-green-400 text-white'
+                                            : 'bg-purple-500 hover:bg-purple-400 text-white'
+                                            }`}
+                                    >
+                                        {editingChapterId ? (
+                                            <><Check size={18} /> Update Chapter</>
+                                        ) : (
+                                            <><Plus size={18} /> Add Chapter</>
+                                        )}
+                                    </button>
+                                </div>
+
+                                {/* Navigation */}
+                                <div className="flex gap-4">
+                                    <button
+                                        onClick={() => setStep(1)}
+                                        className="flex-1 py-5 bg-white/10 text-white font-bold rounded-2xl hover:bg-white/20 transition flex items-center justify-center gap-2"
+                                    >
+                                        <ChevronLeft size={20} /> Back
+                                    </button>
+                                    <button
+                                        onClick={() => setStep(isCustomFlow ? 3 : 4)}
+                                        className="flex-1 py-5 bg-white text-black font-bold text-lg rounded-2xl flex items-center justify-center gap-2 hover:bg-white/90 transition"
+                                    >
+                                        Continue <ChevronRight size={20} />
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* Step 3: Template Selection */}
+                        {step === 3 && (
+                            <motion.div
+                                key="step-3"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                className="space-y-8"
+                            >
+                                <div className="text-center mb-12">
+                                    <h2 className="text-4xl md:text-5xl font-black mb-4">Choose Your Theme</h2>
+                                    <p className="text-white/50">Pick the perfect look for {formData.recipientName}'s story</p>
+                                </div>
+
+                                {/* Template Grid */}
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {TEMPLATES.map((template, i) => (
+                                        <motion.button
+                                            key={template.id}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: i * 0.05 }}
+                                            onClick={() => setFormData({
+                                                ...formData,
+                                                template: template.id,
+                                                opener: template.defaultOpener || 'none'
+                                            })}
+                                            className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-300 overflow-hidden h-48 ${formData.template === template.id
+                                                ? 'border-white scale-[1.02] shadow-2xl'
+                                                : 'border-white/10 hover:border-white/30'
+                                                }`}
+                                        >
+                                            <div className={`absolute inset-0 ${template.preview} opacity-40`} />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+
+                                            <div className="relative z-10 h-full flex flex-col justify-end">
+                                                <h3 className="font-bold text-lg mb-1">{template.name}</h3>
+                                                <p className="text-xs text-white/60 line-clamp-2">{template.description}</p>
+                                            </div>
+
+                                            {formData.template === template.id && (
+                                                <div className="absolute top-3 right-3 w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                                                    <Check size={14} className="text-black" />
+                                                </div>
+                                            )}
+                                        </motion.button>
+                                    ))}
+                                </div>
+
+
+
+                                {/* Final Message */}
+                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
+                                    <label className="text-xs uppercase tracking-wider text-white/40 block mb-4 flex items-center gap-2">
+                                        <Lock size={14} /> Final Message
+                                    </label>
+                                    <textarea
+                                        placeholder="Write a heartfelt closing message..."
+                                        className="w-full bg-transparent border-none rounded-xl p-0 h-32 outline-none text-lg resize-none"
+                                        value={formData.secretMessage}
+                                        onChange={(e) => setFormData({ ...formData, secretMessage: e.target.value })}
+                                    />
+                                </div>
+
+                                {/* Navigation */}
+                                <div className="flex gap-4">
+                                    <button
+                                        onClick={() => setStep(2)}
+                                        className="flex-1 py-5 bg-white/10 text-white font-bold rounded-2xl hover:bg-white/20 transition flex items-center justify-center gap-2"
+                                    >
+                                        <ChevronLeft size={20} /> Back
+                                    </button>
+                                    <button
+                                        onClick={() => setStep(step === 3 && !isCustomFlow ? 4 : (isCustomFlow ? 4 : 3))}
+                                        className="flex-1 py-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-black text-lg rounded-2xl hover:opacity-90 transition flex items-center justify-center gap-2"
+                                    >
+                                        <Eye size={20} /> Preview Story
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+                        {/* Step 4: Live Preview */}
+                        {step === 4 && (
+                            <motion.div
+                                key="step-4"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="fixed inset-0 z-[60] bg-[#0A0A0A] flex flex-col"
+                            >
+                                {/* Preview Header Overlay */}
+                                <div className="absolute top-0 inset-x-0 z-[70] p-6 bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
+                                    <div className="max-w-5xl mx-auto flex items-center justify-between pointer-events-auto">
+                                        <div className="flex items-center gap-3">
+                                            <div className="bg-purple-500 p-2 rounded-xl">
+                                                <Eye size={20} className="text-white" />
+                                            </div>
+                                            <div>
+                                                <h2 className="font-black text-xl">Preview Mode</h2>
+                                                <p className="text-xs text-white/50">This is exactly what your recipient will see</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => setStep(isCustomFlow ? 3 : 2)}
+                                            className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl font-bold hover:bg-white/20 transition flex items-center gap-2"
+                                        >
+                                            <ArrowLeft size={18} /> Back to Edit
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* The Actual Portal Preview */}
+                                <div className="flex-1 overflow-auto">
+                                    <PortalManager formData={formData} />
+                                </div>
+
+                                {/* Preview Footer Action */}
+                                <div className="p-8 bg-gradient-to-t from-black to-transparent pointer-events-none">
+                                    <div className="max-w-xl mx-auto pointer-events-auto">
+                                        <button
+                                            onClick={handleGenerateClick}
+                                            className="w-full py-5 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white font-black text-xl rounded-2xl shadow-2xl shadow-purple-500/20 hover:scale-[1.02] active:scale-[0.98] transition flex items-center justify-center gap-3"
+                                        >
+                                            <Sparkles size={24} /> Confirm & Generate Link
+                                        </button>
+                                        <p className="text-center text-white/40 text-xs mt-4">
+                                            Tip: Test the interactive content before sharing!
+                                        </p>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            </div>
+
+            {/* Payment Modal */}
+            <PaymentModal
+                show={showPayment}
+                onClose={() => setShowPayment(false)}
+                onSuccess={handlePaymentSuccess}
+                amount={10} // 10 GHS
+            />
+        </div>
+    );
+}
