@@ -366,26 +366,24 @@ export const TEMPLATES = [
 // --- MUSIC LIBRARY (Royalty-Free High Quality) ---
 export const MUSIC_LIBRARY = {
     romantic: [
-        { id: 'rom-1', name: 'Rose Petals', url: 'https://cdn.pixabay.com/audio/2022/05/27/audio_1808f3030c.mp3', author: 'Pixabay' },
-        { id: 'rom-2', name: 'Forever Yours', url: 'https://cdn.pixabay.com/audio/2022/01/21/audio_310892.mp3', author: 'Pixabay' },
-        { id: 'rom-3', name: 'Sweet Piano', url: 'https://cdn.pixabay.com/audio/2023/10/05/audio_222333.mp3', author: 'Pixabay' }
+        { id: 'rom-1', name: 'Acoustic Love', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', author: 'SoundHelix' },
+        { id: 'rom-2', name: 'Sweet Piano', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', author: 'SoundHelix' }
     ],
     joyful: [
-        { id: 'pop-1', name: 'Party Upbeat', url: 'https://cdn.pixabay.com/audio/2022/03/10/audio_f76a54.mp3', author: 'Pixabay' },
-        { id: 'pop-2', name: 'Funky Celebration', url: 'https://cdn.pixabay.com/audio/2022/08/02/audio_123456.mp3', author: 'Pixabay' },
-        { id: 'pop-3', name: 'Happy Vibes', url: 'https://cdn.pixabay.com/audio/2021/11/24/audio_1a2b3c.mp3', author: 'Pixabay' }
+        { id: 'pop-1', name: 'Happy Vibes', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', author: 'SoundHelix' },
+        { id: 'pop-2', name: 'Party Upbeat', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', author: 'SoundHelix' }
     ],
     triumphant: [
-        { id: 'edu-1', name: 'Graduation Day', url: 'https://cdn.pixabay.com/audio/2022/03/24/audio_347395.mp3', author: 'Pixabay' },
-        { id: 'edu-2', name: 'Success Story', url: 'https://cdn.pixabay.com/audio/2021/04/16/audio_444555.mp3', author: 'Pixabay' }
+        { id: 'edu-1', name: 'Success Story', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3', author: 'SoundHelix' },
+        { id: 'edu-2', name: 'Achievement', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3', author: 'SoundHelix' }
     ],
     peaceful: [
-        { id: 'zen-1', name: 'Serenity', url: 'https://cdn.pixabay.com/audio/2022/04/27/audio_fefefef.mp3', author: 'Pixabay' },
-        { id: 'zen-2', name: 'Memories Fade', url: 'https://cdn.pixabay.com/audio/2022/02/22/audio_999000.mp3', author: 'Pixabay' }
+        { id: 'zen-1', name: 'Serenity', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3', author: 'SoundHelix' },
+        { id: 'zen-2', name: 'Memories', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3', author: 'SoundHelix' }
     ],
     uplifting: [
-        { id: 'up-1', name: 'Modern Dreams', url: 'https://cdn.pixabay.com/audio/2022/09/01/audio_777888.mp3', author: 'Pixabay' },
-        { id: 'up-2', name: 'Inspirational', url: 'https://cdn.pixabay.com/audio/2022/01/18/audio_abc123.mp3', author: 'Pixabay' }
+        { id: 'up-1', name: 'Modern Dreams', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3', author: 'SoundHelix' },
+        { id: 'up-2', name: 'Inspiration', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3', author: 'SoundHelix' }
     ]
 };
 

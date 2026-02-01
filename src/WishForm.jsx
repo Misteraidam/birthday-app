@@ -517,12 +517,12 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 </div>
 
                                 {/* Recipient Name */}
-                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
-                                    <label className="text-xs uppercase tracking-wider text-white/40 block mb-4">
+                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 md:p-8">
+                                    <label className="text-[10px] md:text-xs uppercase tracking-wider text-white/40 block mb-4">
                                         Recipient's Name *
                                     </label>
                                     <input
-                                        className="w-full bg-transparent text-4xl md:text-5xl font-bold outline-none placeholder:text-white/20"
+                                        className="w-full bg-transparent text-2xl md:text-5xl font-bold outline-none placeholder:text-white/20"
                                         placeholder="Enter their name..."
                                         value={formData.recipientName}
                                         onChange={(e) => setFormData({ ...formData, recipientName: e.target.value })}
@@ -535,13 +535,13 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                     <motion.div
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: 'auto' }}
-                                        className="bg-white/5 backdrop-blur-sm border border-purple-500/30 rounded-3xl p-8"
+                                        className="bg-white/5 backdrop-blur-sm border border-purple-500/30 rounded-3xl p-6 md:p-8"
                                     >
-                                        <label className="text-xs uppercase tracking-wider text-purple-400 block mb-4 flex items-center gap-2">
+                                        <label className="text-[10px] md:text-xs uppercase tracking-wider text-purple-400 block mb-4 flex items-center gap-2">
                                             <Sparkles size={14} /> What are we celebrating?
                                         </label>
                                         <input
-                                            className="w-full bg-transparent text-3xl md:text-4xl font-bold outline-none placeholder:text-white/10"
+                                            className="w-full bg-transparent text-xl md:text-4xl font-bold outline-none placeholder:text-white/10"
                                             placeholder="e.g. New Home, Promotion, Graduation..."
                                             value={formData.customOccasion}
                                             onChange={(e) => setFormData({ ...formData, customOccasion: e.target.value })}
@@ -587,12 +587,12 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
 
                                     {/* Mood Suggestion */}
                                     <div className="mb-6">
-                                        <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3 font-black">Search World Music Library (Jamendo)</p>
+                                        <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3 font-black">Search World Music Library (iTunes)</p>
                                         <div className="flex gap-2">
                                             <div className="relative flex-1">
                                                 <input
                                                     type="text"
-                                                    placeholder="Search mood, genre, or song (e.g. 'romantic', 'pop', 'lo-fi')..."
+                                                    placeholder="Search song or artist..."
                                                     className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-5 text-sm outline-none focus:border-purple-500/50 transition-all"
                                                     value={musicSearch}
                                                     onChange={(e) => setMusicSearch(e.target.value)}
@@ -600,7 +600,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                 />
                                                 <button
                                                     onClick={() => searchMusic(musicSearch)}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 px-4 py-2 bg-purple-500 rounded-xl text-xs font-bold hover:bg-purple-600 transition-colors"
+                                                    className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-purple-500 rounded-xl text-[10px] font-bold hover:bg-purple-600 transition-colors"
                                                 >
                                                     {isSearchingMusic ? '...' : 'Search'}
                                                 </button>
@@ -618,8 +618,8 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                 >
                                                     {musicResults.map(track => (
                                                         <div
-                                                            key={track.id}
-                                                            className={`p-3 rounded-2xl border flex items-center justify-between gap-4 transition-all ${formData.musicUrl === track.audio
+                                                            key={track.trackId || track.id}
+                                                            className={`p-3 rounded-2xl border flex items-center justify-between gap-4 transition-all ${formData.musicUrl === track.previewUrl
                                                                 ? 'bg-purple-500/20 border-purple-500'
                                                                 : 'bg-white/5 border-white/10 hover:bg-white/10'
                                                                 }`}
