@@ -12,6 +12,7 @@ import PortalManager from './portals/PortalManager';
 // TODO: Re-enable payment when ready
 // import PaymentModal from './components/PaymentModal';
 import { API_BASE } from './config/api';
+import { supabase } from './config/supabaseClient';
 
 export default function WishForm({ onGenerate, onBack, initialCelebrationType }) {
     // Multi-step form control (0: Celebration, 1: Details, 2: Chapters, 3: Template, 4: Preview)
@@ -114,24 +115,41 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
         });
     };
 
-    // --- UPLOAD HELPER ---
+    // --- UPLOAD HELPER (Direct to Supabase - Bypass Vercel 4.5MB Limit) ---
     const uploadToCloud = async (base64Data, filename) => {
         try {
             setIsUploading(true);
             setUploadStatus('Uploading...');
-            const res = await fetch(`${API_BASE}/api/upload`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ filename, data: base64Data })
-            });
 
-            if (!res.ok) {
-                const err = await res.json();
-                throw new Error(err.message || "Upload failed");
+            // Convert base64 to Blob for direct upload
+            const byteString = atob(base64Data.split(',')[1]);
+            const mimeString = base64Data.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
             }
+            const blob = new Blob([ab], { type: mimeString });
 
-            const json = await res.json();
-            return json.url; // Returns the Supabase Public URL
+            const uniqueFilename = `${Date.now()}-${filename || 'upload.bin'}`;
+
+            // Upload directly to Supabase Storage
+            const { data, error } = await supabase.storage
+                .from('portals')
+                .upload(uniqueFilename, blob, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (error) throw error;
+
+            // Get Public URL
+            const { data: urlData } = supabase.storage
+                .from('portals')
+                .getPublicUrl(uniqueFilename);
+
+            return urlData.publicUrl;
+
         } catch (e) {
             console.error("Upload error:", e);
             alert("Error uploading media: " + e.message);
