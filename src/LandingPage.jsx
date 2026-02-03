@@ -199,23 +199,32 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                                         {type.name.split(' ')[0]}
                                     </span>
 
-                                    {/* Tooltip */}
+                                    {/* Valentine Demo - Always visible on mobile, tooltip on desktop */}
+                                    {['valentine'].includes(type.id) && (
+                                        <a
+                                            href={`/?demo=${type.id}`}
+                                            className="md:hidden px-3 py-2 bg-gradient-to-r from-pink-500 to-red-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg flex items-center gap-2 mt-1"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <Play size={10} fill="currentColor" /> Demo
+                                        </a>
+                                    )}
+
+                                    {/* Tooltip - Desktop only */}
                                     <AnimatePresence>
                                         {hoveredType === type.id && (
                                             <motion.div
                                                 initial={{ opacity: 0, y: 10, scale: 0.9 }}
                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                 exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                                                className="absolute top-full mt-2 p-3 bg-white/10 backdrop-blur-xl border border-white/10 rounded-xl whitespace-nowrap z-50 flex flex-col items-center gap-2"
+                                                className="hidden md:flex absolute top-full mt-2 p-3 bg-white/10 backdrop-blur-xl border border-white/10 rounded-xl whitespace-nowrap z-50 flex-col items-center gap-2"
                                             >
                                                 <p className="text-xs text-white/80">{type.description}</p>
                                                 {['valentine'].includes(type.id) && (
                                                     <a
                                                         href={`/?demo=${type.id}`}
                                                         className="px-3 py-1.5 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-purple-400 hover:text-white transition-colors flex items-center gap-2"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation(); // Prevent parent click (Create New)
-                                                        }}
+                                                        onClick={(e) => e.stopPropagation()}
                                                     >
                                                         <Play size={10} fill="currentColor" /> Watch Demo
                                                     </a>
@@ -239,7 +248,8 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                         <p className="text-center text-xs uppercase tracking-[0.3em] text-white/40 mb-8">
                             Beautiful Templates
                         </p>
-                        <div className="flex justify-center gap-4 md:gap-6 overflow-hidden">
+                        {/* Mobile: horizontal scroll carousel, Desktop: centered flex */}
+                        <div className="flex gap-4 md:gap-6 overflow-x-auto md:overflow-visible md:justify-center px-4 md:px-0 pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide">
                             {featuredTemplates.map((template, i) => (
                                 <motion.div
                                     key={template.id}
@@ -249,7 +259,8 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                                         y: activeTemplateIndex === i ? -10 : 0
                                     }}
                                     transition={{ duration: 0.5 }}
-                                    className="relative w-64 h-80 rounded-3xl overflow-hidden border border-white/10 bg-gray-900"
+                                    onClick={() => setActiveTemplateIndex(i)}
+                                    className="relative flex-shrink-0 w-48 h-64 md:w-64 md:h-80 rounded-3xl overflow-hidden border border-white/10 bg-gray-900 snap-center cursor-pointer"
                                     style={{
                                         boxShadow: activeTemplateIndex === i
                                             ? `0 25px 50px -12px ${template.primaryColor}40`
@@ -266,15 +277,16 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
                                     {/* Content */}
-                                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                                        <h3 className="text-lg font-bold mb-1">{template.name}</h3>
-                                        <p className="text-xs text-white/60">{template.description}</p>
+                                    <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+                                        <h3 className="text-base md:text-lg font-bold mb-1">{template.name}</h3>
+                                        <p className="text-[10px] md:text-xs text-white/60 line-clamp-2">{template.description}</p>
                                     </div>
 
                                     {/* Preview badge */}
-                                    <div className="absolute top-4 right-4">
-                                        <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-lg flex items-center justify-center">
-                                            <Play size={12} className="text-white ml-0.5" />
+                                    <div className="absolute top-3 right-3 md:top-4 md:right-4">
+                                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/10 backdrop-blur-lg flex items-center justify-center">
+                                            <Play size={10} className="text-white ml-0.5 md:hidden" />
+                                            <Play size={12} className="text-white ml-0.5 hidden md:block" />
                                         </div>
                                     </div>
                                 </motion.div>

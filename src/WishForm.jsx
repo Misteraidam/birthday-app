@@ -9,7 +9,8 @@ import {
 import { CELEBRATION_TYPES, TEMPLATES, getCelebrationType, getTemplatesForCelebration, getMusicInLibrary } from './config/celebrationConfig';
 import CelebrationSelector from './components/CelebrationSelector';
 import PortalManager from './portals/PortalManager';
-import PaymentModal from './components/PaymentModal';
+// TODO: Re-enable payment when ready
+// import PaymentModal from './components/PaymentModal';
 import { API_BASE } from './config/api';
 
 export default function WishForm({ onGenerate, onBack, initialCelebrationType }) {
@@ -55,7 +56,8 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
     const [videoRecorder, setVideoRecorder] = useState(null);
     const videoPreviewRef = useRef(null);
     const [editingChapterId, setEditingChapterId] = useState(null);
-    const [showPayment, setShowPayment] = useState(false);
+    // TODO: Re-enable when payment is ready
+    // const [showPayment, setShowPayment] = useState(false);
 
     // Initialize with celebration type defaults
     useEffect(() => {
@@ -338,18 +340,21 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
             setStep(2);
             return;
         }
-        setShowPayment(true);
+        // TODO: Re-enable payment when ready
+        // setShowPayment(true);
+        // For now, skip payment and generate directly
+        onGenerate(formData);
     };
 
-    const handlePaymentSuccess = (paymentDetails) => {
-        setShowPayment(false);
-        // Add payment validation info to payload for backend verification
-        const dataWithPayment = {
-            ...formData,
-            payment: paymentDetails
-        };
-        onGenerate(dataWithPayment);
-    };
+    // TODO: Re-enable when payment is ready
+    // const handlePaymentSuccess = (paymentDetails) => {
+    //     setShowPayment(false);
+    //     const dataWithPayment = {
+    //         ...formData,
+    //         payment: paymentDetails
+    //     };
+    //     onGenerate(dataWithPayment);
+    // };
 
     // --- MUSIC SEARCH ---
     const searchMusic = async (query) => {
@@ -387,13 +392,13 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
     };
 
     // --- STEP LABELS ---
-    const isCustomFlow = formData.celebrationType === 'custom';
+    // Theme selection is now available for ALL celebration types
     const steps = [
         { num: 1, label: 'Occasion', target: 0 },
         { num: 2, label: 'Basics', target: 1 },
         { num: 3, label: 'Story', target: 2 },
-        ...(isCustomFlow ? [{ num: 4, label: 'Theme', target: 3 }] : []),
-        { num: isCustomFlow ? 5 : 4, label: 'Review', target: 4 }
+        { num: 4, label: 'Theme', target: 3 },
+        { num: 5, label: 'Review', target: 4 }
     ];
 
     return (
@@ -1060,7 +1065,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         <ChevronLeft size={20} /> Back
                                     </button>
                                     <button
-                                        onClick={() => setStep(isCustomFlow ? 3 : 4)}
+                                        onClick={() => setStep(3)}
                                         className="flex-1 py-5 bg-white text-black font-bold text-lg rounded-2xl flex items-center justify-center gap-2 hover:bg-white/90 transition"
                                     >
                                         Continue <ChevronRight size={20} />
@@ -1142,7 +1147,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         <ChevronLeft size={20} /> Back
                                     </button>
                                     <button
-                                        onClick={() => setStep(step === 3 && !isCustomFlow ? 4 : (isCustomFlow ? 4 : 3))}
+                                        onClick={() => setStep(4)}
                                         className="flex-1 py-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-black text-lg rounded-2xl hover:opacity-90 transition flex items-center justify-center gap-2"
                                     >
                                         <Eye size={20} /> Preview Story
@@ -1172,7 +1177,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             </div>
                                         </div>
                                         <button
-                                            onClick={() => setStep(isCustomFlow ? 3 : 2)}
+                                            onClick={() => setStep(3)}
                                             className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl font-bold hover:bg-white/20 transition flex items-center gap-2"
                                         >
                                             <ArrowLeft size={18} /> Back to Edit
@@ -1212,13 +1217,13 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                 </p>
             </div>
 
-            {/* Payment Modal */}
-            <PaymentModal
+            {/* TODO: Re-enable Payment Modal when ready */}
+            {/* <PaymentModal
                 show={showPayment}
                 onClose={() => setShowPayment(false)}
                 onSuccess={handlePaymentSuccess}
                 amount={10} // 10 GHS
-            />
+            /> */}
         </div>
     );
 }
