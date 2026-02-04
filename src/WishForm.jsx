@@ -780,17 +780,30 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                     type="file"
                                                     accept="image/*"
                                                     className="hidden"
-                                                    onChange={(e) => {
+                                                    onChange={async (e) => {
                                                         const file = e.target.files[0];
-                                                        if (file) {
+                                                        if (!file) return;
+
+                                                        setUploadStatus('Uploading Cover...');
+                                                        try {
                                                             const reader = new FileReader();
                                                             reader.readAsDataURL(file);
                                                             reader.onloadend = async () => {
-                                                                setUploadStatus('Processing...');
-                                                                const compressed = await compressImage(reader.result);
-                                                                const url = await uploadToCloud(compressed, file.name);
-                                                                if (url) setFormData(prev => ({ ...prev, portalBg: url }));
+                                                                try {
+                                                                    const compressed = await compressImage(reader.result);
+                                                                    const url = await uploadToCloud(compressed, file.name);
+                                                                    if (url) {
+                                                                        setFormData(prev => ({ ...prev, portalBg: url }));
+                                                                    }
+                                                                } catch (err) {
+                                                                    console.error("Cover upload failed", err);
+                                                                    alert("Failed to upload cover image");
+                                                                } finally {
+                                                                    setUploadStatus(null);
+                                                                }
                                                             };
+                                                        } catch (err) {
+                                                            setUploadStatus(null);
                                                         }
                                                     }}
                                                 />
