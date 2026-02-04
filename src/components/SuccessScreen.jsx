@@ -124,7 +124,7 @@ export default function SuccessScreen({ portalId, formData, onBackToHome }) {
         <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center p-4 md:p-6 relative overflow-x-hidden">
             {/* Subtle Gradient Spot */}
             <div
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[120px] pointer-events-none opacity-10"
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[800px] md:h-[800px] rounded-full blur-[80px] md:blur-[120px] pointer-events-none opacity-20 md:opacity-10"
                 style={{ background: template.primaryColor }}
             />
 
