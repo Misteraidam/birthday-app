@@ -244,25 +244,25 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
                 )}
             </AnimatePresence>
 
-            {/* Background Music Player (Global) - Hide in Demo Mode unless hovered, or just keep minimal */}
+            {/* Background Music Player (Global) - High Visibility positioning */}
             {formData.musicUrl && (
                 <>
                     <button
                         onClick={() => setIsPlaying(!isPlaying)}
-                        className={`fixed top-6 left-6 z-[60] flex items-center gap-3 bg-black/40 hover:bg-black/60 p-2 pr-4 rounded-full border border-white/20 backdrop-blur-xl transition-all group scale-110 md:scale-125 opacity-100`}
+                        className={`fixed top-6 right-6 z-[9999] flex items-center gap-3 bg-black/80 hover:bg-black/90 p-2 pr-4 rounded-full border border-white/20 backdrop-blur-xl transition-all group scale-100 md:scale-110 shadow-2xl`}
                     >
-                        <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
-                            {isPlaying ? <Volume2 size={20} className="text-white animate-pulse" /> : <VolumeX size={20} className="text-white/50" />}
+                        <div className="w-8 h-8 md:w-10 md:h-10 bg-white/10 rounded-full flex items-center justify-center">
+                            {isPlaying ? <Volume2 size={18} className="text-white animate-pulse" /> : <VolumeX size={18} className="text-white/50" />}
                         </div>
                         <div className="flex flex-col items-start pr-2">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/50 leading-none mb-1">Background</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-white/50 leading-none mb-1">Background</span>
                             <div className="flex gap-[2px] items-end h-3">
                                 {[1, 2, 3, 4, 5].map(i => (
                                     <motion.div
                                         key={i}
                                         animate={{ height: isPlaying ? [4, 12, 6, 12, 4] : 4 }}
                                         transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.1 }}
-                                        className={`w-[3px] rounded-full ${isPlaying ? 'bg-purple-400' : 'bg-white/20'}`}
+                                        className={`w-[2px] rounded-full ${isPlaying ? 'bg-purple-400' : 'bg-white/20'}`}
                                     />
                                 ))}
                             </div>
@@ -278,7 +278,7 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
                             className="hidden"
                         />
                     ) : (
-                        <div className="fixed bottom-0 right-0 w-[200px] h-[200px] pointer-events-none overflow-hidden opacity-[0.05] z-[-1]">
+                        <div className="fixed bottom-0 right-0 w-[1px] h-[1px] pointer-events-none overflow-hidden opacity-0 z-[-1]">
                             <ReactPlayer
                                 url={formData.musicUrl}
                                 playing={isPlaying}
@@ -310,14 +310,14 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
                 </>
             )}
 
-            {/* High Visibility Sound Prompt - Display logic handles demo mode internally if needed, or we rely on auto-play */}
+            {/* High Visibility Sound Prompt - Always on top */}
             <AnimatePresence>
                 {!showOpener && !isPlaying && showSoundPrompt && (
                     <motion.div
-                        initial={{ opacity: 0, x: -50, scale: 0.5 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        className="fixed top-24 left-6 z-[70] pointer-events-none"
+                        initial={{ opacity: 0, scale: 0.9, y: 50 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 50 }}
+                        className="fixed inset-x-0 bottom-12 md:bottom-auto md:top-24 flex justify-center z-[10000] px-6 pointer-events-none"
                     >
                         <motion.button
                             onClick={() => {
@@ -327,24 +327,23 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
                                     audioRef.current.play();
                                 }
                             }}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="pointer-events-auto flex items-center gap-4 bg-white/10 backdrop-blur-3xl text-white px-8 py-5 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/20 group"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="pointer-events-auto flex items-center gap-5 bg-white text-black px-8 py-4 rounded-full shadow-[0_30px_60px_rgba(0,0,0,0.4)] border border-white/20 group"
                         >
-                            <div className="w-12 h-12 bg-white text-black rounded-2xl flex items-center justify-center group-hover:bg-purple-500 group-hover:text-white transition-all duration-500">
-                                <Play size={24} fill="currentColor" />
+                            <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center group-hover:bg-purple-600 transition-colors">
+                                <Play size={20} fill="currentColor" />
                             </div>
                             <div className="flex flex-col items-start pr-2">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Experience Sound</span>
-                                <span className="font-bold text-lg tracking-tight">Enable Music</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40 mb-0.5">Audio Detected</span>
+                                <span className="font-bold text-base tracking-tight">Tap to Enable Music</span>
                             </div>
                         </motion.button>
 
                         <motion.div
-                            initial={{ scale: 0.8 }}
-                            animate={{ scale: [0.8, 1.2, 0.8] }}
-                            transition={{ duration: 1.5, repeat: Infinity }}
-                            className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"
+                            animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                            className="absolute -inset-2 bg-purple-500/20 blur-2xl rounded-full z-[-1]"
                         />
                     </motion.div>
                 )}
