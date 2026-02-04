@@ -139,9 +139,28 @@ function PopChapter({ chapter, index }) {
                 </p>
 
                 {chapter.voiceNote && (
-                    <div className="inline-flex items-center gap-4 p-4 bg-white/10 rounded-2xl border border-white/10 text-white/60">
-                        <Music size={20} className="text-pink-400" />
-                        <span className="text-[10px] uppercase font-black tracking-widest">Audio Burst Attached</span>
+                    <button
+                        onClick={() => {
+                            const audio = new Audio(chapter.voiceNote);
+                            audio.play().catch(e => console.error("Voice playback failed", e));
+                        }}
+                        className="inline-flex items-center gap-4 p-4 bg-white/10 rounded-2xl border border-white/10 text-white/60 hover:bg-white/20 transition-all group"
+                    >
+                        <Music size={20} className="text-pink-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-[10px] uppercase font-black tracking-widest text-left">Play Audio Highlight</span>
+                    </button>
+                )}
+
+                {chapter.videoMessage && (
+                    <div className="mt-8 aspect-video w-full max-w-sm bg-black rounded-3xl border-2 border-white/10 overflow-hidden relative group">
+                        <video
+                            src={chapter.videoMessage}
+                            controls
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-3 left-3 bg-purple-500 text-white px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest">
+                            LIVE_MOMENT
+                        </div>
                     </div>
                 )}
             </div>

@@ -143,7 +143,20 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
     };
 
     return (
-        <div className="min-h-screen relative overflow-hidden bg-[#0A0A0A]">
+        <div
+            className="min-h-screen relative overflow-hidden bg-[#0A0A0A]"
+            style={formData.portalBg ? {
+                backgroundImage: `url(${formData.portalBg})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundAttachment: 'fixed'
+            } : {}}
+        >
+            {/* Background Overlay to ensure readability if there is a custom image */}
+            {formData.portalBg && (
+                <div className="absolute inset-0 bg-black/40 z-[1] pointer-events-none" />
+            )}
+
             {/* Global Particle System */}
             {!showOpener && demoStarted && <GlobalParticles type={templateConfig?.particles} />}
 

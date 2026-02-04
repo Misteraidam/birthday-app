@@ -224,9 +224,28 @@ function LuxeChapter({ chapter, index }) {
                 </p>
 
                 {chapter.voiceNote && (
-                    <div className="inline-flex items-center gap-4 py-3 px-6 bg-white/5 rounded-full border border-white/10 text-amber-500/60">
-                        <Music size={16} />
-                        <span className="text-[10px] uppercase font-bold tracking-widest">Audio Archive Decrypted</span>
+                    <button
+                        onClick={() => {
+                            const audio = new Audio(chapter.voiceNote);
+                            audio.play().catch(e => console.error("Voice playback failed", e));
+                        }}
+                        className="inline-flex items-center gap-4 py-3 px-6 bg-white/5 rounded-full border border-white/10 text-amber-500/60 hover:bg-white/10 transition-colors group"
+                    >
+                        <Music size={16} className="group-hover:scale-110 transition-transform" />
+                        <span className="text-[10px] uppercase font-bold tracking-widest text-left">Decryption Request: Play Audio Archive</span>
+                    </button>
+                )}
+
+                {chapter.videoMessage && (
+                    <div className="mt-12 aspect-video w-full max-w-md bg-black rounded-[30px] border border-amber-500/20 overflow-hidden relative group shadow-[0_0_50px_rgba(255,215,0,0.1)]">
+                        <video
+                            src={chapter.videoMessage}
+                            controls
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-4 left-4 bg-amber-500 text-black px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest">
+                            Visual Archive
+                        </div>
                     </div>
                 )}
             </div>

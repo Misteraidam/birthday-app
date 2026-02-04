@@ -222,9 +222,28 @@ function ChapterEntry({ chapter, index }) {
                 </p>
 
                 {chapter.voiceNote && (
-                    <div className="mt-12 inline-flex items-center gap-4 py-3 px-6 bg-white rounded-2xl border border-pink-100 shadow-sm text-pink-500">
-                        <Music size={16} className="animate-pulse" />
-                        <span className="text-[10px] uppercase font-bold tracking-widest">Voice Recording Attached</span>
+                    <button
+                        onClick={() => {
+                            const audio = new Audio(chapter.voiceNote);
+                            audio.play().catch(e => console.error("Voice playback failed", e));
+                        }}
+                        className="mt-12 inline-flex items-center gap-4 py-3 px-6 bg-white rounded-2xl border border-pink-100 shadow-sm text-pink-500 hover:bg-pink-50 transition-colors group"
+                    >
+                        <Music size={16} className="group-hover:scale-110 transition-transform animate-pulse" />
+                        <span className="text-[10px] uppercase font-bold tracking-widest text-left">Click to Play Voice Recording</span>
+                    </button>
+                )}
+
+                {chapter.videoMessage && (
+                    <div className="mt-12 aspect-video w-full max-w-sm bg-black rounded-lg border border-pink-100 overflow-hidden relative group">
+                        <video
+                            src={chapter.videoMessage}
+                            controls
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-3 left-3 bg-pink-500 text-white px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-widest">
+                            Video Memory
+                        </div>
                     </div>
                 )}
             </div>

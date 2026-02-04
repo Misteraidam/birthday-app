@@ -146,13 +146,33 @@ function GoldenChapter({ chapter, index }) {
                 </p>
 
                 {chapter.voiceNote && (
-                    <div className="flex items-center gap-4 p-4 bg-white/5 rounded-3xl border border-white/10 w-fit">
-                        <div className="w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center text-black shadow-[0_0_30px_rgba(245,158,11,0.3)]">
+                    <button
+                        onClick={() => {
+                            const audio = new Audio(chapter.voiceNote);
+                            audio.play().catch(e => console.error("Voice note playback failed", e));
+                        }}
+                        className="flex items-center gap-4 p-4 bg-white/5 rounded-3xl border border-white/10 w-fit hover:bg-white/10 transition group"
+                    >
+                        <div className="w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center text-black shadow-[0_0_30px_rgba(245,158,11,0.3)] group-hover:scale-110 transition">
                             <Music size={24} />
                         </div>
-                        <div className="pr-4">
+                        <div className="text-left pr-4">
                             <span className="block text-[8px] font-black uppercase tracking-widest text-white/30">Audio Log</span>
                             <span className="block text-sm font-bold">Press to playback recorded memory</span>
+                        </div>
+                    </button>
+                )}
+
+                {chapter.videoMessage && (
+                    <div className="mt-12 aspect-video w-full max-w-md bg-black rounded-2xl border border-white/10 overflow-hidden relative group">
+                        <video
+                            src={chapter.videoMessage}
+                            controls
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-4 left-4 bg-red-500 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                            Visual Message
                         </div>
                     </div>
                 )}
