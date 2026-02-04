@@ -3,8 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 
 const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_KEY
+    process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL,
+    process.env.SUPABASE_KEY || process.env.VITE_SUPABASE_KEY
 );
 
 function hashPasscodeSync(passcode, salt = null) {
