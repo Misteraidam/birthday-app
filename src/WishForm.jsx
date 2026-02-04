@@ -1222,24 +1222,24 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 exit={{ opacity: 0 }}
                                 className="fixed inset-0 z-[60] bg-[#0A0A0A] flex flex-col"
                             >
-                                {/* Preview Header Overlay */}
-                                <div className="absolute top-0 inset-x-0 z-[70] p-6 bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
-                                    <div className="max-w-5xl mx-auto flex items-center justify-between pointer-events-auto">
-                                        <div className="flex items-center gap-3">
-                                            <div className="bg-purple-500 p-2 rounded-xl">
-                                                <Eye size={20} className="text-white" />
-                                            </div>
-                                            <div>
-                                                <h2 className="font-black text-xl">Preview Mode</h2>
-                                                <p className="text-xs text-white/50">This is exactly what your recipient will see</p>
-                                            </div>
-                                        </div>
+                                {/* Preview Header Overlay - Repositioned for visibility */}
+                                <div className="absolute top-10 inset-x-0 z-[70] px-6 md:px-12 pointer-events-none">
+                                    <div className="max-w-7xl mx-auto flex items-center justify-between pointer-events-auto">
                                         <button
                                             onClick={() => setStep(3)}
-                                            className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl font-bold hover:bg-white/20 transition flex items-center gap-2"
+                                            className="px-6 py-3 bg-black/60 backdrop-blur-xl border border-white/20 rounded-full font-bold text-white hover:bg-black/80 transition flex items-center gap-2 shadow-[0_10px_40px_rgba(0,0,0,0.5)] active:scale-95"
                                         >
-                                            <ArrowLeft size={18} /> Back to Edit
+                                            <ArrowLeft size={18} /> <span>Back to Edit</span>
                                         </button>
+
+                                        <div className="hidden md:flex items-center gap-3 bg-black/40 backdrop-blur-lg px-5 py-2.5 rounded-full border border-white/10">
+                                            <div className="bg-purple-500/20 p-1.5 rounded-lg">
+                                                <Eye size={16} className="text-purple-400" />
+                                            </div>
+                                            <div>
+                                                <h2 className="font-black text-sm uppercase tracking-widest">Preview</h2>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
