@@ -548,7 +548,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         className="w-full bg-transparent text-2xl md:text-5xl font-bold outline-none placeholder:text-white/20"
                                         placeholder="Enter their name..."
                                         value={formData.recipientName}
-                                        onChange={(e) => setFormData({ ...formData, recipientName: e.target.value })}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, recipientName: e.target.value }))}
                                         autoFocus
                                     />
                                 </div>
@@ -567,7 +567,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             className="w-full bg-transparent text-xl md:text-4xl font-bold outline-none placeholder:text-white/10"
                                             placeholder="e.g. New Home, Promotion, Graduation..."
                                             value={formData.customOccasion}
-                                            onChange={(e) => setFormData({ ...formData, customOccasion: e.target.value })}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, customOccasion: e.target.value }))}
                                         />
                                         <p className="text-[10px] text-white/30 mt-2 font-medium tracking-wide">THIS WILL BE THE MAIN HEADING IN THE PORTAL</p>
                                     </motion.div>
@@ -584,7 +584,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             placeholder="Enter your name..."
                                             className="w-full bg-transparent text-xl font-bold outline-none placeholder:text-white/20"
                                             value={formData.senderName}
-                                            onChange={(e) => setFormData({ ...formData, senderName: e.target.value })}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, senderName: e.target.value }))}
                                         />
                                     </div>
 
@@ -596,7 +596,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             type="date"
                                             className="w-full bg-transparent text-xl font-bold outline-none [color-scheme:dark]"
                                             value={formData.birthday || ""}
-                                            onChange={(e) => setFormData({ ...formData, birthday: e.target.value })}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, birthday: e.target.value }))}
                                         />
                                     </div>
                                 </div>
@@ -663,7 +663,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                                 </div>
                                                             </div>
                                                             <button
-                                                                onClick={() => setFormData({ ...formData, musicUrl: track.previewUrl })}
+                                                                onClick={() => setFormData(prev => ({ ...prev, musicUrl: track.previewUrl }))}
                                                                 className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${formData.musicUrl === track.previewUrl
                                                                     ? 'bg-green-500 text-white'
                                                                     : 'bg-white/10 text-white/60 hover:bg-white'
@@ -691,7 +691,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             {getMusicInLibrary(celebrationConfig?.musicMood || 'joyful').map(track => (
                                                 <button
                                                     key={track.id}
-                                                    onClick={() => setFormData({ ...formData, musicUrl: track.url })}
+                                                    onClick={() => setFormData(prev => ({ ...prev, musicUrl: track.url }))}
                                                     className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${formData.musicUrl === track.url
                                                         ? 'bg-purple-500 border-purple-400 text-white shadow-lg shadow-purple-500/20'
                                                         : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
@@ -742,7 +742,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             <div className="relative w-24 h-24 rounded-xl overflow-hidden">
                                                 <img src={formData.portalBg} alt="" className="w-full h-full object-cover" />
                                                 <button
-                                                    onClick={() => setFormData({ ...formData, portalBg: null })}
+                                                    onClick={() => setFormData(prev => ({ ...prev, portalBg: null }))}
                                                     className="absolute top-1 right-1 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center"
                                                 >
                                                     <X size={12} />
@@ -764,7 +764,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                                 setUploadStatus('Processing...');
                                                                 const compressed = await compressImage(reader.result);
                                                                 const url = await uploadToCloud(compressed, file.name);
-                                                                if (url) setFormData({ ...formData, portalBg: url });
+                                                                if (url) setFormData(prev => ({ ...prev, portalBg: url }));
                                                             };
                                                         }
                                                     }}
@@ -1152,7 +1152,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         placeholder="Write a heartfelt closing message..."
                                         className="w-full bg-transparent border-none rounded-xl p-0 h-32 outline-none text-lg resize-none"
                                         value={formData.secretMessage}
-                                        onChange={(e) => setFormData({ ...formData, secretMessage: e.target.value })}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, secretMessage: e.target.value }))}
                                     />
                                 </div>
 

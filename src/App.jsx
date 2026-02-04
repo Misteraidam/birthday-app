@@ -96,19 +96,51 @@ function App() {
       });
   };
 
+  // Helper to sanitize form data for serialization (removes circular refs/non-serializable objects)
+  const sanitizeFormData = (raw) => {
+    if (!raw) return null;
+    return {
+      celebrationType: String(raw.celebrationType || ''),
+      recipientName: String(raw.recipientName || ''),
+      senderName: String(raw.senderName || ''),
+      birthday: String(raw.birthday || ''),
+      portalBg: raw.portalBg,
+      musicUrl: raw.musicUrl,
+      secretMessage: raw.secretMessage,
+      template: raw.template,
+      opener: raw.opener,
+      customOccasion: raw.customOccasion,
+      chapters: (raw.chapters || []).map(ch => ({
+        id: ch.id,
+        title: String(ch.title || ''),
+        content: String(ch.content || ''),
+        media: (ch.media || []).map(m => ({
+          type: m.type,
+          data: m.data,
+          anchor: m.anchor
+        })),
+        videoMessage: ch.videoMessage,
+        voiceNote: ch.voiceNote,
+        musicUrl: ch.musicUrl,
+        messageAnchors: ch.messageAnchors
+      }))
+    };
+  };
+
   const handleGenerate = async (formData) => {
     try {
       setLoading(true);
+      const cleanData = sanitizeFormData(formData);
       const res = await fetch(`${API_BASE}/api/portal`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: formData })
+        body: JSON.stringify({ data: cleanData })
       });
       if (!res.ok) throw new Error("Failed to save portal");
       const json = await res.json();
       const newUrl = `${window.location.pathname}?id=${json.id}`;
       window.history.pushState({ path: newUrl }, '', newUrl);
-      setData(formData);
+      setData(cleanData);
       setPortalId(json.id);
       setView('success');
     } catch (err) {
