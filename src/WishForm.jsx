@@ -404,15 +404,15 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
         if (!query || query.length < 2) return;
         setIsSearchingMusic(true);
         try {
-            // Using Apple iTunes API - The most reliable global music search in 2026
-            // No CORS proxy needed, better performance, direct audio streams.
-            const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&limit=15`);
+            // Use our own server-side proxy to avoid CORS/Network issues on mobile
+            const response = await fetch(`/api/music_search?query=${encodeURIComponent(query)}`);
+            if (!response.ok) throw new Error("Search failed");
+
             const json = await response.json();
             setMusicResults(json.results || []);
         } catch (err) {
             console.error("Music search failed:", err);
-            // Fallback purely to local mood recommendations if API fails
-            setIsSearchingMusic(false);
+            // alert("Tips: Try a simpler search term"); // Optional feedback
         } finally {
             setIsSearchingMusic(false);
         }
