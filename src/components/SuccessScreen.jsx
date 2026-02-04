@@ -121,7 +121,7 @@ export default function SuccessScreen({ portalId, formData, onBackToHome }) {
     };
 
     return (
-        <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center p-6 relative overflow-hidden">
+        <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center p-4 md:p-6 relative overflow-x-hidden">
             {/* Subtle Gradient Spot */}
             <div
                 className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[120px] pointer-events-none opacity-10"
@@ -131,14 +131,14 @@ export default function SuccessScreen({ portalId, formData, onBackToHome }) {
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-4xl bg-black/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 md:p-12 shadow-2xl relative z-10 grid md:grid-cols-2 gap-12 items-center"
+                className="w-full max-w-4xl bg-black/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 md:p-12 shadow-2xl relative z-10 flex flex-col md:grid md:grid-cols-2 gap-8 md:gap-12 items-center"
             >
                 {/* Left: Digital Card Preview */}
-                <div className="relative aspect-[4/5] bg-gradient-to-br from-white/10 to-transparent border border-white/10 rounded-[2rem] p-8 flex flex-col justify-between overflow-hidden group">
+                <div className="relative w-full max-w-[350px] md:max-w-none aspect-[4/5] bg-gradient-to-br from-white/10 to-transparent border border-white/10 rounded-[2rem] p-6 md:p-8 flex flex-col justify-between overflow-hidden group mx-auto">
                     <div className={`absolute inset-0 opacity-20 ${template.preview}`} />
 
                     <div className="relative z-10 text-center">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest text-white/60 mb-6">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest text-white/60 mb-4 md:mb-6">
                             <Sparkles size={12} className={template.textColor} />
                             Digital Invite
                         </div>
@@ -150,11 +150,11 @@ export default function SuccessScreen({ portalId, formData, onBackToHome }) {
                         )}
                     </div>
 
-                    <div className="relative z-10 bg-white p-4 rounded-2xl w-fit shadow-xl mx-auto">
+                    <div className="relative z-10 bg-white p-3 md:p-4 rounded-2xl w-fit shadow-xl mx-auto my-4">
                         <QRCodeSVG
                             id="portal-qr-code"
                             value={portalUrl}
-                            size={120}
+                            size={100}
                             level="M"
                         />
                     </div>
@@ -170,16 +170,16 @@ export default function SuccessScreen({ portalId, formData, onBackToHome }) {
                 </div>
 
                 {/* Right: Actions */}
-                <div className="space-y-8">
+                <div className="w-full space-y-6 md:space-y-8">
                     <div>
-                        <div className="flex items-center gap-3 mb-4">
+                        <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
                             <div className="w-10 h-10 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center border border-green-500/20">
                                 <CheckCircle2 size={20} />
                             </div>
                             <span className="text-sm font-bold text-white/80">Successfully Created</span>
                         </div>
-                        <h1 className="text-3xl font-bold mb-2">Ready to Share</h1>
-                        <p className="text-white/40 text-sm leading-relaxed">
+                        <h1 className="text-2xl md:text-3xl font-bold mb-2 text-center md:text-left">Ready to Share</h1>
+                        <p className="text-white/40 text-sm leading-relaxed text-center md:text-left">
                             Your immersive story is live. Share the link below or let them scan the QR code to enter the portal.
                         </p>
                     </div>
@@ -191,7 +191,7 @@ export default function SuccessScreen({ portalId, formData, onBackToHome }) {
                         </div>
                         <button
                             onClick={handleCopy}
-                            className={`px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${copied ? 'bg-green-500 text-white' : 'bg-white text-black hover:bg-white/90'}`}
+                            className={`px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 flex-shrink-0 ${copied ? 'bg-green-500 text-white' : 'bg-white text-black hover:bg-white/90'}`}
                         >
                             {copied ? <Check size={14} /> : <Copy size={14} />}
                             {copied ? 'Copied' : 'Copy'}
@@ -200,8 +200,8 @@ export default function SuccessScreen({ portalId, formData, onBackToHome }) {
 
                     {/* Share Buttons */}
                     <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-white/20 mb-3">Quick Share</p>
-                        <div className="flex gap-2">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-white/20 mb-3 text-center md:text-left">Quick Share</p>
+                        <div className="flex gap-2 justify-center md:justify-start">
                             {[
                                 { id: 'whatsapp', icon: <MessageCircle size={18} />, color: 'hover:bg-[#25D366] hover:text-white hover:border-[#25D366]' },
                                 { id: 'twitter', icon: <Twitter size={18} />, color: 'hover:bg-[#1DA1F2] hover:text-white hover:border-[#1DA1F2]' },
@@ -218,13 +218,13 @@ export default function SuccessScreen({ portalId, formData, onBackToHome }) {
                         </div>
                     </div>
 
-                    <div className="pt-8 border-t border-white/5 flex gap-4">
+                    <div className="pt-6 border-t border-white/5 flex gap-4">
                         <a
                             href={portalUrl}
                             target="_blank"
                             className="flex-1 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all"
                         >
-                            <ExternalLink size={16} /> Open Portal
+                            <ExternalLink size={16} /> Open
                         </a>
                         <button
                             onClick={onBackToHome}

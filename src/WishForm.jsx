@@ -636,24 +636,30 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                     {/* Mood Suggestion */}
                                     <div className="mb-6">
                                         <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3 font-black">Search World Music Library (iTunes)</p>
-                                        <div className="flex gap-2">
+                                        <form
+                                            onSubmit={(e) => {
+                                                e.preventDefault();
+                                                searchMusic(musicSearch);
+                                            }}
+                                            className="flex gap-2"
+                                        >
                                             <div className="relative flex-1">
                                                 <input
-                                                    type="text"
+                                                    type="search"
                                                     placeholder="Search song or artist..."
                                                     className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-5 text-sm outline-none focus:border-purple-500/50 transition-all"
                                                     value={musicSearch}
                                                     onChange={(e) => setMusicSearch(e.target.value)}
-                                                    onKeyDown={(e) => e.key === 'Enter' && searchMusic(musicSearch)}
+                                                    enterKeyHint="search"
                                                 />
                                                 <button
-                                                    onClick={() => searchMusic(musicSearch)}
+                                                    type="submit"
                                                     className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-purple-500 rounded-xl text-[10px] font-bold hover:bg-purple-600 transition-colors"
                                                 >
                                                     {isSearchingMusic ? '...' : 'Search'}
                                                 </button>
                                             </div>
-                                        </div>
+                                        </form>
 
                                         {/* Search Results */}
                                         <AnimatePresence>
@@ -1280,6 +1286,6 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                 onSuccess={handlePaymentSuccess}
                 amount={10} // 10 GHS
             /> */}
-        </div>
+        </div >
     );
 }
