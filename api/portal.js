@@ -94,8 +94,12 @@ export default async function handler(req, res) {
 
             return res.status(200).json({ data: payload });
         } catch (e) {
-            console.error(e);
-            return res.status(500).json({ error: 'load_failed' });
+            console.error('PORTAL_LOAD_ERROR:', e);
+            return res.status(500).json({
+                error: 'load_failed',
+                message: e.message,
+                details: e.details || e.hint || JSON.stringify(e)
+            });
         }
     }
 
