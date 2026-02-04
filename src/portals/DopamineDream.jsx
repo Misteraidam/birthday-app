@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Heart, Star, Music, PartyPopper } from 'lucide-react';
 
 export default function DopamineDream({ formData }) {
@@ -62,7 +62,7 @@ export default function DopamineDream({ formData }) {
                                 <PartyPopper size={48} className="text-[#FF69B4]" />
                             </motion.div>
                             {recipientName && (
-                                <h1 className="text-8xl md:text-[14rem] font-black leading-none mb-8 tracking-tighter"
+                                <h1 className="text-6xl md:text-[14rem] font-black leading-none mb-8 tracking-tighter"
                                     style={{
                                         WebkitTextFillColor: 'transparent',
                                         WebkitTextStrokeWidth: '2px',
