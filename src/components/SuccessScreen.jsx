@@ -31,6 +31,95 @@ export default function SuccessScreen({ portalId, formData, onBackToHome }) {
         if (url) window.open(url, '_blank');
     };
 
+    const handleDownload = () => {
+        try {
+            const svgElement = document.getElementById('portal-qr-code');
+            if (!svgElement) {
+                alert("QR Code not ready yet. Please wait a moment.");
+                return;
+            }
+
+            const svgData = new XMLSerializer().serializeToString(svgElement);
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            canvas.width = 1200;
+            canvas.height = 1600;
+
+            img.onerror = () => {
+                alert("Failed to generate digital card image.");
+            };
+
+            img.onload = () => {
+                // Background
+                const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                gradient.addColorStop(0, '#050505');
+                gradient.addColorStop(1, '#111111');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Artistic Glows
+                ctx.globalAlpha = 0.4;
+                ctx.fillStyle = template.primaryColor;
+                ctx.filter = 'blur(100px)';
+                ctx.beginPath();
+                ctx.arc(canvas.width, 0, 600, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Frame
+                ctx.globalAlpha = 1.0;
+                ctx.filter = 'none';
+                ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(60, 60, canvas.width - 120, canvas.height - 120);
+
+                // Title
+                ctx.fillStyle = '#FFFFFF';
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 30px sans-serif';
+                ctx.globalAlpha = 0.5;
+                ctx.fillText('A DIGITAL STORY FOR', canvas.width / 2, 250);
+
+                // Recipient
+                ctx.globalAlpha = 1.0;
+                ctx.font = '900 100px sans-serif';
+                const recipient = formData.recipientName.toUpperCase();
+                ctx.fillText(recipient, canvas.width / 2, 400);
+
+                // Sender
+                if (formData.senderName) {
+                    ctx.font = 'italic 40px sans-serif';
+                    ctx.fillStyle = template.primaryColor;
+                    ctx.fillText(`From ${formData.senderName}`, canvas.width / 2, 500);
+                }
+
+                // QR Code
+                ctx.drawImage(img, 350, 650, 500, 500);
+
+                // Footer
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 30px sans-serif';
+                ctx.fillText('SCAN TO ENTER', canvas.width / 2, 1250);
+
+                ctx.font = '20px sans-serif';
+                ctx.globalAlpha = 0.3;
+                ctx.fillText('Interactive Celebration Portal', canvas.width / 2, 1450);
+
+                const link = document.createElement('a');
+                link.download = `Invite-${formData.recipientName}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            };
+
+            const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            img.src = URL.createObjectURL(svgBlob);
+        } catch (e) {
+            console.error(e);
+            alert("Could not generate card.");
+        }
+    };
+
     return (
         <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center p-6 relative overflow-hidden">
             {/* Subtle Gradient Spot */}
@@ -48,27 +137,35 @@ export default function SuccessScreen({ portalId, formData, onBackToHome }) {
                 <div className="relative aspect-[4/5] bg-gradient-to-br from-white/10 to-transparent border border-white/10 rounded-[2rem] p-8 flex flex-col justify-between overflow-hidden group">
                     <div className={`absolute inset-0 opacity-20 ${template.preview}`} />
 
-                    <div className="relative z-10">
+                    <div className="relative z-10 text-center">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest text-white/60 mb-6">
                             <Sparkles size={12} className={template.textColor} />
                             Digital Invite
                         </div>
-                        <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-none" style={{ color: template.primaryColor }}>
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-none mb-2" style={{ color: template.primaryColor }}>
                             {formData.recipientName}
                         </h2>
+                        {formData.senderName && (
+                            <p className="text-sm font-medium italic text-white/50">From {formData.senderName}</p>
+                        )}
                     </div>
 
-                    <div className="relative z-10 bg-white p-4 rounded-2xl w-fit shadow-xl">
+                    <div className="relative z-10 bg-white p-4 rounded-2xl w-fit shadow-xl mx-auto">
                         <QRCodeSVG
+                            id="portal-qr-code"
                             value={portalUrl}
                             size={120}
                             level="M"
                         />
                     </div>
 
-                    <div className="relative z-10 space-y-1">
-                        <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest">Access Token</p>
-                        <p className="text-sm font-bold font-mono text-white/60">{portalId}</p>
+                    <div className="relative z-10 text-center space-y-3">
+                        <button
+                            onClick={handleDownload}
+                            className="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all"
+                        >
+                            <Download size={14} /> Download Card
+                        </button>
                     </div>
                 </div>
 

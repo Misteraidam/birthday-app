@@ -291,23 +291,48 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
     };
 
     // --- IMAGE HANDLING ---
-    const handleImageUpload = (e) => {
+    const handleImageUpload = async (e) => {
         const files = Array.from(e.target.files);
-        files.forEach(file => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onloadend = async () => {
-                setUploadStatus('Processing...');
-                const compressed = await compressImage(reader.result);
-                const url = await uploadToCloud(compressed, file.name);
-                if (url) {
-                    setCurrentChapter(prev => ({
-                        ...prev,
-                        media: [...prev.media, { type: 'image', data: url, anchor: null }]
-                    }));
-                }
-            };
-        });
+        if (files.length === 0) return;
+
+        setUploadStatus('Processing...');
+        try {
+            // Process uploads concurrently
+            const uploadPromises = files.map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onloadend = async () => {
+                        try {
+                            const compressed = await compressImage(reader.result);
+                            const url = await uploadToCloud(compressed, file.name);
+                            if (url) {
+                                resolve({ type: 'image', data: url, anchor: null });
+                            } else {
+                                resolve(null);
+                            }
+                        } catch (err) {
+                            console.error("Image processing error", err);
+                            resolve(null);
+                        }
+                    };
+                });
+            });
+
+            const results = await Promise.all(uploadPromises);
+            const successfulUploads = results.filter(item => item !== null);
+
+            if (successfulUploads.length > 0) {
+                setCurrentChapter(prev => ({
+                    ...prev,
+                    media: [...prev.media, ...successfulUploads]
+                }));
+            }
+        } catch (err) {
+            console.error("Batch upload error", err);
+        } finally {
+            setUploadStatus(null);
+        }
     };
 
     const removeMedia = (index) => {
