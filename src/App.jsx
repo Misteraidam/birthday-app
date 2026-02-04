@@ -47,8 +47,12 @@ function App() {
       setLoading(false);
     } else if (id) {
       fetch(`${API_BASE}/api/portal?id=${id}`)
-        .then(res => {
-          if (!res.ok) throw new Error("Portal not found");
+        .then(async res => {
+          if (!res.ok) {
+            const errText = await res.text();
+            console.error(`Portal fetch failed: ${res.status} ${res.statusText}`, errText);
+            throw new Error(`Server Error: ${res.status}`);
+          }
           return res.json();
         })
         .then(json => {
