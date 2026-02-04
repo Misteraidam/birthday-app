@@ -90,13 +90,24 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
 
     const [isUploading, setIsUploading] = useState(false);
     const [uploadStatus, setUploadStatus] = useState('');
+    const [pendingUploads, setPendingUploads] = useState(0);
 
-    // --- COMPRESSION HELPER ---
-    const compressImage = async (base64Str, maxWidth = 1200, quality = 0.7) => {
-        return new Promise((resolve) => {
+    // Watch pending uploads to close overlay
+    useEffect(() => {
+        if (pendingUploads === 0 && isUploading) {
+            setIsUploading(false);
+            setUploadStatus('');
+        }
+    }, [pendingUploads]);
+
+    // --- COMPRESSION HELPER (Optimized) ---
+    const compressImage = async (file, maxWidth = 1200, quality = 0.6) => {
+        return new Promise((resolve, reject) => {
+            const url = URL.createObjectURL(file);
             const img = new window.Image();
-            img.src = base64Str;
+            img.src = url;
             img.onload = () => {
+                URL.revokeObjectURL(url);
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
@@ -110,30 +121,28 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-                resolve(canvas.toDataURL('image/jpeg', quality));
+
+                canvas.toBlob((resultBlob) => {
+                    resolve(resultBlob);
+                }, 'image/jpeg', quality);
+            };
+            img.onerror = (err) => {
+                URL.revokeObjectURL(url);
+                reject(err);
             };
         });
     };
 
-    // --- UPLOAD HELPER (Direct to Supabase - Bypass Vercel 4.5MB Limit) ---
-    const uploadToCloud = async (base64Data, filename) => {
+    // --- UPLOAD HELPER (Direct to Supabase - Refactored for concurrency) ---
+    const uploadToCloud = async (blob, filename) => {
         try {
+            setPendingUploads(prev => prev + 1);
             setIsUploading(true);
-            setUploadStatus('Uploading...');
 
-            // Convert base64 to Blob for direct upload
-            const byteString = atob(base64Data.split(',')[1]);
-            const mimeString = base64Data.split(',')[0].split(':')[1].split(';')[0];
-            const ab = new ArrayBuffer(byteString.length);
-            const ia = new Uint8Array(ab);
-            for (let i = 0; i < byteString.length; i++) {
-                ia[i] = byteString.charCodeAt(i);
-            }
-            const blob = new Blob([ab], { type: mimeString });
+            // Sanitize filename for Supabase Storage
+            const sanitizedName = (filename || 'upload.bin').replace(/[^a-zA-Z0-9.-]/g, '_');
+            const uniqueFilename = `${Date.now()}-${sanitizedName}`;
 
-            const uniqueFilename = `${Date.now()}-${filename || 'upload.bin'}`;
-
-            // Upload directly to Supabase Storage
             const { data, error } = await supabase.storage
                 .from('portals')
                 .upload(uniqueFilename, blob, {
@@ -143,7 +152,6 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
 
             if (error) throw error;
 
-            // Get Public URL
             const { data: urlData } = supabase.storage
                 .from('portals')
                 .getPublicUrl(uniqueFilename);
@@ -155,8 +163,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
             alert("Error uploading media: " + e.message);
             return null;
         } finally {
-            setIsUploading(false);
-            setUploadStatus('');
+            setPendingUploads(prev => Math.max(0, prev - 1));
         }
     };
 
@@ -168,14 +175,10 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
             const chunks = [];
 
             recorder.ondataavailable = (e) => chunks.push(e.data);
-            recorder.onstop = () => {
+            recorder.onstop = async () => {
                 const blob = new Blob(chunks, { type: 'audio/webm' });
-                const reader = new FileReader();
-                reader.readAsDataURL(blob);
-                reader.onloadend = async () => {
-                    const url = await uploadToCloud(reader.result, `audio-${Date.now()}.webm`);
-                    if (url) setCurrentChapter(prev => ({ ...prev, voiceNote: url }));
-                };
+                const url = await uploadToCloud(blob, `audio-${Date.now()}.webm`);
+                if (url) setCurrentChapter(prev => ({ ...prev, voiceNote: url }));
             };
 
             recorder.start();
@@ -210,14 +213,10 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
             const chunks = [];
 
             recorder.ondataavailable = (e) => chunks.push(e.data);
-            recorder.onstop = () => {
+            recorder.onstop = async () => {
                 const blob = new Blob(chunks, { type: 'video/webm' });
-                const reader = new FileReader();
-                reader.readAsDataURL(blob);
-                reader.onloadend = async () => {
-                    const url = await uploadToCloud(reader.result, `video-${Date.now()}.webm`);
-                    if (url) setCurrentChapter(prev => ({ ...prev, videoMessage: url }));
-                };
+                const url = await uploadToCloud(blob, `video-${Date.now()}.webm`);
+                if (url) setCurrentChapter(prev => ({ ...prev, videoMessage: url }));
                 stream.getTracks().forEach(track => track.stop());
             };
 
@@ -297,30 +296,26 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
 
         setUploadStatus('Processing...');
         try {
-            // Process uploads concurrently
-            const uploadPromises = files.map(file => {
-                return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onloadend = async () => {
-                        try {
-                            const compressed = await compressImage(reader.result);
-                            const url = await uploadToCloud(compressed, file.name);
-                            if (url) {
-                                resolve({ type: 'image', data: url, anchor: null });
-                            } else {
-                                resolve(null);
-                            }
-                        } catch (err) {
-                            console.error("Image processing error", err);
-                            resolve(null);
-                        }
-                    };
-                });
-            });
+            const successfulUploads = [];
 
-            const results = await Promise.all(uploadPromises);
-            const successfulUploads = results.filter(item => item !== null);
+            // Process uploads SEQUENTIALLY for mobile stability
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                try {
+                    setUploadStatus(`Processing ${i + 1}/${files.length}...`);
+                    const compressedBlob = await compressImage(file);
+
+                    setUploadStatus(`Uploading ${i + 1}/${files.length}...`);
+                    const url = await uploadToCloud(compressedBlob, file.name);
+
+                    if (url) {
+                        successfulUploads.push({ type: 'image', data: url, anchor: null });
+                    }
+                } catch (err) {
+                    console.error(`Error processing file ${i}:`, err);
+                    // Continue with next file
+                }
+            }
 
             if (successfulUploads.length > 0) {
                 setCurrentChapter(prev => ({
@@ -796,8 +791,9 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                             reader.readAsDataURL(file);
                                                             reader.onloadend = async () => {
                                                                 try {
-                                                                    const compressed = await compressImage(reader.result);
-                                                                    const url = await uploadToCloud(compressed, file.name);
+                                                                    setUploadStatus('Compressing Cover...');
+                                                                    const compressedBlob = await compressImage(file);
+                                                                    const url = await uploadToCloud(compressedBlob, file.name);
                                                                     if (url) {
                                                                         setFormData(prev => ({ ...prev, portalBg: url }));
                                                                     }
