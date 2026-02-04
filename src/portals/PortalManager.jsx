@@ -249,7 +249,7 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
                 <>
                     <button
                         onClick={() => setIsPlaying(!isPlaying)}
-                        className={`fixed top-6 left-6 z-[60] flex items-center gap-3 bg-black/40 hover:bg-black/60 p-2 pr-4 rounded-full border border-white/20 backdrop-blur-xl transition-all group scale-110 md:scale-125 ${isDemo ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}
+                        className={`fixed top-6 left-6 z-[60] flex items-center gap-3 bg-black/40 hover:bg-black/60 p-2 pr-4 rounded-full border border-white/20 backdrop-blur-xl transition-all group scale-110 md:scale-125 opacity-100`}
                     >
                         <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
                             {isPlaying ? <Volume2 size={20} className="text-white animate-pulse" /> : <VolumeX size={20} className="text-white/50" />}
@@ -312,7 +312,7 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
 
             {/* High Visibility Sound Prompt - Display logic handles demo mode internally if needed, or we rely on auto-play */}
             <AnimatePresence>
-                {!showOpener && !isPlaying && showSoundPrompt && !isDemo && ( // Don't show prompt in demo mode, ruin cinematic feel
+                {!showOpener && !isPlaying && showSoundPrompt && (
                     <motion.div
                         initial={{ opacity: 0, x: -50, scale: 0.5 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
