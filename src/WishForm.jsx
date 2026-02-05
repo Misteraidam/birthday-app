@@ -13,6 +13,7 @@ import PortalManager from './portals/PortalManager';
 // import PaymentModal from './components/PaymentModal';
 import { API_BASE } from './config/api';
 import { supabase } from './config/supabaseClient';
+import heic2any from 'heic2any';
 
 export default function WishForm({ onGenerate, onBack, initialCelebrationType }) {
     // Multi-step form control (0: Celebration, 1: Details, 2: Chapters, 3: Template, 4: Preview)
@@ -100,10 +101,28 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
         }
     }, [pendingUploads]);
 
-    // --- COMPRESSION HELPER (Optimized) ---
+    // --- COMPRESSION HELPER (Optimized with HEIC support) ---
     const compressImage = async (file, maxWidth = 1200, quality = 0.6) => {
-        return new Promise((resolve, reject) => {
-            const url = URL.createObjectURL(file);
+        return new Promise(async (resolve, reject) => {
+            let processingFile = file;
+
+            // Handle HEIC/HEIF (iPhones)
+            if (file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic')) {
+                try {
+                    setUploadStatus('Converting HEIC...');
+                    const convertedBlob = await heic2any({
+                        blob: file,
+                        toType: 'image/jpeg',
+                        quality: quality
+                    });
+                    processingFile = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+                } catch (err) {
+                    console.error("HEIC conversion failed:", err);
+                    // Fallback: try to process as normal, but likely will fail
+                }
+            }
+
+            const url = URL.createObjectURL(processingFile);
             const img = new window.Image();
             img.src = url;
             img.onload = () => {
@@ -306,14 +325,14 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                     const compressedBlob = await compressImage(file);
 
                     setUploadStatus(`Uploading ${i + 1}/${files.length}...`);
-                    const url = await uploadToCloud(compressedBlob, file.name);
+                    const url = await uploadToCloud(compressedBlob, file.name || `image-${Date.now()}.jpg`);
 
                     if (url) {
                         successfulUploads.push({ type: 'image', data: url, anchor: null });
                     }
                 } catch (err) {
                     console.error(`Error processing file ${i}:`, err);
-                    // Continue with next file
+                    alert(`Failed to upload ${file.name || 'image'}. It might be too large or an unsupported format.`);
                 }
             }
 
