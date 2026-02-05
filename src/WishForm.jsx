@@ -11,7 +11,7 @@ import CelebrationSelector from './components/CelebrationSelector';
 import PortalManager from './portals/PortalManager';
 // TODO: Re-enable payment when ready
 // import PaymentModal from './components/PaymentModal';
-import { API_BASE } from './config/api';
+
 import { supabase } from './config/supabaseClient';
 import heic2any from 'heic2any';
 
@@ -1287,12 +1287,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                 </div>
             </div>
 
-            {/* Diagnostic Footer */}
-            <div className="py-4 border-t border-white/5 text-center">
-                <p className="text-[10px] text-white/20 uppercase tracking-widest font-mono">
-                    API Status: <span className="text-purple-400">{API_BASE}</span>
-                </p>
-            </div>
+
 
             {/* TODO: Re-enable Payment Modal when ready */}
             {/* <PaymentModal

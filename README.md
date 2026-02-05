@@ -24,7 +24,7 @@ A premium, immersive web platform for creating personalized birthday and celebra
 - **Frontend**: React 19, Framer Motion, Tailwind CSS, Lucide React
 - **Backend**: Node.js, Express
 - **Database / Storage**: Supabase (PostgreSQL & Object Storage)
-- **Deployment**: Vercel / Railway
+- **Deployment**: Vercel
 
 ## 🛠️ Local Development
 
