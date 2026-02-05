@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Volume2 } from 'lucide-react';
 
-export default function BalloonPopper({ recipientName, onComplete }) {
+export default function BalloonPopper({ recipientName, onComplete, hasMusic }) {
     // Generate random balloons
     const [balloons, setBalloons] = useState(() =>
         Array.from({ length: 15 }).map((_, i) => ({
@@ -43,7 +43,13 @@ export default function BalloonPopper({ recipientName, onComplete }) {
                 >
                     Happy Birthday<br />{recipientName}!
                 </motion.h1>
-                <div className="bg-white/20 backdrop-blur-md px-6 py-2 rounded-full inline-block border border-white/30">
+                <div className="bg-white/20 backdrop-blur-md px-6 py-2 rounded-full inline-block border border-white/30 space-y-2">
+                    {hasMusic && (
+                        <div className="flex items-center justify-center gap-2 text-white/80 border-b border-white/10 pb-1 mb-1">
+                            <Volume2 size={16} className="animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Sound On</span>
+                        </div>
+                    )}
                     <p className="text-white text-lg font-bold">
                         {poppedCount < requiredPops
                             ? `Pop ${requiredPops - poppedCount} more user_rules to start!`

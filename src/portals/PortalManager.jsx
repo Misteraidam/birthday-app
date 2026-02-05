@@ -228,6 +228,7 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
                             recipientName={formData.recipientName}
                             celebrationType={formData.celebrationType}
                             onComplete={handleOpenerComplete}
+                            hasMusic={!!formData.musicUrl}
                         />
                     </motion.div>
                 )}
@@ -240,6 +241,7 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
                         type={formData.opener}
                         recipientName={formData.recipientName}
                         onComplete={handleOpenerComplete}
+                        hasMusic={!!formData.musicUrl}
                     />
                 )}
             </AnimatePresence>
@@ -363,7 +365,7 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
 }
 
 // Simple opener animations for types without dedicated components
-function SimpleOpener({ type, recipientName, onComplete }) {
+function SimpleOpener({ type, recipientName, onComplete, hasMusic }) {
     useEffect(() => {
         const timer = setTimeout(onComplete, 2500);
         return () => clearTimeout(timer);
@@ -400,6 +402,22 @@ function SimpleOpener({ type, recipientName, onComplete }) {
             className={`fixed inset-0 z-50 ${style.bg} flex flex-col items-center justify-center text-white cursor-pointer`}
             onClick={onComplete}
         >
+            {hasMusic && (
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute top-12 flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20"
+                >
+                    <motion.div
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ repeat: Infinity, duration: 2 }}
+                    >
+                        <Volume2 size={14} className="text-white" />
+                    </motion.div>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Sound Recommended</span>
+                </motion.div>
+            )}
+
             <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}

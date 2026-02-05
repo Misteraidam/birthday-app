@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Volume2 } from 'lucide-react';
 
-export default function EnvelopeOpener({ recipientName, onComplete }) {
+export default function EnvelopeOpener({ recipientName, onComplete, hasMusic }) {
     const [isOpening, setIsOpening] = useState(false);
 
     const handleClick = () => {
@@ -78,7 +78,17 @@ export default function EnvelopeOpener({ recipientName, onComplete }) {
                         <span className="text-red-900 font-serif font-bold text-lg">W</span>
                     </motion.div>
 
-                    <div className="absolute -bottom-12 w-full text-center">
+                    <div className="absolute -bottom-12 w-full text-center space-y-2">
+                        {hasMusic && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="flex items-center justify-center gap-2 text-white/60 mb-1"
+                            >
+                                <Volume2 size={14} className="animate-pulse" />
+                                <span className="text-[10px] font-bold uppercase tracking-widest">Sound On Recommended</span>
+                            </motion.div>
+                        )}
                         <p className="text-white/40 text-xs uppercase tracking-widest animate-pulse">Tap to Open</p>
                     </div>
                 </div>
