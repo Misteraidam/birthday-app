@@ -627,15 +627,16 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         />
                                     </div>
 
-                                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6">
-                                        <label className="text-xs uppercase tracking-wider text-white/40 block mb-3">
+                                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 relative group hover:border-white/20 transition">
+                                        <label className="text-xs uppercase tracking-wider text-white/40 block mb-3 pointer-events-none">
                                             Special Date {celebrationConfig?.id === 'birthday' && '🎂'}
                                         </label>
                                         <input
                                             type="date"
-                                            className="w-full bg-transparent text-xl font-bold outline-none [color-scheme:dark]"
-                                            value={formData.birthday || ""}
+                                            className="w-full bg-transparent text-xl font-bold outline-none [color-scheme:dark] cursor-pointer"
+                                            value={formData.birthday || ''}
                                             onChange={(e) => setFormData(prev => ({ ...prev, birthday: e.target.value }))}
+                                            onClick={(e) => e.target.showPicker && e.target.showPicker()}
                                         />
                                     </div>
                                 </div>
