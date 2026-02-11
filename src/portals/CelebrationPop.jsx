@@ -41,7 +41,7 @@ export default function CelebrationPop({ formData }) {
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-7xl md:text-[10rem] font-black tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 leading-none"
+                        className="text-5xl md:text-7xl lg:text-[10rem] font-black tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 leading-none break-words"
                     >
                         {recipientName.toUpperCase()}
                     </motion.h1>
@@ -58,7 +58,7 @@ export default function CelebrationPop({ formData }) {
             </header>
 
             {/* Main Feed */}
-            <main className="max-w-6xl mx-auto px-6 space-y-48 pb-60 relative z-10 pt-20">
+            <main className="max-w-6xl mx-auto px-6 space-y-20 md:space-y-48 pb-60 relative z-10 pt-20">
                 {chapters.map((chapter, index) => (
                     <PopChapter key={chapter.id || index} chapter={chapter} index={index} />
                 ))}
@@ -131,10 +131,10 @@ function PopChapter({ chapter, index }) {
                 <div className={`inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 rounded-full text-[10px] font-black tracking-widest text-purple-300 mb-8`}>
                     MOMENT_{index + 1}
                 </div>
-                <h2 className="text-4xl md:text-7xl font-black mb-8 leading-none tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+                <h2 className="text-3xl md:text-4xl lg:text-7xl font-black mb-6 md:mb-8 leading-none tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
                     {chapter.title}
                 </h2>
-                <p className="text-xl md:text-3xl font-medium text-white/70 leading-relaxed mb-10">
+                <p className="text-lg md:text-xl lg:text-3xl font-medium text-white/70 leading-relaxed mb-8 md:mb-10">
                     {chapter.content}
                 </p>
 

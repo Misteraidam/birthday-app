@@ -466,7 +466,6 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                     <button
                         onClick={() => {
                             if (step === 1) onBack();
-                            else if (step === 4 && !isCustomFlow) setStep(2); // Skip Step 3 on back
                             else if (step > 0) setStep(step - 1);
                             else onBack();
                         }}
@@ -476,14 +475,14 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                         <span className="hidden md:inline text-sm font-medium">Back</span>
                     </button>
 
-                    {/* Step Indicator */}
+                    {/* Step Indicator — shows label on active step for mobile */}
                     <div className="flex items-center gap-1 md:gap-2">
                         {steps.map((s, i) => (
                             <React.Fragment key={s.num}>
                                 <button
                                     onClick={() => setStep(s.target)}
                                     disabled={s.target > step && !formData.celebrationType}
-                                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition ${step === s.target
+                                    className={`flex items-center gap-1.5 md:gap-2 px-2.5 md:px-3 py-1.5 rounded-full text-xs font-bold transition ${step === s.target
                                         ? 'bg-white text-black'
                                         : step > s.target
                                             ? 'bg-purple-500/30 text-purple-300'
@@ -491,10 +490,11 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         } disabled:cursor-not-allowed`}
                                 >
                                     {step > i ? <Check size={12} /> : s.num}
-                                    <span className="hidden md:inline">{s.label}</span>
+                                    {/* Show label on desktop always, on mobile only for active step */}
+                                    <span className={`text-[10px] md:text-xs ${step === s.target ? 'inline' : 'hidden md:inline'}`}>{s.label}</span>
                                 </button>
                                 {i < steps.length - 1 && (
-                                    <div className={`w-8 h-0.5 ${step > i ? 'bg-purple-500/50' : 'bg-white/10'}`} />
+                                    <div className={`w-4 md:w-8 h-0.5 ${step > i ? 'bg-purple-500/50' : 'bg-white/10'}`} />
                                 )}
                             </React.Fragment>
                         ))}
@@ -584,7 +584,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         Recipient's Name *
                                     </label>
                                     <input
-                                        className="w-full bg-transparent text-2xl md:text-5xl font-bold outline-none placeholder:text-white/20"
+                                        className="w-full bg-transparent text-2xl md:text-5xl font-bold outline-none placeholder:text-white/30"
                                         placeholder="Enter their name..."
                                         value={formData.recipientName}
                                         onChange={(e) => setFormData(prev => ({ ...prev, recipientName: e.target.value }))}
@@ -805,26 +805,18 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                         const file = e.target.files[0];
                                                         if (!file) return;
 
-                                                        setUploadStatus('Uploading Cover...');
                                                         try {
-                                                            const reader = new FileReader();
-                                                            reader.readAsDataURL(file);
-                                                            reader.onloadend = async () => {
-                                                                try {
-                                                                    setUploadStatus('Compressing Cover...');
-                                                                    const compressedBlob = await compressImage(file);
-                                                                    const url = await uploadToCloud(compressedBlob, file.name);
-                                                                    if (url) {
-                                                                        setFormData(prev => ({ ...prev, portalBg: url }));
-                                                                    }
-                                                                } catch (err) {
-                                                                    console.error("Cover upload failed", err);
-                                                                    alert("Failed to upload cover image");
-                                                                } finally {
-                                                                    setUploadStatus(null);
-                                                                }
-                                                            };
+                                                            setUploadStatus('Compressing Cover...');
+                                                            const compressedBlob = await compressImage(file);
+                                                            setUploadStatus('Uploading Cover...');
+                                                            const url = await uploadToCloud(compressedBlob, file.name);
+                                                            if (url) {
+                                                                setFormData(prev => ({ ...prev, portalBg: url }));
+                                                            }
                                                         } catch (err) {
+                                                            console.error("Cover upload failed", err);
+                                                            alert("Failed to upload cover image");
+                                                        } finally {
                                                             setUploadStatus(null);
                                                         }
                                                     }}

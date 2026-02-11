@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2 } from 'lucide-react';
 
@@ -52,7 +53,7 @@ export default function BalloonPopper({ recipientName, onComplete, hasMusic }) {
                     )}
                     <p className="text-white text-lg font-bold">
                         {poppedCount < requiredPops
-                            ? `Pop ${requiredPops - poppedCount} more user_rules to start!`
+                            ? `Pop ${requiredPops - poppedCount} more balloon${requiredPops - poppedCount !== 1 ? 's' : ''} to start!`
                             : "Here we go! 🎉"}
                     </p>
                 </div>
@@ -67,7 +68,7 @@ export default function BalloonPopper({ recipientName, onComplete, hasMusic }) {
                         exit={{ scale: 0, opacity: 0 }}
                         transition={{
                             y: {
-                                duration: 15 + Math.random() * 5, // Slower: 15-20s
+                                duration: 8 + Math.random() * 4, // 8-12s for snappier mobile UX
                                 ease: "linear",
                                 delay: b.delay,
                                 repeat: Infinity,

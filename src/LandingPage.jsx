@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Heart, Send, ArrowRight, Play, Star, Gift, Music, Camera, MessageCircle } from 'lucide-react';
+import { Sparkles, Heart, Send, ArrowRight, Play, Star, Gift, Music, Camera, MessageCircle, Menu, X } from 'lucide-react';
 import { CELEBRATION_TYPES, TEMPLATES } from './config/celebrationConfig';
 import { TEMPLATE_PREVIEWS } from './components/TemplatePreviews';
 
@@ -13,14 +13,17 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
     const [showViewInput, setShowViewInput] = useState(false);
     const [hoveredType, setHoveredType] = useState(null);
     const [activeTemplateIndex, setActiveTemplateIndex] = useState(0);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [carouselPaused, setCarouselPaused] = useState(false);
 
-    // Auto-rotate template previews
+    // Auto-rotate template previews (pauses on hover/interaction)
     useEffect(() => {
+        if (carouselPaused) return;
         const interval = setInterval(() => {
             setActiveTemplateIndex(prev => (prev + 1) % 3);
-        }, 3000);
+        }, 4000);
         return () => clearInterval(interval);
-    }, []);
+    }, [carouselPaused]);
 
     const handleViewStory = () => {
         if (viewCode.trim()) {
@@ -30,39 +33,36 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
 
     const featuredTemplates = TEMPLATES.slice(0, 3);
 
-
-
     if (legalView === 'terms') return <Terms onBack={() => setLegalView(null)} />;
     if (legalView === 'privacy') return <Privacy onBack={() => setLegalView(null)} />;
 
     return (
         <div className="min-h-screen bg-[#0A0A0A] text-white overflow-hidden relative">
-            {/* Animated Background */}
+            {/* Animated Background — reduced from 3 blobs to 2 for cleaner look */}
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-3xl" />
+                <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-pink-500/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
             </div>
 
-            {/* Floating Particles */}
+            {/* Floating Particles — reduced to 10, using % positions (SSR-safe) */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                {[...Array(20)].map((_, i) => (
+                {[...Array(10)].map((_, i) => (
                     <motion.div
                         key={i}
                         className="absolute w-1 h-1 bg-white/20 rounded-full"
+                        style={{ left: `${(i * 9.7 + 3) % 100}%` }}
                         initial={{
-                            x: Math.random() * window.innerWidth,
-                            y: window.innerHeight + 10,
+                            y: '100vh',
                             opacity: 0
                         }}
                         animate={{
-                            y: -10,
-                            opacity: [0, 0.5, 0],
+                            y: '-10px',
+                            opacity: [0, 0.4, 0],
                         }}
                         transition={{
-                            duration: 8 + Math.random() * 4,
+                            duration: 10 + (i % 4) * 2,
                             repeat: Infinity,
-                            delay: Math.random() * 5,
+                            delay: i * 0.8,
                             ease: "linear"
                         }}
                     />
@@ -85,6 +85,7 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                         </span>
                     </motion.div>
 
+                    {/* Desktop nav */}
                     <motion.nav
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -99,7 +100,54 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                             <Send size={14} /> View a Story
                         </button>
                     </motion.nav>
+
+                    {/* Mobile hamburger button */}
+                    <button
+                        className="md:hidden p-2 text-white/60 hover:text-white transition rounded-lg hover:bg-white/5"
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        aria-label="Toggle menu"
+                    >
+                        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
                 </div>
+
+                {/* Mobile menu dropdown */}
+                <AnimatePresence>
+                    {mobileMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="md:hidden overflow-hidden"
+                        >
+                            <div className="flex flex-col gap-2 pt-4 pb-2">
+                                <a
+                                    href="#how-it-works"
+                                    className="px-4 py-3 text-sm text-white/60 hover:text-white hover:bg-white/5 rounded-xl transition"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    How it Works
+                                </a>
+                                <a
+                                    href="#templates"
+                                    className="px-4 py-3 text-sm text-white/60 hover:text-white hover:bg-white/5 rounded-xl transition"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Templates
+                                </a>
+                                <button
+                                    onClick={() => {
+                                        setMobileMenuOpen(false);
+                                        setShowViewInput(true);
+                                    }}
+                                    className="px-4 py-3 text-sm text-white/60 hover:text-white hover:bg-white/5 rounded-xl transition flex items-center gap-2 text-left"
+                                >
+                                    <Send size={14} /> View a Story
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </header>
 
             {/* Hero Section */}
@@ -122,7 +170,7 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                             <span className="text-xs text-white/60">Create immersive celebration experiences</span>
                         </motion.div>
 
-                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-[0.9]">
+                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-[0.95]">
                             Create a story
                             <br />
                             <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
@@ -195,8 +243,9 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                                     >
                                         {type.icon}
                                     </motion.div>
-                                    <span className="text-xs text-white/60 group-hover:text-white transition">
-                                        {type.name.split(' ')[0]}
+                                    {/* Show full name instead of truncated first word */}
+                                    <span className="text-xs text-white/60 group-hover:text-white transition max-w-[80px] text-center leading-tight">
+                                        {type.name}
                                     </span>
 
                                     {/* Valentine Demo - Always visible on mobile, tooltip on desktop */}
@@ -244,6 +293,13 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                         transition={{ delay: 0.5, duration: 0.8 }}
                         id="templates"
                         className="mb-24"
+                        onMouseEnter={() => setCarouselPaused(true)}
+                        onMouseLeave={() => setCarouselPaused(false)}
+                        onTouchStart={() => setCarouselPaused(true)}
+                        onTouchEnd={() => {
+                            // Resume after a delay on touch
+                            setTimeout(() => setCarouselPaused(false), 5000);
+                        }}
                     >
                         <p className="text-center text-xs uppercase tracking-[0.3em] text-white/40 mb-8">
                             Beautiful Templates
@@ -255,11 +311,16 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                                     key={template.id}
                                     animate={{
                                         scale: activeTemplateIndex === i ? 1.05 : 0.95,
-                                        opacity: activeTemplateIndex === i ? 1 : 0.5,
+                                        opacity: activeTemplateIndex === i ? 1 : 0.7,
                                         y: activeTemplateIndex === i ? -10 : 0
                                     }}
                                     transition={{ duration: 0.5 }}
-                                    onClick={() => setActiveTemplateIndex(i)}
+                                    onClick={() => {
+                                        setActiveTemplateIndex(i);
+                                        setCarouselPaused(true);
+                                        // Resume after 8 seconds
+                                        setTimeout(() => setCarouselPaused(false), 8000);
+                                    }}
                                     className="relative flex-shrink-0 w-48 h-64 md:w-64 md:h-80 rounded-3xl overflow-hidden border border-white/10 bg-gray-900 snap-center cursor-pointer"
                                     style={{
                                         boxShadow: activeTemplateIndex === i
@@ -298,7 +359,11 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                             {featuredTemplates.map((_, i) => (
                                 <button
                                     key={i}
-                                    onClick={() => setActiveTemplateIndex(i)}
+                                    onClick={() => {
+                                        setActiveTemplateIndex(i);
+                                        setCarouselPaused(true);
+                                        setTimeout(() => setCarouselPaused(false), 8000);
+                                    }}
                                     className={`w-2 h-2 rounded-full transition-all ${activeTemplateIndex === i ? 'bg-white w-6' : 'bg-white/30'
                                         }`}
                                 />
@@ -317,12 +382,12 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                         <p className="text-center text-xs uppercase tracking-[0.3em] text-white/40 mb-12">
                             How it Works
                         </p>
-                        <div className="grid md:grid-cols-4 gap-8">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                             {[
                                 { icon: <Heart size={24} />, title: 'Choose', desc: 'Select a celebration type or create your own' },
                                 { icon: <Camera size={24} />, title: 'Create', desc: 'Add chapters, photos, videos and music' },
-                                { icon: <Music size={24} />, title: 'Customize', desc: 'Pick template' },
-                                { icon: <Send size={24} />, title: 'Share', desc: 'Send the magic link' },
+                                { icon: <Music size={24} />, title: 'Customize', desc: 'Pick a beautiful theme to match the mood' },
+                                { icon: <Send size={24} />, title: 'Share', desc: 'Send the magic link to your loved one' },
                             ].map((step, i) => (
                                 <motion.div
                                     key={i}
@@ -381,6 +446,7 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                                 type="text"
                                 value={viewCode}
                                 onChange={(e) => setViewCode(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleViewStory()}
                                 placeholder="Enter portal ID or link..."
                                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 mb-4 outline-none focus:border-purple-500 transition"
                                 autoFocus

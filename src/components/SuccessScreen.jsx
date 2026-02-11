@@ -59,17 +59,16 @@ export default function SuccessScreen({ portalId, formData, onBackToHome }) {
                 ctx.fillStyle = gradient;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Artistic Glows
-                ctx.globalAlpha = 0.4;
-                ctx.fillStyle = template.primaryColor;
-                ctx.filter = 'blur(100px)';
-                ctx.beginPath();
-                ctx.arc(canvas.width, 0, 600, 0, Math.PI * 2);
-                ctx.fill();
+                // Artistic Glow — using radial gradient instead of ctx.filter (Safari compat)
+                ctx.globalAlpha = 0.3;
+                const glow = ctx.createRadialGradient(canvas.width, 0, 0, canvas.width, 0, 600);
+                glow.addColorStop(0, template.primaryColor);
+                glow.addColorStop(1, 'transparent');
+                ctx.fillStyle = glow;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 // Frame
                 ctx.globalAlpha = 1.0;
-                ctx.filter = 'none';
                 ctx.strokeStyle = 'rgba(255,255,255,0.05)';
                 ctx.lineWidth = 2;
                 ctx.strokeRect(60, 60, canvas.width - 120, canvas.height - 120);
@@ -81,10 +80,16 @@ export default function SuccessScreen({ portalId, formData, onBackToHome }) {
                 ctx.globalAlpha = 0.5;
                 ctx.fillText('A DIGITAL STORY FOR', canvas.width / 2, 250);
 
-                // Recipient
+                // Recipient — auto-scale font for long names
                 ctx.globalAlpha = 1.0;
-                ctx.font = '900 100px sans-serif';
                 const recipient = formData.recipientName.toUpperCase();
+                let fontSize = 100;
+                ctx.font = `900 ${fontSize}px sans-serif`;
+                // Shrink font until text fits within canvas width with padding
+                while (ctx.measureText(recipient).width > canvas.width - 160 && fontSize > 40) {
+                    fontSize -= 4;
+                    ctx.font = `900 ${fontSize}px sans-serif`;
+                }
                 ctx.fillText(recipient, canvas.width / 2, 400);
 
                 // Sender
@@ -94,8 +99,10 @@ export default function SuccessScreen({ portalId, formData, onBackToHome }) {
                     ctx.fillText(`From ${formData.senderName}`, canvas.width / 2, 500);
                 }
 
-                // QR Code
-                ctx.drawImage(img, 350, 650, 500, 500);
+                // QR Code — centered horizontally
+                const qrSize = 500;
+                const qrX = (canvas.width - qrSize) / 2;
+                ctx.drawImage(img, qrX, 650, qrSize, qrSize);
 
                 // Footer
                 ctx.fillStyle = '#FFFFFF';
