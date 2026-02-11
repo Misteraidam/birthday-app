@@ -459,56 +459,55 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
     ];
 
     return (
-        <div className="min-h-screen bg-[#0A0A0A] text-white selection:bg-purple-500 selection:text-white">
+        <div className="min-h-screen bg-background text-foreground font-sans">
             {/* Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-white/5">
-                <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+            <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
+                <div className="max-w-5xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
                     <button
                         onClick={() => {
                             if (step === 1) onBack();
                             else if (step > 0) setStep(step - 1);
                             else onBack();
                         }}
-                        className="flex items-center gap-2 text-white/60 hover:text-white transition"
+                        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition"
                     >
                         <ArrowLeft size={18} />
                         <span className="hidden md:inline text-sm font-medium">Back</span>
                     </button>
 
-                    {/* Step Indicator — shows label on active step for mobile */}
+                    {/* Step Indicator */}
                     <div className="flex items-center gap-1 md:gap-2">
                         {steps.map((s, i) => (
                             <React.Fragment key={s.num}>
                                 <button
                                     onClick={() => setStep(s.target)}
                                     disabled={s.target > step && !formData.celebrationType}
-                                    className={`flex items-center gap-1.5 md:gap-2 px-2.5 md:px-3 py-1.5 rounded-full text-xs font-bold transition ${step === s.target
-                                        ? 'bg-white text-black'
+                                    className={`flex items-center gap-1.5 md:gap-2 px-2.5 md:px-3 py-1.5 rounded-full text-xs font-medium transition ${step === s.target
+                                        ? 'bg-accent text-background'
                                         : step > s.target
-                                            ? 'bg-purple-500/30 text-purple-300'
-                                            : 'bg-white/10 text-white/40'
+                                            ? 'bg-accent-soft text-accent-warm'
+                                            : 'bg-surface text-muted'
                                         } disabled:cursor-not-allowed`}
                                 >
                                     {step > i ? <Check size={12} /> : s.num}
-                                    {/* Show label on desktop always, on mobile only for active step */}
                                     <span className={`text-[10px] md:text-xs ${step === s.target ? 'inline' : 'hidden md:inline'}`}>{s.label}</span>
                                 </button>
                                 {i < steps.length - 1 && (
-                                    <div className={`w-4 md:w-8 h-0.5 ${step > i ? 'bg-purple-500/50' : 'bg-white/10'}`} />
+                                    <div className={`w-4 md:w-8 h-0.5 ${step > i ? 'bg-accent-warm/40' : 'bg-border'}`} />
                                 )}
                             </React.Fragment>
                         ))}
                     </div>
 
                     {/* Tools */}
-                    <div className="flex gap-2">
-                        <label className="cursor-pointer p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition">
+                    <div className="flex gap-1">
+                        <label className="cursor-pointer p-2 text-muted hover:text-foreground hover:bg-surface-hover rounded-lg transition">
                             <Upload size={16} />
                             <input type="file" accept=".json" className="hidden" onChange={importData} />
                         </label>
                         <button
                             onClick={exportData}
-                            className="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition"
+                            className="p-2 text-muted hover:text-foreground hover:bg-surface-hover rounded-lg transition"
                         >
                             <Download size={16} />
                         </button>
@@ -523,13 +522,13 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex flex-col items-center justify-center gap-6"
+                        className="fixed inset-0 z-[100] bg-background/90 backdrop-blur-md flex flex-col items-center justify-center gap-6"
                     >
                         <div className="relative">
-                            <div className="w-16 h-16 border-4 border-purple-500/30 rounded-full"></div>
-                            <div className="absolute inset-0 w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-16 h-16 border-4 border-accent-warm/30 rounded-full"></div>
+                            <div className="absolute inset-0 w-16 h-16 border-4 border-accent-warm border-t-transparent rounded-full animate-spin"></div>
                         </div>
-                        <p className="text-white font-bold tracking-widest uppercase text-xs">{uploadStatus}</p>
+                        <p className="text-foreground font-medium tracking-widest uppercase text-xs">{uploadStatus}</p>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -567,24 +566,23 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                     <motion.div
                                         initial={{ scale: 0 }}
                                         animate={{ scale: 1 }}
-                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
-                                        style={{ background: celebrationConfig?.gradient || 'rgba(255,255,255,0.1)' }}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-surface mb-6"
                                     >
                                         <span className="text-lg">{celebrationConfig?.icon}</span>
-                                        <span className="text-xs font-bold">{celebrationConfig?.name}</span>
+                                        <span className="text-xs font-medium text-muted-foreground">{celebrationConfig?.name}</span>
                                     </motion.div>
 
-                                    <h2 className="text-4xl md:text-5xl font-black mb-4">Who's this for?</h2>
-                                    <p className="text-white/50">Let's personalize their experience</p>
+                                    <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-3 text-balance">Who is this for?</h2>
+                                    <p className="text-muted-foreground text-sm">Let's personalize their experience</p>
                                 </div>
 
                                 {/* Recipient Name */}
-                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 md:p-8">
-                                    <label className="text-[10px] md:text-xs uppercase tracking-wider text-white/40 block mb-4">
+                                <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
+                                    <label className="text-[10px] md:text-xs uppercase tracking-[0.15em] text-muted block mb-4">
                                         Recipient's Name *
                                     </label>
                                     <input
-                                        className="w-full bg-transparent text-2xl md:text-5xl font-bold outline-none placeholder:text-white/30"
+                                        className="w-full bg-transparent text-2xl md:text-4xl font-bold outline-none placeholder:text-muted/40 text-foreground"
                                         placeholder="Enter their name..."
                                         value={formData.recipientName}
                                         onChange={(e) => setFormData(prev => ({ ...prev, recipientName: e.target.value }))}
@@ -597,43 +595,43 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                     <motion.div
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: 'auto' }}
-                                        className="bg-white/5 backdrop-blur-sm border border-purple-500/30 rounded-3xl p-6 md:p-8"
+                                        className="bg-card border border-accent-warm/20 rounded-2xl p-6 md:p-8"
                                     >
-                                        <label className="text-[10px] md:text-xs uppercase tracking-wider text-purple-400 block mb-4 flex items-center gap-2">
+                                        <label className="text-[10px] md:text-xs uppercase tracking-[0.15em] text-accent-warm block mb-4 flex items-center gap-2">
                                             <Sparkles size={14} /> What are we celebrating?
                                         </label>
                                         <input
-                                            className="w-full bg-transparent text-xl md:text-4xl font-bold outline-none placeholder:text-white/10"
+                                            className="w-full bg-transparent text-xl md:text-3xl font-bold outline-none placeholder:text-muted/30 text-foreground"
                                             placeholder="e.g. New Home, Promotion, Graduation..."
                                             value={formData.customOccasion}
                                             onChange={(e) => setFormData(prev => ({ ...prev, customOccasion: e.target.value }))}
                                         />
-                                        <p className="text-[10px] text-white/30 mt-2 font-medium tracking-wide">THIS WILL BE THE MAIN HEADING IN THE PORTAL</p>
+                                        <p className="text-[10px] text-muted mt-2 font-medium tracking-wide">THIS WILL BE THE MAIN HEADING IN THE PORTAL</p>
                                     </motion.div>
                                 )}
 
                                 {/* Sender Name & Date */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6">
-                                        <label className="text-xs uppercase tracking-wider text-white/40 block mb-3">
+                                    <div className="bg-card border border-border rounded-2xl p-6 hover:border-muted/30 transition">
+                                        <label className="text-[10px] uppercase tracking-[0.15em] text-muted block mb-3">
                                             From (Your Name)
                                         </label>
                                         <input
                                             type="text"
                                             placeholder="Enter your name..."
-                                            className="w-full bg-transparent text-xl font-bold outline-none placeholder:text-white/20"
+                                            className="w-full bg-transparent text-lg font-semibold outline-none placeholder:text-muted/30 text-foreground"
                                             value={formData.senderName}
                                             onChange={(e) => setFormData(prev => ({ ...prev, senderName: e.target.value }))}
                                         />
                                     </div>
 
-                                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 relative group hover:border-white/20 transition">
-                                        <label className="text-xs uppercase tracking-wider text-white/40 block mb-3 pointer-events-none">
-                                            Special Date {celebrationConfig?.id === 'birthday' && '🎂'}
+                                    <div className="bg-card border border-border rounded-2xl p-6 relative group hover:border-muted/30 transition">
+                                        <label className="text-[10px] uppercase tracking-[0.15em] text-muted block mb-3 pointer-events-none">
+                                            Special Date
                                         </label>
                                         <input
                                             type="date"
-                                            className="w-full bg-transparent text-xl font-bold outline-none [color-scheme:dark] cursor-pointer"
+                                            className="w-full bg-transparent text-lg font-semibold outline-none [color-scheme:dark] cursor-pointer text-foreground"
                                             value={formData.birthday || ''}
                                             onChange={(e) => setFormData(prev => ({ ...prev, birthday: e.target.value }))}
                                             onClick={(e) => e.target.showPicker && e.target.showPicker()}
@@ -642,15 +640,15 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 </div>
 
                                 {/* Background Music */}
-                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6">
-                                    <label className="text-xs uppercase tracking-wider text-white/40 block mb-4 flex items-center justify-between">
+                                <div className="bg-card border border-border rounded-2xl p-6">
+                                    <label className="text-[10px] uppercase tracking-[0.15em] text-muted block mb-4 flex items-center justify-between">
                                         <div className="flex items-center gap-2"><Music size={14} /> Background Music</div>
-                                        {formData.musicUrl && <span className="text-[10px] text-green-400 font-bold">✓ Track Selected</span>}
+                                        {formData.musicUrl && <span className="text-[10px] text-accent-warm font-medium">Track Selected</span>}
                                     </label>
 
                                     {/* Mood Suggestion */}
                                     <div className="mb-6">
-                                        <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3 font-black">Search World Music Library (iTunes)</p>
+                                        <p className="text-[10px] text-muted uppercase tracking-[0.15em] mb-3 font-medium">Search World Music Library (iTunes)</p>
                                         <form
                                             onSubmit={(e) => {
                                                 e.preventDefault();
@@ -662,14 +660,14 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                 <input
                                                     type="search"
                                                     placeholder="Search song or artist..."
-                                                    className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-5 text-sm outline-none focus:border-purple-500/50 transition-all"
+                                                    className="w-full bg-background border border-border rounded-xl py-3.5 px-5 text-sm outline-none focus:border-accent-warm/40 transition-all text-foreground"
                                                     value={musicSearch}
                                                     onChange={(e) => setMusicSearch(e.target.value)}
                                                     enterKeyHint="search"
                                                 />
                                                 <button
                                                     type="submit"
-                                                    className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-purple-500 rounded-xl text-[10px] font-bold hover:bg-purple-600 transition-colors"
+                                                    className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-accent text-background rounded-lg text-[10px] font-semibold hover:bg-accent-warm transition-colors"
                                                 >
                                                     {isSearchingMusic ? '...' : 'Search'}
                                                 </button>
@@ -688,9 +686,9 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                     {musicResults.map(track => (
                                                         <div
                                                             key={track.trackId || track.id}
-                                                            className={`p-3 rounded-2xl border flex items-center justify-between gap-4 transition-all ${formData.musicUrl === track.previewUrl
-                                                                ? 'bg-purple-500/20 border-purple-500'
-                                                                : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                                            className={`p-3 rounded-xl border flex items-center justify-between gap-4 transition-all ${formData.musicUrl === track.previewUrl
+                                                                ? 'bg-accent-soft border-accent-warm/40'
+                                                                : 'bg-surface border-border hover:bg-surface-hover'
                                                                 }`}
                                                         >
                                                             <div className="flex items-center gap-3 overflow-hidden">
@@ -710,9 +708,9 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                             </div>
                                                             <button
                                                                 onClick={() => setFormData(prev => ({ ...prev, musicUrl: track.previewUrl }))}
-                                                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${formData.musicUrl === track.previewUrl
-                                                                    ? 'bg-green-500 text-white'
-                                                                    : 'bg-white/10 text-white/60 hover:bg-white'
+                                                                className={`px-4 py-2 rounded-lg text-[10px] font-semibold uppercase tracking-wider transition-all ${formData.musicUrl === track.previewUrl
+                                                                    ? 'bg-accent-warm text-background'
+                                                                    : 'bg-surface text-muted-foreground hover:bg-surface-hover'
                                                                     }`}
                                                             >
                                                                 {formData.musicUrl === track.previewUrl ? 'Selected' : 'Select'}
@@ -732,15 +730,15 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                     </div>
 
                                     <div className="mb-6">
-                                        <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3 font-black">Quick Recommendations</p>
+                                        <p className="text-[10px] text-muted uppercase tracking-[0.15em] mb-3 font-medium">Quick Recommendations</p>
                                         <div className="flex flex-wrap gap-2">
                                             {getMusicInLibrary(celebrationConfig?.musicMood || 'joyful').map(track => (
                                                 <button
                                                     key={track.id}
                                                     onClick={() => setFormData(prev => ({ ...prev, musicUrl: track.url }))}
-                                                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${formData.musicUrl === track.url
-                                                        ? 'bg-purple-500 border-purple-400 text-white shadow-lg shadow-purple-500/20'
-                                                        : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+                                                    className={`px-4 py-2 rounded-lg text-xs font-medium transition-all border ${formData.musicUrl === track.url
+                                                        ? 'bg-accent text-background border-accent-warm'
+                                                        : 'bg-surface border-border text-muted-foreground hover:bg-surface-hover'
                                                         }`}
                                                 >
                                                     {track.name}
@@ -751,12 +749,12 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
 
                                     {/* Custom URL */}
                                     <div className="space-y-3">
-                                        <p className="text-[10px] text-white/30 uppercase tracking-widest">Or use your own link (YouTube/SoundCloud/MP3)</p>
+                                        <p className="text-[10px] text-muted uppercase tracking-[0.15em]">Or use your own link (YouTube/SoundCloud/MP3)</p>
                                         <div className="relative group">
                                             <input
                                                 type="text"
                                                 placeholder="Paste URL here..."
-                                                className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-5 text-sm font-medium outline-none focus:border-purple-500/50 transition-all placeholder:text-white/10 font-mono"
+                                                className="w-full bg-background border border-border rounded-xl py-3.5 px-5 text-sm font-medium outline-none focus:border-accent-warm/40 transition-all placeholder:text-muted/30 font-mono text-foreground"
                                                 value={formData.musicUrl || ""}
                                                 onChange={(e) => setFormData({ ...formData, musicUrl: e.target.value })}
                                             />
@@ -772,15 +770,15 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         </div>
                                     </div>
 
-                                    <div className="mt-4 flex items-center gap-2 text-[10px] text-white/30 italic">
-                                        <Sparkles size={10} className="text-yellow-500" />
+                                    <div className="mt-4 flex items-center gap-2 text-[10px] text-muted italic">
+                                        <Sparkles size={10} className="text-accent-warm" />
                                         <span>Testing is recommended! Some YouTube songs are restricted for embedding.</span>
                                     </div>
                                 </div>
 
                                 {/* Cover Image */}
-                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6">
-                                    <label className="text-xs uppercase tracking-wider text-white/40 block mb-4">
+                                <div className="bg-card border border-border rounded-2xl p-6">
+                                    <label className="text-[10px] uppercase tracking-[0.15em] text-muted block mb-4">
                                         Cover Image (Optional)
                                     </label>
                                     <div className="flex items-center gap-4">
@@ -795,8 +793,8 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                 </button>
                                             </div>
                                         ) : (
-                                            <label className="w-24 h-24 rounded-xl border-2 border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition">
-                                                <Image size={24} className="text-white/30" />
+                                            <label className="w-24 h-24 rounded-xl border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-muted/40 transition">
+                                                <Image size={24} className="text-muted" />
                                                 <input
                                                     type="file"
                                                     accept="image/*"
@@ -828,19 +826,19 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 </div>
 
                                 {/* Navigation */}
-                                <div className="flex gap-4">
+                                <div className="flex gap-3">
                                     <button
                                         onClick={() => setStep(0)}
-                                        className="flex-1 py-5 bg-white/10 text-white font-bold rounded-2xl hover:bg-white/20 transition flex items-center justify-center gap-2"
+                                        className="flex-1 py-4 bg-surface border border-border text-foreground font-medium rounded-xl hover:bg-surface-hover transition flex items-center justify-center gap-2"
                                     >
-                                        <ChevronLeft size={20} /> Back
+                                        <ChevronLeft size={18} /> Back
                                     </button>
                                     <button
                                         onClick={() => formData.recipientName && setStep(2)}
                                         disabled={!formData.recipientName}
-                                        className="flex-1 py-5 bg-white text-black font-bold text-lg rounded-2xl flex items-center justify-center gap-2 hover:bg-white/90 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                                        className="flex-[2] py-4 bg-accent text-background font-semibold text-base rounded-xl flex items-center justify-center gap-2 hover:bg-accent-warm transition disabled:opacity-30 disabled:cursor-not-allowed"
                                     >
-                                        Continue <ChevronRight size={20} />
+                                        Continue <ChevronRight size={18} />
                                     </button>
                                 </div>
                             </motion.div>
@@ -856,16 +854,16 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 className="space-y-8"
                             >
                                 <div className="text-center mb-12">
-                                    <h2 className="text-4xl md:text-5xl font-black mb-4">Build Your Story</h2>
-                                    <p className="text-white/50">
+                                    <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-3 text-balance">Build Your Story</h2>
+                                    <p className="text-muted-foreground text-sm">
                                         Craft chapters filled with memories for {formData.recipientName}
                                     </p>
                                 </div>
 
                                 {/* Chapters List */}
-                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6">
+                                <div className="bg-card border border-border rounded-2xl p-6">
                                     <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-sm font-bold uppercase tracking-wider text-white/60">
+                                        <h3 className="text-[10px] font-medium uppercase tracking-[0.15em] text-muted">
                                             Chapters ({formData.chapters.length})
                                         </h3>
                                     </div>
@@ -886,9 +884,9 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                         initial={{ opacity: 0, scale: 0.95 }}
                                                         animate={{ opacity: 1, scale: 1 }}
                                                         exit={{ opacity: 0, scale: 0.95 }}
-                                                        className={`bg-white/5 border rounded-xl p-4 flex items-center gap-4 cursor-move ${editingChapterId === chapter.id
-                                                            ? 'border-purple-500 bg-purple-500/10'
-                                                            : 'border-white/10'
+                                                        className={`bg-surface border rounded-xl p-4 flex items-center gap-4 cursor-move ${editingChapterId === chapter.id
+                                                            ? 'border-accent-warm/40 bg-accent-soft'
+                                                            : 'border-border'
                                                             }`}
                                                     >
                                                         <GripVertical size={16} className="text-white/30 flex-shrink-0" />
@@ -946,9 +944,9 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 </div>
 
                                 {/* Chapter Editor */}
-                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 space-y-6 relative overflow-hidden">
+                                <div className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-6 relative overflow-hidden">
                                     {editingChapterId && (
-                                        <div className="absolute top-0 inset-x-0 h-1 bg-purple-500 animate-pulse" />
+                                        <div className="absolute top-0 inset-x-0 h-0.5 bg-accent-warm" />
                                     )}
 
                                     <div className="flex items-center justify-between">
@@ -968,7 +966,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                     {/* Chapter Title */}
                                     <input
                                         placeholder="Chapter Title..."
-                                        className="w-full bg-white/5 border border-white/10 text-xl font-bold outline-none p-4 rounded-xl focus:border-purple-500 transition"
+                                        className="w-full bg-background border border-border text-lg font-semibold outline-none p-4 rounded-xl focus:border-accent-warm/40 transition text-foreground placeholder:text-muted/40"
                                         value={currentChapter.title}
                                         onChange={(e) => setCurrentChapter({ ...currentChapter, title: e.target.value })}
                                     />
@@ -976,14 +974,14 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                     {/* Chapter Content */}
                                     <textarea
                                         placeholder={currentChapter.hint || "Tell the story..."}
-                                        className="w-full bg-white/5 border border-white/10 p-4 rounded-xl h-32 focus:border-purple-500 outline-none transition resize-none"
+                                        className="w-full bg-background border border-border p-4 rounded-xl h-32 focus:border-accent-warm/40 outline-none transition resize-none text-foreground placeholder:text-muted/40"
                                         value={currentChapter.content}
                                         onChange={e => setCurrentChapter({ ...currentChapter, content: e.target.value })}
                                     />
 
                                     {/* Media Upload */}
                                     <div>
-                                        <label className="text-xs uppercase tracking-wider text-white/40 block mb-3">
+                                        <label className="text-[10px] uppercase tracking-[0.15em] text-muted block mb-3">
                                             Photos & Media
                                         </label>
                                         <div className="flex flex-wrap gap-3">
@@ -998,9 +996,9 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                     </button>
                                                 </div>
                                             ))}
-                                            <label className="w-24 h-24 rounded-xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center cursor-pointer hover:border-purple-500/50 transition bg-black/20">
-                                                <Plus size={20} className="text-white/30 mb-1" />
-                                                <span className="text-xs text-white/30">Add</span>
+                                            <label className="w-24 h-24 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-accent-warm/30 transition bg-surface">
+                                                <Plus size={20} className="text-muted mb-1" />
+                                                <span className="text-xs text-muted">Add</span>
                                                 <input
                                                     type="file"
                                                     accept="image/*"
@@ -1013,9 +1011,9 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                     </div>
 
                                     {/* Voice Note */}
-                                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between">
+                                    <div className="bg-surface border border-border rounded-xl p-4 flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${currentChapter.voiceNote ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-white/40'
+                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${currentChapter.voiceNote ? 'bg-accent-soft text-accent-warm' : 'bg-surface-hover text-muted'
                                                 }`}>
                                                 <Mic size={20} />
                                             </div>
@@ -1055,10 +1053,10 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                     </div>
 
                                     {/* Video Message */}
-                                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                                    <div className="bg-surface border border-border rounded-xl p-4">
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="flex items-center gap-3">
-                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${currentChapter.videoMessage ? 'bg-blue-500/20 text-blue-400' : 'bg-white/10 text-white/40'
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${currentChapter.videoMessage ? 'bg-accent-soft text-accent-warm' : 'bg-surface-hover text-muted'
                                                     }`}>
                                                     <Video size={20} />
                                                 </div>
@@ -1087,7 +1085,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                     )}
                                                     <button
                                                         onClick={startVideoRecording}
-                                                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full font-bold text-xs flex items-center gap-2"
+                                                        className="px-4 py-2 bg-accent text-background rounded-full font-semibold text-xs flex items-center gap-2 hover:bg-accent-warm transition"
                                                     >
                                                         <Camera size={14} /> {currentChapter.videoMessage ? 'Re-record' : 'Record Video'}
                                                     </button>
@@ -1113,9 +1111,9 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                     <button
                                         onClick={saveChapter}
                                         disabled={!currentChapter.title}
-                                        className={`w-full py-4 font-bold rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${editingChapterId
-                                            ? 'bg-green-500 hover:bg-green-400 text-white'
-                                            : 'bg-purple-500 hover:bg-purple-400 text-white'
+                                        className={`w-full py-4 font-semibold rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${editingChapterId
+                                            ? 'bg-accent-warm text-background hover:bg-accent'
+                                            : 'bg-accent text-background hover:bg-accent-warm'
                                             }`}
                                     >
                                         {editingChapterId ? (
@@ -1127,18 +1125,18 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 </div>
 
                                 {/* Navigation */}
-                                <div className="flex gap-4">
+                                <div className="flex gap-3">
                                     <button
                                         onClick={() => setStep(1)}
-                                        className="flex-1 py-5 bg-white/10 text-white font-bold rounded-2xl hover:bg-white/20 transition flex items-center justify-center gap-2"
+                                        className="flex-1 py-4 bg-surface border border-border text-foreground font-medium rounded-xl hover:bg-surface-hover transition flex items-center justify-center gap-2"
                                     >
-                                        <ChevronLeft size={20} /> Back
+                                        <ChevronLeft size={18} /> Back
                                     </button>
                                     <button
                                         onClick={() => setStep(3)}
-                                        className="flex-1 py-5 bg-white text-black font-bold text-lg rounded-2xl flex items-center justify-center gap-2 hover:bg-white/90 transition"
+                                        className="flex-[2] py-4 bg-accent text-background font-semibold text-base rounded-xl flex items-center justify-center gap-2 hover:bg-accent-warm transition"
                                     >
-                                        Continue <ChevronRight size={20} />
+                                        Continue <ChevronRight size={18} />
                                     </button>
                                 </div>
                             </motion.div>
@@ -1154,8 +1152,8 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 className="space-y-8"
                             >
                                 <div className="text-center mb-12">
-                                    <h2 className="text-4xl md:text-5xl font-black mb-4">Choose Your Theme</h2>
-                                    <p className="text-white/50">Pick the perfect look for {formData.recipientName}'s story</p>
+                                    <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-3 text-balance">Choose Your Theme</h2>
+                                    <p className="text-muted-foreground text-sm">Pick the perfect look for {formData.recipientName}'s story</p>
                                 </div>
 
                                 {/* Template Grid */}
@@ -1171,9 +1169,9 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                 template: template.id,
                                                 opener: template.defaultOpener || 'none'
                                             })}
-                                            className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-300 overflow-hidden h-48 ${formData.template === template.id
-                                                ? 'border-white scale-[1.02] shadow-2xl'
-                                                : 'border-white/10 hover:border-white/30'
+                                            className={`relative p-4 rounded-2xl border text-left transition-all duration-300 overflow-hidden h-48 ${formData.template === template.id
+                                                ? 'border-accent-warm ring-1 ring-accent-warm/20 scale-[1.02]'
+                                                : 'border-border hover:border-muted/30'
                                                 }`}
                                         >
                                             <div className={`absolute inset-0 ${template.preview} opacity-40`} />
@@ -1185,8 +1183,8 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             </div>
 
                                             {formData.template === template.id && (
-                                                <div className="absolute top-3 right-3 w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                                                    <Check size={14} className="text-black" />
+                                                <div className="absolute top-3 right-3 w-6 h-6 bg-accent rounded-full flex items-center justify-center">
+                                                    <Check size={14} className="text-background" />
                                                 </div>
                                             )}
                                         </motion.button>
@@ -1196,31 +1194,31 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
 
 
                                 {/* Final Message */}
-                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
-                                    <label className="text-xs uppercase tracking-wider text-white/40 block mb-4 flex items-center gap-2">
+                                <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
+                                    <label className="text-[10px] uppercase tracking-[0.15em] text-muted block mb-4 flex items-center gap-2">
                                         <Lock size={14} /> Final Message
                                     </label>
                                     <textarea
                                         placeholder="Write a heartfelt closing message..."
-                                        className="w-full bg-transparent border-none rounded-xl p-0 h-32 outline-none text-lg resize-none"
+                                        className="w-full bg-transparent border-none rounded-xl p-0 h-32 outline-none text-lg resize-none text-foreground placeholder:text-muted/40"
                                         value={formData.secretMessage}
                                         onChange={(e) => setFormData(prev => ({ ...prev, secretMessage: e.target.value }))}
                                     />
                                 </div>
 
                                 {/* Navigation */}
-                                <div className="flex gap-4">
+                                <div className="flex gap-3">
                                     <button
                                         onClick={() => setStep(2)}
-                                        className="flex-1 py-5 bg-white/10 text-white font-bold rounded-2xl hover:bg-white/20 transition flex items-center justify-center gap-2"
+                                        className="flex-1 py-4 bg-surface border border-border text-foreground font-medium rounded-xl hover:bg-surface-hover transition flex items-center justify-center gap-2"
                                     >
-                                        <ChevronLeft size={20} /> Back
+                                        <ChevronLeft size={18} /> Back
                                     </button>
                                     <button
                                         onClick={() => setStep(4)}
-                                        className="flex-1 py-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-black text-lg rounded-2xl hover:opacity-90 transition flex items-center justify-center gap-2"
+                                        className="flex-[2] py-4 bg-accent text-background font-semibold text-base rounded-xl hover:bg-accent-warm transition flex items-center justify-center gap-2"
                                     >
-                                        <Eye size={20} /> Preview Story
+                                        <Eye size={18} /> Preview Story
                                     </button>
                                 </div>
                             </motion.div>
@@ -1232,24 +1230,24 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="fixed inset-0 z-[60] bg-[#0A0A0A] flex flex-col"
+                                className="fixed inset-0 z-[60] bg-background flex flex-col"
                             >
-                                {/* Preview Header Overlay - Repositioned for visibility */}
-                                <div className="absolute top-10 inset-x-0 z-[70] px-6 md:px-12 pointer-events-none">
+                                {/* Preview Header */}
+                                <div className="absolute top-8 inset-x-0 z-[70] px-4 md:px-12 pointer-events-none">
                                     <div className="max-w-7xl mx-auto flex items-center justify-between pointer-events-auto">
                                         <button
                                             onClick={() => setStep(3)}
-                                            className="px-6 py-3 bg-black/60 backdrop-blur-xl border border-white/20 rounded-full font-bold text-white hover:bg-black/80 transition flex items-center gap-2 shadow-[0_10px_40px_rgba(0,0,0,0.5)] active:scale-95"
+                                            className="px-5 py-2.5 bg-background/70 backdrop-blur-xl border border-border rounded-full font-medium text-foreground text-sm hover:bg-surface-hover transition flex items-center gap-2 active:scale-95"
                                         >
-                                            <ArrowLeft size={18} /> <span>Back to Edit</span>
+                                            <ArrowLeft size={16} /> <span>Edit</span>
                                         </button>
 
-                                        <div className="hidden md:flex items-center gap-3 bg-black/40 backdrop-blur-lg px-5 py-2.5 rounded-full border border-white/10">
-                                            <div className="bg-purple-500/20 p-1.5 rounded-lg">
-                                                <Eye size={16} className="text-purple-400" />
+                                        <div className="hidden md:flex items-center gap-3 bg-background/60 backdrop-blur-lg px-5 py-2.5 rounded-full border border-border">
+                                            <div className="bg-accent-soft p-1.5 rounded-lg">
+                                                <Eye size={14} className="text-accent-warm" />
                                             </div>
                                             <div>
-                                                <h2 className="font-black text-sm uppercase tracking-widest">Preview</h2>
+                                                <h2 className="font-semibold text-xs uppercase tracking-[0.15em] text-muted-foreground">Preview</h2>
                                             </div>
                                         </div>
                                     </div>
@@ -1261,15 +1259,15 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 </div>
 
                                 {/* Preview Footer Action */}
-                                <div className="p-8 bg-gradient-to-t from-black to-transparent pointer-events-none">
+                                <div className="p-6 md:p-8 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none">
                                     <div className="max-w-xl mx-auto pointer-events-auto">
                                         <button
                                             onClick={handleGenerateClick}
-                                            className="w-full py-5 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white font-black text-xl rounded-2xl shadow-2xl shadow-purple-500/20 hover:scale-[1.02] active:scale-[0.98] transition flex items-center justify-center gap-3"
+                                            className="w-full py-4 bg-accent text-background font-semibold text-lg rounded-xl hover:bg-accent-warm active:scale-[0.98] transition flex items-center justify-center gap-3"
                                         >
-                                            <Sparkles size={24} /> Confirm & Generate Link
+                                            <Sparkles size={20} /> Confirm & Generate Link
                                         </button>
-                                        <p className="text-center text-white/40 text-xs mt-4">
+                                        <p className="text-center text-muted text-xs mt-3">
                                             Tip: Test the interactive content before sharing!
                                         </p>
                                     </div>
