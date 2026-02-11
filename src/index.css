@@ -1,9 +1,39 @@
 @import "tailwindcss";
 
+@theme inline {
+  --color-background: #060606;
+  --color-foreground: #F5F5F3;
+  --color-muted: #8A8A8A;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-accent: #E8C47C;
+  --color-accent-soft: rgba(232, 196, 124, 0.12);
+  --color-surface: rgba(255, 255, 255, 0.04);
+  --color-surface-hover: rgba(255, 255, 255, 0.08);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+}
+
 @layer base {
   html, body {
-    background-color: #0A0A0A;
-    color: white;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-background);
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
