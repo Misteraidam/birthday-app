@@ -32,7 +32,7 @@ export default function RoseGarden({ formData }) {
             </div>
 
             {/* Header */}
-            <header className="relative z-10 pt-32 pb-20 px-6 text-center">
+            <header className="relative z-10 pt-20 md:pt-32 pb-20 px-6 text-center">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -50,15 +50,16 @@ export default function RoseGarden({ formData }) {
                     </motion.h1>
                 )}
 
-                {celebrationType && (
+                {(formData.customOccasion || celebrationType) && (
                     <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 0.4 }}
                         className="text-xs uppercase tracking-[0.8em] font-bold"
                     >
-                        {celebrationType.toUpperCase()} // AN ENCHANTED ANTHOLOGY
+                        {(formData.customOccasion || celebrationType).toUpperCase()}
                     </motion.p>
                 )}
+
 
                 {/* Decorative Rose Icon */}
                 <motion.div

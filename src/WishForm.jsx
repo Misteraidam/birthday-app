@@ -6,7 +6,7 @@ import {
     Calendar, GripVertical, Trash2, MessageSquare, ArrowLeft, Check,
     Clock, Key, Scroll, Volume2, VolumeX, Camera, Pause, ExternalLink, Sparkles
 } from 'lucide-react';
-import { CELEBRATION_TYPES, TEMPLATES, getCelebrationType, getTemplatesForCelebration, getMusicInLibrary } from './config/celebrationConfig';
+import { CELEBRATION_TYPES, TEMPLATES, STORY_TEMPLATES, getCelebrationType, getTemplatesForCelebration, getMusicInLibrary } from './config/celebrationConfig';
 import CelebrationSelector from './components/CelebrationSelector';
 import PortalManager from './portals/PortalManager';
 // TODO: Re-enable payment when ready
@@ -14,6 +14,8 @@ import PortalManager from './portals/PortalManager';
 
 import { supabase } from './config/supabaseClient';
 import heic2any from 'heic2any';
+import { v4 as uuidv4 } from 'uuid';
+import ChapterEditor from './components/ChapterEditor';
 
 export default function WishForm({ onGenerate, onBack, initialCelebrationType }) {
     // Multi-step form control (0: Celebration, 1: Details, 2: Chapters, 3: Template, 4: Preview)
@@ -465,8 +467,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                 <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
                     <button
                         onClick={() => {
-                            if (step === 1) onBack();
-                            else if (step > 0) setStep(step - 1);
+                            if (step > 0) setStep(step - 1);
                             else onBack();
                         }}
                         className="flex items-center gap-2 text-white/60 hover:text-white transition"
@@ -534,7 +535,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                 )}
             </AnimatePresence>
 
-            <div className="pt-24 pb-32 px-6">
+            <div className="pt-20 pb-32 px-6">
                 <div className="max-w-4xl mx-auto">
                     <AnimatePresence mode="wait">
                         {/* Step 0: Celebration Type Selection */}
@@ -547,7 +548,11 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                             >
                                 <CelebrationSelector
                                     selected={formData.celebrationType}
-                                    onSelect={(type) => setFormData(prev => ({ ...prev, celebrationType: type }))}
+                                    onSelect={(type) => {
+                                        setFormData(prev => ({ ...prev, celebrationType: type }));
+                                        // Auto-advance with delay for visual feedback
+                                        setTimeout(() => setStep(1), 600);
+                                    }}
                                     onContinue={() => setStep(1)}
                                     onBack={onBack}
                                 />
@@ -563,7 +568,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 exit={{ opacity: 0, x: -20 }}
                                 className="space-y-8"
                             >
-                                <div className="text-center mb-12">
+                                <div className="text-center mb-8">
                                     <motion.div
                                         initial={{ scale: 0 }}
                                         animate={{ scale: 1 }}
@@ -584,7 +589,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         Recipient's Name *
                                     </label>
                                     <input
-                                        className="w-full bg-transparent text-2xl md:text-5xl font-bold outline-none placeholder:text-white/30"
+                                        className="w-full bg-transparent text-2xl md:text-5xl font-bold outline-none placeholder:text-white/30 text-white"
                                         placeholder="Enter their name..."
                                         value={formData.recipientName}
                                         onChange={(e) => setFormData(prev => ({ ...prev, recipientName: e.target.value }))}
@@ -603,7 +608,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             <Sparkles size={14} /> What are we celebrating?
                                         </label>
                                         <input
-                                            className="w-full bg-transparent text-xl md:text-4xl font-bold outline-none placeholder:text-white/10"
+                                            className="w-full bg-transparent text-xl md:text-4xl font-bold outline-none placeholder:text-white/10 text-white"
                                             placeholder="e.g. New Home, Promotion, Graduation..."
                                             value={formData.customOccasion}
                                             onChange={(e) => setFormData(prev => ({ ...prev, customOccasion: e.target.value }))}
@@ -611,6 +616,43 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         <p className="text-[10px] text-white/30 mt-2 font-medium tracking-wide">THIS WILL BE THE MAIN HEADING IN THE PORTAL</p>
                                     </motion.div>
                                 )}
+
+                                {/* Story Vibe Selection */}
+                                <div className="bg-white/5 backdrop-blur-sm border border-purple-500/30 rounded-3xl p-6 md:p-8">
+                                    <label className="text-[10px] md:text-xs uppercase tracking-wider text-purple-400 block mb-4 flex items-center gap-2">
+                                        <Sparkles size={14} /> Choose the Story Vibe
+                                    </label>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        {(STORY_TEMPLATES[celebrationConfig?.id] || STORY_TEMPLATES.default).map(t => (
+                                            <button
+                                                key={t.id}
+                                                onClick={() => {
+                                                    const newChapters = t.chapters.map(c => ({
+                                                        ...c,
+                                                        id: uuidv4(),
+                                                        media: [],
+                                                        voiceNote: null,
+                                                        videoMessage: null
+                                                    }));
+                                                    setFormData(prev => ({ ...prev, chapters: newChapters, storyTemplate: t.id }));
+                                                }}
+                                                className={`p-4 rounded-xl border text-left transition relative overflow-hidden group ${formData.storyTemplate === t.id
+                                                    ? 'bg-purple-500 border-purple-400 text-white'
+                                                    : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/60 hover:text-white'
+                                                    }`}
+                                            >
+                                                <div className="text-2xl mb-2">{t.icon}</div>
+                                                <div className="font-bold text-sm mb-1">{t.label}</div>
+                                                <div className="text-[10px] opacity-60 leading-tight">{t.description}</div>
+                                                {formData.storyTemplate === t.id && (
+                                                    <div className="absolute top-2 right-2 bg-white text-purple-600 rounded-full p-0.5">
+                                                        <Check size={10} strokeWidth={4} />
+                                                    </div>
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
 
                                 {/* Sender Name & Date */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -621,7 +663,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         <input
                                             type="text"
                                             placeholder="Enter your name..."
-                                            className="w-full bg-transparent text-xl font-bold outline-none placeholder:text-white/20"
+                                            className="w-full bg-transparent text-xl font-bold outline-none placeholder:text-white/20 text-white"
                                             value={formData.senderName}
                                             onChange={(e) => setFormData(prev => ({ ...prev, senderName: e.target.value }))}
                                         />
@@ -633,7 +675,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         </label>
                                         <input
                                             type="date"
-                                            className="w-full bg-transparent text-xl font-bold outline-none [color-scheme:dark] cursor-pointer"
+                                            className="w-full bg-transparent text-xl font-bold outline-none [color-scheme:dark] cursor-pointer text-white"
                                             value={formData.birthday || ''}
                                             onChange={(e) => setFormData(prev => ({ ...prev, birthday: e.target.value }))}
                                             onClick={(e) => e.target.showPicker && e.target.showPicker()}
@@ -662,7 +704,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                 <input
                                                     type="search"
                                                     placeholder="Search song or artist..."
-                                                    className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-5 text-sm outline-none focus:border-purple-500/50 transition-all"
+                                                    className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-5 text-sm outline-none focus:border-purple-500/50 transition-all placeholder:text-white/10 text-white"
                                                     value={musicSearch}
                                                     onChange={(e) => setMusicSearch(e.target.value)}
                                                     enterKeyHint="search"
@@ -756,7 +798,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             <input
                                                 type="text"
                                                 placeholder="Paste URL here..."
-                                                className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-5 text-sm font-medium outline-none focus:border-purple-500/50 transition-all placeholder:text-white/10 font-mono"
+                                                className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-5 text-sm font-medium outline-none focus:border-purple-500/50 transition-all placeholder:text-white/10 font-mono text-white"
                                                 value={formData.musicUrl || ""}
                                                 onChange={(e) => setFormData({ ...formData, musicUrl: e.target.value })}
                                             />
@@ -828,21 +870,26 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 </div>
 
                                 {/* Navigation */}
-                                <div className="flex gap-4">
-                                    <button
-                                        onClick={() => setStep(0)}
-                                        className="flex-1 py-5 bg-white/10 text-white font-bold rounded-2xl hover:bg-white/20 transition flex items-center justify-center gap-2"
-                                    >
-                                        <ChevronLeft size={20} /> Back
-                                    </button>
-                                    <button
-                                        onClick={() => formData.recipientName && setStep(2)}
-                                        disabled={!formData.recipientName}
-                                        className="flex-1 py-5 bg-white text-black font-bold text-lg rounded-2xl flex items-center justify-center gap-2 hover:bg-white/90 transition disabled:opacity-30 disabled:cursor-not-allowed"
-                                    >
-                                        Continue <ChevronRight size={20} />
-                                    </button>
+                                {/* Navigation - Sticky on Mobile */}
+                                <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0A0A0A] border-t border-white/10 md:static md:bg-transparent md:border-none md:p-0 z-40">
+                                    <div className="flex gap-4 max-w-4xl mx-auto">
+                                        <button
+                                            onClick={() => setStep(0)}
+                                            className="flex-1 py-4 md:py-5 bg-white/10 text-white font-bold rounded-xl md:rounded-2xl hover:bg-white/20 transition flex items-center justify-center gap-2 text-sm md:text-base"
+                                        >
+                                            <ChevronLeft size={20} /> Back
+                                        </button>
+                                        <button
+                                            onClick={() => formData.recipientName && setStep(2)}
+                                            disabled={!formData.recipientName}
+                                            className="flex-[2] py-4 md:py-5 bg-white text-black font-bold text-sm md:text-lg rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-white/90 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                                        >
+                                            Continue <ChevronRight size={20} />
+                                        </button>
+                                    </div>
                                 </div>
+                                {/* Spacer for sticky footer */}
+                                <div className="h-20 md:hidden" />
                             </motion.div>
                         )}
 
@@ -945,202 +992,50 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                     </AnimatePresence>
                                 </div>
 
-                                {/* Chapter Editor */}
-                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 space-y-6 relative overflow-hidden">
-                                    {editingChapterId && (
-                                        <div className="absolute top-0 inset-x-0 h-1 bg-purple-500 animate-pulse" />
-                                    )}
-
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="text-lg font-bold">
-                                            {editingChapterId ? 'Edit Chapter' : 'Add New Chapter'}
-                                        </h3>
-                                        {editingChapterId && (
-                                            <button
-                                                onClick={resetCurrentChapter}
-                                                className="text-xs text-white/40 hover:text-white"
-                                            >
-                                                Cancel Edit
-                                            </button>
-                                        )}
-                                    </div>
-
-                                    {/* Chapter Title */}
-                                    <input
-                                        placeholder="Chapter Title..."
-                                        className="w-full bg-white/5 border border-white/10 text-xl font-bold outline-none p-4 rounded-xl focus:border-purple-500 transition"
-                                        value={currentChapter.title}
-                                        onChange={(e) => setCurrentChapter({ ...currentChapter, title: e.target.value })}
-                                    />
-
-                                    {/* Chapter Content */}
-                                    <textarea
-                                        placeholder={currentChapter.hint || "Tell the story..."}
-                                        className="w-full bg-white/5 border border-white/10 p-4 rounded-xl h-32 focus:border-purple-500 outline-none transition resize-none"
-                                        value={currentChapter.content}
-                                        onChange={e => setCurrentChapter({ ...currentChapter, content: e.target.value })}
-                                    />
-
-                                    {/* Media Upload */}
-                                    <div>
-                                        <label className="text-xs uppercase tracking-wider text-white/40 block mb-3">
-                                            Photos & Media
-                                        </label>
-                                        <div className="flex flex-wrap gap-3">
-                                            {currentChapter.media.map((item, i) => (
-                                                <div key={i} className="relative w-24 h-24 rounded-xl overflow-hidden group">
-                                                    <img src={item.data} alt="" className="w-full h-full object-cover" />
-                                                    <button
-                                                        onClick={() => removeMedia(i)}
-                                                        className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
-                                                    >
-                                                        <X size={20} />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                            <label className="w-24 h-24 rounded-xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center cursor-pointer hover:border-purple-500/50 transition bg-black/20">
-                                                <Plus size={20} className="text-white/30 mb-1" />
-                                                <span className="text-xs text-white/30">Add</span>
-                                                <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    multiple
-                                                    className="hidden"
-                                                    onChange={handleImageUpload}
-                                                />
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    {/* Voice Note */}
-                                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${currentChapter.voiceNote ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-white/40'
-                                                }`}>
-                                                <Mic size={20} />
-                                            </div>
-                                            <div>
-                                                <p className="font-bold text-sm">Voice Note</p>
-                                                <p className="text-xs text-white/40">
-                                                    {currentChapter.voiceNote ? 'Audio recorded' : 'Add a voice message'}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        {isRecordingAudio ? (
-                                            <button
-                                                onClick={stopAudioRecording}
-                                                className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-full font-bold text-xs flex items-center gap-2 animate-pulse"
-                                            >
-                                                <StopCircle size={14} /> Stop
-                                            </button>
-                                        ) : (
-                                            <div className="flex gap-2">
-                                                {currentChapter.voiceNote && (
-                                                    <button
-                                                        onClick={() => setCurrentChapter({ ...currentChapter, voiceNote: null })}
-                                                        className="p-2 hover:bg-white/10 rounded-full text-white/40"
-                                                    >
-                                                        <X size={14} />
-                                                    </button>
-                                                )}
-                                                <button
-                                                    onClick={startAudioRecording}
-                                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full font-bold text-xs flex items-center gap-2"
-                                                >
-                                                    <Mic size={14} /> {currentChapter.voiceNote ? 'Re-record' : 'Record'}
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Video Message */}
-                                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                                        <div className="flex items-center justify-between mb-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${currentChapter.videoMessage ? 'bg-blue-500/20 text-blue-400' : 'bg-white/10 text-white/40'
-                                                    }`}>
-                                                    <Video size={20} />
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold text-sm">Video Message</p>
-                                                    <p className="text-xs text-white/40">Record a personal video</p>
-                                                </div>
-                                            </div>
-
-                                            {isRecordingVideo ? (
-                                                <button
-                                                    onClick={stopVideoRecording}
-                                                    className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-full font-bold text-xs flex items-center gap-2 animate-pulse"
-                                                >
-                                                    <StopCircle size={14} /> Stop Recording
-                                                </button>
-                                            ) : (
-                                                <div className="flex gap-2">
-                                                    {currentChapter.videoMessage && (
-                                                        <button
-                                                            onClick={() => setCurrentChapter({ ...currentChapter, videoMessage: null })}
-                                                            className="p-2 hover:bg-white/10 rounded-full text-white/40"
-                                                        >
-                                                            <X size={14} />
-                                                        </button>
-                                                    )}
-                                                    <button
-                                                        onClick={startVideoRecording}
-                                                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full font-bold text-xs flex items-center gap-2"
-                                                    >
-                                                        <Camera size={14} /> {currentChapter.videoMessage ? 'Re-record' : 'Record Video'}
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Video Preview */}
-                                        {(isRecordingVideo || currentChapter.videoMessage) && (
-                                            <div className="mt-4 rounded-xl overflow-hidden bg-black aspect-video">
-                                                {isRecordingVideo ? (
-                                                    <video ref={videoPreviewRef} className="w-full h-full object-cover" muted />
-                                                ) : currentChapter.videoMessage ? (
-                                                    <video src={currentChapter.videoMessage} controls className="w-full h-full object-cover" />
-                                                ) : null}
-                                            </div>
-                                        )}
-                                    </div>
-
-
-
-                                    {/* Save Chapter Button */}
-                                    <button
-                                        onClick={saveChapter}
-                                        disabled={!currentChapter.title}
-                                        className={`w-full py-4 font-bold rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${editingChapterId
-                                            ? 'bg-green-500 hover:bg-green-400 text-white'
-                                            : 'bg-purple-500 hover:bg-purple-400 text-white'
-                                            }`}
-                                    >
-                                        {editingChapterId ? (
-                                            <><Check size={18} /> Update Chapter</>
-                                        ) : (
-                                            <><Plus size={18} /> Add Chapter</>
-                                        )}
-                                    </button>
-                                </div>
+                                {/* Chapter Editor Component - extracted for cleaner architecture */}
+                                <ChapterEditor
+                                    chapter={currentChapter}
+                                    onChange={setCurrentChapter}
+                                    onSave={saveChapter}
+                                    onReset={resetCurrentChapter}
+                                    isEditing={!!editingChapterId}
+                                    mediaHandlers={{
+                                        removeMedia,
+                                        handleImageUpload,
+                                        startAudio: startAudioRecording,
+                                        stopAudio: stopAudioRecording,
+                                        startVideo: startVideoRecording,
+                                        stopVideo: stopVideoRecording,
+                                        clearVoice: () => setCurrentChapter(prev => ({ ...prev, voiceNote: null })),
+                                        clearVideo: () => setCurrentChapter(prev => ({ ...prev, videoMessage: null }))
+                                    }}
+                                    recordingState={{
+                                        isRecordingAudio,
+                                        isRecordingVideo
+                                    }}
+                                    videoRef={videoPreviewRef}
+                                />
 
                                 {/* Navigation */}
-                                <div className="flex gap-4">
-                                    <button
-                                        onClick={() => setStep(1)}
-                                        className="flex-1 py-5 bg-white/10 text-white font-bold rounded-2xl hover:bg-white/20 transition flex items-center justify-center gap-2"
-                                    >
-                                        <ChevronLeft size={20} /> Back
-                                    </button>
-                                    <button
-                                        onClick={() => setStep(3)}
-                                        className="flex-1 py-5 bg-white text-black font-bold text-lg rounded-2xl flex items-center justify-center gap-2 hover:bg-white/90 transition"
-                                    >
-                                        Continue <ChevronRight size={20} />
-                                    </button>
+                                {/* Navigation - Sticky on Mobile */}
+                                <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0A0A0A] border-t border-white/10 md:static md:bg-transparent md:border-none md:p-0 z-40">
+                                    <div className="flex gap-4 max-w-4xl mx-auto">
+                                        <button
+                                            onClick={() => setStep(1)}
+                                            className="flex-1 py-4 md:py-5 bg-white/10 text-white font-bold rounded-xl md:rounded-2xl hover:bg-white/20 transition flex items-center justify-center gap-2 text-sm md:text-base"
+                                        >
+                                            <ChevronLeft size={20} /> Back
+                                        </button>
+                                        <button
+                                            onClick={() => setStep(3)}
+                                            className="flex-[2] py-4 md:py-5 bg-white text-black font-bold text-sm md:text-lg rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-white/90 transition"
+                                        >
+                                            Continue <ChevronRight size={20} />
+                                        </button>
+                                    </div>
                                 </div>
+                                {/* Spacer for sticky footer */}
+                                <div className="h-20 md:hidden" />
                             </motion.div>
                         )}
 
@@ -1209,20 +1104,25 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 </div>
 
                                 {/* Navigation */}
-                                <div className="flex gap-4">
-                                    <button
-                                        onClick={() => setStep(2)}
-                                        className="flex-1 py-5 bg-white/10 text-white font-bold rounded-2xl hover:bg-white/20 transition flex items-center justify-center gap-2"
-                                    >
-                                        <ChevronLeft size={20} /> Back
-                                    </button>
-                                    <button
-                                        onClick={() => setStep(4)}
-                                        className="flex-1 py-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-black text-lg rounded-2xl hover:opacity-90 transition flex items-center justify-center gap-2"
-                                    >
-                                        <Eye size={20} /> Preview Story
-                                    </button>
+                                {/* Navigation - Sticky on Mobile */}
+                                <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0A0A0A] border-t border-white/10 md:static md:bg-transparent md:border-none md:p-0 z-40">
+                                    <div className="flex gap-4 max-w-4xl mx-auto">
+                                        <button
+                                            onClick={() => setStep(2)}
+                                            className="flex-1 py-4 md:py-5 bg-white/10 text-white font-bold rounded-xl md:rounded-2xl hover:bg-white/20 transition flex items-center justify-center gap-2 text-sm md:text-base"
+                                        >
+                                            <ChevronLeft size={20} /> Back
+                                        </button>
+                                        <button
+                                            onClick={() => setStep(4)}
+                                            className="flex-[2] py-4 md:py-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-black text-sm md:text-lg rounded-xl md:rounded-2xl hover:opacity-90 transition flex items-center justify-center gap-2"
+                                        >
+                                            <Eye size={20} /> Preview Story
+                                        </button>
+                                    </div>
                                 </div>
+                                {/* Spacer for sticky footer */}
+                                <div className="h-20 md:hidden" />
                             </motion.div>
                         )}
                         {/* Step 4: Live Preview */}

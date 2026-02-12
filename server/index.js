@@ -30,8 +30,8 @@ app.use((req, res, next) => {
 });
 
 // Configure Supabase
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY || process.env.VITE_SUPABASE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   console.error('Missing SUPABASE_URL or SUPABASE_KEY in .env');
@@ -39,14 +39,23 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Helper: Hash Passcode
-function hashPasscodeSync(passcode, salt = null) {
-  salt = salt || crypto.randomBytes(16).toString('hex');
-  const iterations = 200000;
-  const keylen = 32;
-  const digest = 'sha256';
-  const hash = crypto.pbkdf2Sync(passcode, salt, iterations, keylen, digest).toString('hex');
-  return { salt, hash, iterations, digest };
+// Helper: Hash Passcode (Async/Promise-based for better perf)
+function hashPasscode(passcode, salt = null) {
+  return new Promise((resolve, reject) => {
+    salt = salt || crypto.randomBytes(16).toString('hex');
+    const iterations = 200000;
+    const keylen = 32;
+    const digest = 'sha256';
+    crypto.pbkdf2(passcode, salt, iterations, keylen, digest, (err, derivedKey) => {
+      if (err) return reject(err);
+      resolve({
+        salt,
+        hash: derivedKey.toString('hex'),
+        iterations,
+        digest
+      });
+    });
+  });
 }
 
 // SAVE PORTAL (to Supabase Table 'portals')
@@ -58,7 +67,7 @@ app.post('/api/portal', async (req, res) => {
 
     let pass_meta = {};
     if (payload.passcode) {
-      const pm = hashPasscodeSync(payload.passcode);
+      const pm = await hashPasscode(payload.passcode);
       pass_meta = { salt: pm.salt, hash: pm.hash, iterations: pm.iterations, digest: pm.digest };
       delete payload.passcode;
     }
@@ -111,26 +120,63 @@ app.get('/api/portal', async (req, res) => {
     if (!rows || rows.length === 0) return res.status(404).json({ error: 'not_found' });
 
     const row = rows[0];
+
+    // SECURITY CHECK: If password exists
+    if (row.pass_hash) {
+      const providedPass = req.headers['x-portal-password'] || req.query.password;
+      if (!providedPass) {
+        // Return restricted info only
+        return res.json({
+          protected: true,
+          id: id,
+          hint: 'Password required'
+        });
+      }
+
+      // Verify Password
+      try {
+        const pm = await hashPasscode(providedPass, row.pass_salt);
+        if (pm.hash !== row.pass_hash) {
+          return res.status(401).json({ error: 'invalid_password' });
+        }
+      } catch (err) {
+        console.error("Password verification error:", err);
+        return res.status(500).json({ error: 'auth_error' });
+      }
+    }
+
     const payload = row.payload || {};
 
-    // 2. Increment view count (async, don't block response)
-    supabase
-      .from('portals')
-      .update({ views: (row.views || 0) + 1 })
-      .eq('id', id)
-      .then(({ error }) => { if (error) console.error("Update views failed:", error); });
+    // 2. Increment view count using atomic RPC if available, or fallback to optimistic update
+    // We try to call an RPC function 'increment_portal_views' first.
+    // If that fails (e.g. function doesn't exist), we fallback to the old method but cleaner.
 
-    // reattach passcodeHash fields
-    payload.passcodeHash = row.pass_hash || null;
-    payload.passSalt = row.pass_salt || null;
-    payload.passIterations = row.pass_iterations || null;
-    payload.passDigest = row.pass_digest || null;
+    // Attempt RPC first (Best for concurrency)
+    const { error: rpcError } = await supabase.rpc('increment_portal_views', { row_id: id });
+
+    if (rpcError) {
+      // Fallback: Standard update (Subject to race conditions but better than nothing if RPC missing)
+      // We ignore the error here to not block the main response
+      supabase
+        .from('portals')
+        .update({ views: (row.views || 0) + 1 })
+        .eq('id', id)
+        .then(() => { });
+    }
+
+    // reattach passcodeHash fields (only if authorized, which we are if we get here)
+    if (row.pass_hash) {
+      // Only send back non-sensitive auth meta if needed, strictly NEVER the implementation details if possible
+      // But for now keeping compatibility with existing frontend expectations if any
+      payload.passcodeHash = row.pass_hash;
+    }
+
     payload.stats = { views: (row.views || 0) + 1 };
 
     res.json({ data: payload });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'load_failed' });
+    res.status(500).json({ error: 'load_failed', details: e.message });
   }
 });
 
@@ -189,6 +235,27 @@ app.post('/api/validate-promo', (req, res) => {
     res.json({ valid: true });
   } else {
     res.status(400).json({ valid: false });
+  }
+});
+
+// MUSIC SEARCH PROXY (iTunes) -- Added for local development
+app.get('/api/music_search', async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (!query) return res.status(400).json({ error: 'Query required' });
+
+    console.log(`Searching iTunes for: ${query}`);
+    const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&limit=20&entity=song`);
+
+    if (!response.ok) {
+      throw new Error(`iTunes API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (e) {
+    console.error('MUSIC_SEARCH_ERROR:', e);
+    res.status(500).json({ error: 'search_failed', details: e.message });
   }
 });
 

@@ -50,7 +50,7 @@ export default function CosmicReveal({ formData }) {
                                     {recipientName}
                                 </motion.h1>
                             )}
-                            {celebrationType && (
+                            {(formData.customOccasion || celebrationType) && (
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
@@ -58,7 +58,7 @@ export default function CosmicReveal({ formData }) {
                                 >
                                     <div className="h-px w-20 bg-gray-200" />
                                     <p className="text-[10px] uppercase tracking-[0.6em] text-gray-400 font-black">
-                                        {celebrationType} // DISCOVERY_LOG_2026
+                                        {(formData.customOccasion || celebrationType).toUpperCase()}
                                     </p>
                                     <div className="h-px w-20 bg-gray-200" />
                                 </motion.div>
@@ -80,7 +80,7 @@ export default function CosmicReveal({ formData }) {
                                     "{formData.secretMessage}"
                                 </p>
                                 <div className="mt-20 text-[10px] uppercase tracking-[1em] opacity-40">
-                                    Shared by {formData.senderName || 'Anonymous'} // PORTAL_END
+                                    Shared by {formData.senderName || 'Anonymous'}
                                 </div>
                             </footer>
                         )}

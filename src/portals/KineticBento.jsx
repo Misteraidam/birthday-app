@@ -36,16 +36,16 @@ export default function KineticBento({ formData }) {
                             className="max-w-7xl mx-auto mb-16 pt-12 text-center md:text-left"
                         >
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest text-cyan-400 mb-6 font-bold">
-                                <Layout size={12} /> System_Load // 2026.v1
+                                <Layout size={12} /> System_Load
                             </div>
                             {recipientName && (
                                 <h1 className="text-6xl md:text-9xl font-black tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 leading-none">
                                     {recipientName.toUpperCase()}
                                 </h1>
                             )}
-                            {celebrationType && (
+                            {(formData.customOccasion || celebrationType) && (
                                 <p className="text-xl md:text-2xl text-white/40 max-w-2xl font-light italic">
-                                    {celebrationType.toUpperCase()} // A curated digital anthology of shared moments and synthesized memories.
+                                    {(formData.customOccasion || celebrationType).toUpperCase()}
                                 </p>
                             )}
                         </motion.header>
@@ -92,7 +92,7 @@ function SystemBootIntro({ onComplete, recipientName }) {
             exit={{ opacity: 0 }}
         >
             <div className="text-center">
-                <div className="mb-2 text-xs tracking-[0.2em]">SYSTEM_BOOT // {recipientName || 'USER'}</div>
+                <div className="mb-2 text-xs tracking-[0.2em]">SYSTEM_BOOT</div>
                 <div className="text-xl font-bold animate-pulse">INITIALIZING KINETIC INTERFACE...</div>
             </div>
         </motion.div>

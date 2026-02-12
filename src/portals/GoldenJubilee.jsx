@@ -43,7 +43,7 @@ export default function GoldenJubilee({ formData }) {
                     </motion.h1>
                 )}
 
-                {celebrationType && (
+                {(formData.customOccasion || celebrationType) && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -51,7 +51,7 @@ export default function GoldenJubilee({ formData }) {
                     >
                         <div className="h-px w-20 bg-amber-500/50" />
                         <p className="text-xs uppercase tracking-[0.6em] text-amber-500 font-black">
-                            {celebrationType} // PRESTIGE_EDITION
+                            {(formData.customOccasion || celebrationType).toUpperCase()}
                         </p>
                         <div className="h-px w-20 bg-amber-500/50" />
                     </motion.div>
@@ -73,7 +73,7 @@ export default function GoldenJubilee({ formData }) {
                         "{formData.secretMessage}"
                     </p>
                     <div className="mt-20 text-[10px] uppercase tracking-[1em] text-white/20">
-                        EST. 2026 // CELEBRATION_PORTAL_COLLECTION
+                        EST. 2026
                     </div>
                 </footer>
             )}

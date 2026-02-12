@@ -7,13 +7,23 @@ const supabase = createClient(
     process.env.SUPABASE_KEY || process.env.VITE_SUPABASE_KEY
 );
 
-function hashPasscodeSync(passcode, salt = null) {
-    salt = salt || crypto.randomBytes(16).toString('hex');
-    const iterations = 200000;
-    const keylen = 32;
-    const digest = 'sha256';
-    const hash = crypto.pbkdf2Sync(passcode, salt, iterations, keylen, digest).toString('hex');
-    return { salt, hash, iterations, digest };
+// Async Hash Helper
+function hashPasscode(passcode, salt = null) {
+    return new Promise((resolve, reject) => {
+        salt = salt || crypto.randomBytes(16).toString('hex');
+        const iterations = 200000;
+        const keylen = 32;
+        const digest = 'sha256';
+        crypto.pbkdf2(passcode, salt, iterations, keylen, digest, (err, derivedKey) => {
+            if (err) return reject(err);
+            resolve({
+                salt,
+                hash: derivedKey.toString('hex'),
+                iterations,
+                digest
+            });
+        });
+    });
 }
 
 export default async function handler(req, res) {
@@ -35,7 +45,7 @@ export default async function handler(req, res) {
 
             let pass_meta = {};
             if (payload.passcode) {
-                const pm = hashPasscodeSync(payload.passcode);
+                const pm = await hashPasscode(payload.passcode);
                 pass_meta = { salt: pm.salt, hash: pm.hash, iterations: pm.iterations, digest: pm.digest };
                 delete payload.passcode;
             }
@@ -77,19 +87,29 @@ export default async function handler(req, res) {
             if (!rows || rows.length === 0) return res.status(404).json({ error: 'not_found' });
 
             const row = rows[0];
+
+            // SECURITY CHECK
+            if (row.pass_hash) {
+                const providedPass = req.headers['x-portal-password'] || req.query.password;
+                if (!providedPass) {
+                    return res.json({ protected: true, id: id });
+                }
+                const pm = await hashPasscode(providedPass, row.pass_salt);
+                if (pm.hash !== row.pass_hash) {
+                    return res.status(401).json({ error: 'invalid_password' });
+                }
+            }
+
             const payload = row.payload || {};
 
-            // Increment view count (async)
-            supabase
-                .from('portals')
-                .update({ views: (row.views || 0) + 1 })
-                .eq('id', id)
-                .then(() => { });
+            // Increment view count (try RPC, fallback to legacy)
+            const { error: rpcError } = await supabase.rpc('increment_portal_views', { row_id: id });
+            if (rpcError) {
+                supabase.from('portals').update({ views: (row.views || 0) + 1 }).eq('id', id).then(() => { });
+            }
 
             payload.passcodeHash = row.pass_hash || null;
-            payload.passSalt = row.pass_salt || null;
-            payload.passIterations = row.pass_iterations || null;
-            payload.passDigest = row.pass_digest || null;
+            // payload.passSalt = row.pass_salt || null; // Don't send salt unnecessarily
             payload.stats = { views: (row.views || 0) + 1 };
 
             return res.status(200).json({ data: payload });

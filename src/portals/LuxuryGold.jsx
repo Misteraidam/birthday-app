@@ -54,7 +54,7 @@ export default function LuxuryGold({ formData }) {
                                 </motion.h1>
                             )}
 
-                            {celebrationType && (
+                            {(formData.customOccasion || celebrationType) && (
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
@@ -62,7 +62,7 @@ export default function LuxuryGold({ formData }) {
                                 >
                                     <div className="h-px w-20 bg-[#FDB931]/20" />
                                     <p className="text-[10px] uppercase tracking-[0.8em] text-[#FDB931]/40 font-black">
-                                        {celebrationType} // PRIVATE_ARCHIVE_2026
+                                        {(formData.customOccasion || celebrationType).toUpperCase()}
                                     </p>
                                     <div className="h-px w-20 bg-[#FDB931]/20" />
                                 </motion.div>
@@ -84,7 +84,7 @@ export default function LuxuryGold({ formData }) {
                                     "{formData.secretMessage}"
                                 </p>
                                 <div className="mt-24 text-[10px] uppercase tracking-[1em] text-[#FDB931]/20 font-bold">
-                                    Excellence Curated by {formData.senderName || 'Anonymous'} // THE_END
+                                    Excellence Curated by {formData.senderName || 'Anonymous'}
                                 </div>
                             </footer>
                         )}

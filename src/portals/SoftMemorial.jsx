@@ -65,18 +65,17 @@ export default function SoftMemorial({ formData }) {
                                 </motion.h1>
                             )}
 
-                            {celebrationType && (
+                            {(formData.customOccasion || celebrationType) && (
                                 <motion.div
                                     initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.5 }}
+                                    animate={{ opacity: 0.5 }}
                                     className="flex items-center justify-center gap-4"
                                 >
-                                    <div className="h-px w-12 bg-slate-200" />
-                                    <p className="text-sm tracking-[0.4em] uppercase text-slate-400 font-medium">
-                                        {celebrationType} // DOVE_PEACE
+                                    <div className="h-px w-12 bg-white/20" />
+                                    <p className="text-[10px] uppercase tracking-[0.5em] font-bold">
+                                        {(formData.customOccasion || celebrationType).toUpperCase()}
                                     </p>
-                                    <div className="h-px w-12 bg-slate-200" />
+                                    <div className="h-px w-12 bg-white/20" />
                                 </motion.div>
                             )}
                         </header>
@@ -96,7 +95,7 @@ export default function SoftMemorial({ formData }) {
                                     "{formData.secretMessage}"
                                 </p>
                                 <div className="mt-20 text-[10px] uppercase tracking-[0.5em] text-slate-400 font-bold">
-                                    With Eternal Love // 2026
+                                    With Eternal Love
                                 </div>
                             </footer>
                         )}

@@ -72,9 +72,9 @@ export default function DopamineDream({ formData }) {
                                 </h1>
                             )}
                             <div className="flex flex-wrap justify-center gap-4">
-                                {celebrationType && (
+                                {(formData.customOccasion || celebrationType) && (
                                     <span className="px-6 py-2 bg-white rounded-full text-xs font-black tracking-widest border-2 border-[#2D2D2D] shadow-[4px_4px_0px_#2D2D2D]">
-                                        {celebrationType.toUpperCase()}
+                                        {(formData.customOccasion || celebrationType).toUpperCase()}
                                     </span>
                                 )}
                                 {['ENERGY', 'JOY', 'CELEBRATION', '2026'].map((tag, i) => (

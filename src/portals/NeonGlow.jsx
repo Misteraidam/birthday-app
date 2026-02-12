@@ -60,7 +60,7 @@ export default function NeonGlow({ formData }) {
                                     {recipientName.toUpperCase()}
                                 </motion.h1>
                             )}
-                            {celebrationType && (
+                            {(formData.customOccasion || celebrationType) && (
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
@@ -68,7 +68,7 @@ export default function NeonGlow({ formData }) {
                                 >
                                     <div className="h-px w-20 bg-cyan-500/30" />
                                     <p className="text-[10px] uppercase tracking-[0.6em] text-cyan-400 font-black">
-                                        {celebrationType} // NEURAL_LINK_ESTABLISHED
+                                        {(formData.customOccasion || celebrationType).toUpperCase()}
                                     </p>
                                     <div className="h-px w-20 bg-cyan-500/30" />
                                 </motion.div>
@@ -91,7 +91,7 @@ export default function NeonGlow({ formData }) {
                                     "{formData.secretMessage}"
                                 </p>
                                 <div className="mt-20 text-[10px] uppercase tracking-[1em] text-cyan-500 opacity-40">
-                                    Transmission Complete // End of Line
+                                    Transmission Complete
                                 </div>
                             </footer>
                         )}

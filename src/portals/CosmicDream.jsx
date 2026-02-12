@@ -59,7 +59,7 @@ export default function CosmicDream({ formData }) {
                     </motion.h1>
                 )}
 
-                {celebrationType && (
+                {(formData.customOccasion || celebrationType) && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -67,7 +67,7 @@ export default function CosmicDream({ formData }) {
                     >
                         <div className="h-px w-20 bg-purple-500/30" />
                         <p className="text-xs uppercase tracking-[0.8em] text-purple-400 font-black">
-                            {celebrationType} // STAR_LOG_2026
+                            {(formData.customOccasion || celebrationType).toUpperCase()}
                         </p>
                         <div className="h-px w-20 bg-purple-500/30" />
                     </motion.div>
@@ -88,8 +88,8 @@ export default function CosmicDream({ formData }) {
                     <p className="text-3xl md:text-6xl font-light tracking-tight text-white leading-tight max-w-5xl mx-auto italic">
                         "{formData.secretMessage}"
                     </p>
-                    <div className="mt-20 text-[10px] uppercase tracking-[1em] text-purple-500/40 font-bold">
-                        Written In The Stars // 2026.∞
+                    <div className="mt-20 text-[10px] uppercase tracking-[0.8em] text-purple-400 font-black">
+                        Stardust Memories
                     </div>
                 </footer>
             )}

@@ -46,13 +46,13 @@ export default function CelebrationPop({ formData }) {
                         {recipientName.toUpperCase()}
                     </motion.h1>
                 )}
-                {celebrationType && (
+                {(formData.customOccasion || celebrationType) && (
                     <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         className="text-xs uppercase tracking-[0.6em] text-white/40 font-black"
                     >
-                        {celebrationType} // PARTY_MODE_ON
+                        {(formData.customOccasion || celebrationType).toUpperCase()}
                     </motion.p>
                 )}
             </header>
@@ -72,7 +72,7 @@ export default function CelebrationPop({ formData }) {
                         "{formData.secretMessage}"
                     </p>
                     <div className="mt-20 text-[10px] uppercase tracking-[1em] text-white/20">
-                        Stay Electric // 2026.V1
+                        Stay Electric
                     </div>
                 </footer>
             )}

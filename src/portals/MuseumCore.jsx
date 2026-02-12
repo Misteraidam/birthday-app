@@ -45,9 +45,9 @@ export default function MuseumCore({ formData }) {
                                     {recipientName}
                                 </h1>
                             )}
-                            {celebrationType && (
+                            {(formData.customOccasion || celebrationType) && (
                                 <p className="text-xs uppercase tracking-[0.8em] text-[#D4AF37] font-bold">
-                                    {celebrationType.toUpperCase()} // EXHIBITION_LOG_2026
+                                    {(formData.customOccasion || celebrationType).toUpperCase()}
                                 </p>
                             )}
                         </motion.div>

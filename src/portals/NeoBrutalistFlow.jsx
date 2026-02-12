@@ -41,9 +41,9 @@ export default function NeoBrutalistFlow({ formData }) {
                                         {recipientName}
                                     </h1>
                                 )}
-                                {celebrationType && (
+                                {(formData.customOccasion || celebrationType) && (
                                     <div className="bg-black text-[#FFFF00] px-6 py-4 text-2xl uppercase mb-4 rotate-2 self-start md:self-auto">
-                                        {celebrationType} // 2026.RAW
+                                        {(formData.customOccasion || celebrationType).toUpperCase()}
                                     </div>
                                 )}
                             </div>

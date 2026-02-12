@@ -40,7 +40,7 @@ export default function CapAndGown({ formData }) {
                         {recipientName.toUpperCase()}
                     </motion.h1>
                 )}
-                {celebrationType && (
+                {(formData.customOccasion || celebrationType) && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -48,7 +48,7 @@ export default function CapAndGown({ formData }) {
                     >
                         <div className="h-px w-12 bg-yellow-500/30" />
                         <p className="text-xs uppercase tracking-[0.5em] text-yellow-400 font-bold">
-                            {celebrationType} // CLASS OF {new Date().getFullYear()}
+                            {(formData.customOccasion || celebrationType).toUpperCase()}
                         </p>
                         <div className="h-px w-12 bg-yellow-500/30" />
                     </motion.div>
@@ -70,7 +70,7 @@ export default function CapAndGown({ formData }) {
                         "{formData.secretMessage}"
                     </p>
                     <div className="mt-20 text-[10px] uppercase tracking-[1em] text-white/20">
-                        The Adventure Begins // 2026.V1
+                        The Adventure Begins
                     </div>
                 </footer>
             )}

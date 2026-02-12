@@ -53,7 +53,7 @@ export default function VintageFilm({ formData }) {
                     </motion.h1>
                 )}
 
-                {celebrationType && (
+                {(formData.customOccasion || celebrationType) && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 0.6 }}
@@ -61,7 +61,7 @@ export default function VintageFilm({ formData }) {
                     >
                         <div className="h-px w-20 bg-amber-800/20" />
                         <p className="text-xs uppercase tracking-[0.5em] font-sans font-black">
-                            {celebrationType} // VINTAGE_REEL_2026
+                            {(formData.customOccasion || celebrationType).toUpperCase()}
                         </p>
                         <div className="h-px w-20 bg-amber-800/20" />
                     </motion.div>
@@ -83,7 +83,7 @@ export default function VintageFilm({ formData }) {
                         "{formData.secretMessage}"
                     </p>
                     <div className="mt-20 text-[10px] uppercase tracking-[1em] opacity-40">
-                        The End // Curated Nostalgia
+                        The End
                     </div>
                 </footer>
             )}

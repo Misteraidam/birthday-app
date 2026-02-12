@@ -48,7 +48,7 @@ export default function MinimalStory({ formData }) {
                                     {recipientName.toUpperCase()}
                                 </motion.h1>
                             )}
-                            {celebrationType && (
+                            {(formData.customOccasion || celebrationType) && (
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
@@ -56,7 +56,7 @@ export default function MinimalStory({ formData }) {
                                 >
                                     <div className="h-px w-12 bg-gray-100" />
                                     <p className="text-[10px] uppercase tracking-[1em] text-gray-400 font-bold">
-                                        {celebrationType} // EDITION_{new Date().getFullYear()}
+                                        {(formData.customOccasion || celebrationType).toUpperCase()}
                                     </p>
                                     <div className="h-px w-12 bg-gray-100" />
                                 </motion.div>
@@ -78,7 +78,7 @@ export default function MinimalStory({ formData }) {
                                     "{formData.secretMessage}"
                                 </p>
                                 <div className="mt-20 text-[10px] uppercase tracking-[0.8em] text-gray-600 font-bold">
-                                    Sincerely, {formData.senderName || 'Anonymous'} // CURATED_THOUGHTS
+                                    Sincerely, {formData.senderName || 'Anonymous'}
                                 </div>
                             </footer>
                         )}

@@ -58,11 +58,11 @@ export default function EternalVow({ formData }) {
                         & {senderName}
                     </motion.p>
                 )}
-                {celebrationType && (
+                {(formData.customOccasion || celebrationType) && (
                     <div className="flex items-center justify-center gap-4">
                         <div className="h-px w-12 bg-amber-500/30" />
                         <span className="text-[10px] uppercase tracking-[0.5em] font-sans font-bold opacity-40">
-                            {celebrationType.toUpperCase()} // ETERNAL_VOW
+                            {(formData.customOccasion || celebrationType).toUpperCase()}
                         </span>
                         <div className="h-px w-12 bg-amber-500/30" />
                     </div>
@@ -84,7 +84,7 @@ export default function EternalVow({ formData }) {
                         "{formData.secretMessage}"
                     </p>
                     <div className="mt-20 text-[10px] uppercase tracking-[0.6em] text-amber-600 font-bold">
-                        Forever & Always // 2026.V1
+                        Forever & Always
                     </div>
                 </footer>
             )}

@@ -17,15 +17,16 @@ export function RoseGardenPreview({ isActive }) {
                     🌸
                 </motion.div>
             ))}
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4 text-center">
                 <motion.div
                     animate={isActive ? { scale: [1, 1.1, 1] } : {}}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="text-3xl mb-2"
+                    className="text-4xl mb-4"
                 >
-                    💝
+                    🌹
                 </motion.div>
-                <p className="text-xs font-light italic">My Valentine</p>
+                <h4 className="text-xl font-serif italic mb-1">To Youri</h4>
+                <p className="text-[10px] font-light tracking-widest uppercase opacity-60">"The Spark that started it all"</p>
             </div>
         </div>
     );
@@ -45,15 +46,16 @@ export function GoldenJubileePreview({ isActive }) {
                     transition={{ duration: 3, repeat: Infinity, delay: i * 0.3, ease: "linear" }}
                 />
             ))}
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4 text-center">
                 <motion.div
                     animate={isActive ? { rotate: [0, 10, -10, 0] } : {}}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="text-3xl mb-2"
+                    className="text-4xl mb-4"
                 >
-                    🎂
+                    ✨
                 </motion.div>
-                <p className="text-xs font-bold">BIRTHDAY</p>
+                <h4 className="text-xl font-bold mb-1">Elijah's 25th</h4>
+                <p className="text-[10px] font-black tracking-[0.2em] opacity-80 uppercase">A Grand Milestone</p>
             </div>
         </div>
     );
@@ -62,17 +64,22 @@ export function GoldenJubileePreview({ isActive }) {
 export function EternalVowPreview({ isActive }) {
     return (
         <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-rose-100 to-amber-200 overflow-hidden">
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-amber-800">
-                <motion.svg
-                    className="w-12 h-12 mb-2"
-                    viewBox="0 0 100 100"
-                    animate={isActive ? { rotate: [0, 5, -5, 0] } : {}}
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-amber-800 p-4 text-center">
+                <motion.div
+                    animate={isActive ? { scale: [1, 1.05, 1] } : {}}
                     transition={{ duration: 4, repeat: Infinity }}
+                    className="mb-4"
                 >
-                    <circle cx="40" cy="50" r="20" fill="none" stroke="#B45309" strokeWidth="3" />
-                    <circle cx="60" cy="50" r="20" fill="none" stroke="#D4A574" strokeWidth="3" />
-                </motion.svg>
-                <p className="text-xs font-light italic">Forever</p>
+                    <svg
+                        className="w-16 h-16"
+                        viewBox="0 0 100 100"
+                    >
+                        <circle cx="40" cy="50" r="20" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.5" />
+                        <circle cx="60" cy="50" r="20" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.8" />
+                    </svg>
+                </motion.div>
+                <h4 className="text-xl font-serif italic mb-1">The Adamsons</h4>
+                <p className="text-[10px] font-light tracking-[0.2em] uppercase opacity-60">10 Years Forever</p>
             </div>
         </div>
     );

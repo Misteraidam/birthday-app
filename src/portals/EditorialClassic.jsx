@@ -42,7 +42,7 @@ export default function EditorialClassic({ formData }) {
                     </motion.h1>
                 )}
 
-                {celebrationType && (
+                {(formData.customOccasion || celebrationType) && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -50,7 +50,7 @@ export default function EditorialClassic({ formData }) {
                     >
                         <div className="h-px w-20 bg-black/10" />
                         <p className="text-[10px] uppercase tracking-[0.6em] font-sans font-black opacity-40">
-                            {celebrationType} // EDITION_2026.RAW
+                            {(formData.customOccasion || celebrationType).toUpperCase()}
                         </p>
                         <div className="h-px w-20 bg-black/10" />
                     </motion.div>
@@ -72,7 +72,7 @@ export default function EditorialClassic({ formData }) {
                         "{formData.secretMessage}"
                     </p>
                     <div className="mt-24 text-[10px] uppercase tracking-[1em] opacity-40">
-                        Curation by {formData.senderName || 'Anonymous'} // PORTRAIT_END
+                        Curation by {formData.senderName || 'Anonymous'}
                     </div>
                 </footer>
             )}

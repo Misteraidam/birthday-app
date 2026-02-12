@@ -56,7 +56,7 @@ export default function SoftGradient({ formData }) {
                                 </motion.h1>
                             )}
 
-                            {celebrationType && (
+                            {(formData.customOccasion || celebrationType) && (
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
@@ -64,7 +64,7 @@ export default function SoftGradient({ formData }) {
                                 >
                                     <div className="h-px w-20 bg-rose-200" />
                                     <p className="text-[10px] uppercase tracking-[0.4em] text-rose-400 font-bold">
-                                        {celebrationType} // SOFT_GRADIENT_2026
+                                        {(formData.customOccasion || celebrationType).toUpperCase()}
                                     </p>
                                     <div className="h-px w-20 bg-rose-200" />
                                 </motion.div>
@@ -86,7 +86,7 @@ export default function SoftGradient({ formData }) {
                                     "{formData.secretMessage}"
                                 </p>
                                 <div className="mt-20 text-[10px] uppercase tracking-[1em] text-rose-400 opacity-40">
-                                    With Love, {formData.senderName || 'Anonymous'} // SOFT_END
+                                    With Love, {formData.senderName || 'Anonymous'}
                                 </div>
                             </footer>
                         )}

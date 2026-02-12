@@ -57,17 +57,17 @@ export default function NeonNights({ formData }) {
                         {recipientName.toUpperCase()}
                     </motion.h1>
                 )}
-                {celebrationType && (
+                {(formData.customOccasion || celebrationType) && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="flex items-center justify-center gap-6"
+                        className="flex items-center justify-center gap-4"
                     >
-                        <div className="h-px w-20 bg-cyan-500/30" />
-                        <p className="text-[10px] uppercase tracking-[0.6em] text-cyan-400 font-black">
-                            {celebrationType} // UPLINK_ESTABLISHED
+                        <div className="h-1 w-8 bg-cyan-500 shadow-[0_0_10px_#06b6d4]" />
+                        <p className="text-[10px] uppercase tracking-[0.5em] text-cyan-400 font-bold">
+                            {(formData.customOccasion || celebrationType).toUpperCase()}
                         </p>
-                        <div className="h-px w-20 bg-cyan-500/30" />
+                        <div className="h-1 w-8 bg-cyan-500 shadow-[0_0_10px_#06b6d4]" />
                     </motion.div>
                 )}
             </header>
@@ -88,7 +88,7 @@ export default function NeonNights({ formData }) {
                         "{formData.secretMessage}"
                     </p>
                     <div className="mt-20 text-[10px] uppercase tracking-[1em] text-cyan-500 opacity-40">
-                        Transmission Complete // End of Line
+                        Transmission Complete
                     </div>
                 </footer>
             )}

@@ -6,7 +6,7 @@ import { CELEBRATION_TYPES } from '../config/celebrationConfig';
 export default function CelebrationSelector({ selected, onSelect, onContinue, onBack }) {
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8">
                 <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
@@ -88,7 +88,7 @@ export default function CelebrationSelector({ selected, onSelect, onContinue, on
                                                 key={ci}
                                                 className="px-2 py-1 bg-white/10 rounded-full text-xs text-white/70"
                                             >
-                                                {chapter}
+                                                {chapter.title}
                                             </span>
                                         ))}
                                         {type.defaultChapters.length > 3 && (
@@ -116,26 +116,15 @@ export default function CelebrationSelector({ selected, onSelect, onContinue, on
             </div>
 
             {/* Navigation Buttons */}
-            <div className="flex gap-4">
+            <div className="flex justify-center md:justify-start">
                 <motion.button
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 }}
                     onClick={onBack}
-                    className="flex-1 py-5 bg-white/5 text-white/60 font-bold text-lg rounded-2xl hover:bg-white/10 transition"
+                    className="px-8 py-3 bg-white/5 text-white/40 font-bold text-sm rounded-xl hover:bg-white/10 hover:text-white transition"
                 >
-                    Cancel
-                </motion.button>
-                <motion.button
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6 }}
-                    onClick={onContinue}
-                    disabled={!selected}
-                    className="flex-[2] py-5 bg-white text-black font-bold text-lg rounded-2xl flex items-center justify-center gap-2 hover:bg-white/90 transition disabled:opacity-30 disabled:cursor-not-allowed group"
-                >
-                    Continue
-                    <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                    Cancel & Go Back
                 </motion.button>
             </div>
         </div>

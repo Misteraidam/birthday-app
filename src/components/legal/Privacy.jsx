@@ -29,25 +29,25 @@ export default function Privacy({ onBack }) {
 
                 <section className="prose prose-lg prose-gray">
                     <h3>1. Information We Collect</h3>
-                    <p>
+                    <div className="text-gray-600 mb-4">
                         We collect information you provide directly to us when you create a celebration portal. This includes:
-                        <ul>
+                        <ul className="list-disc pl-5 mt-2 space-y-1">
                             <li>The content of your stories (text, images, audio).</li>
                             <li>Payment information (transactions are processed by Paystack; we do not store full credit card details).</li>
                             <li>Technical usage data (logs, device type) to improve the service.</li>
                         </ul>
-                    </p>
+                    </div>
 
                     <h3>2. How We Use Your Information</h3>
-                    <p>
+                    <div className="text-gray-600 mb-4">
                         We use the information we collect to:
-                        <ul>
+                        <ul className="list-disc pl-5 mt-2 space-y-1">
                             <li>Provide, maintain, and improve our services.</li>
                             <li>Process your transactions.</li>
                             <li>Monitor and analyze trends, usage, and activities in connection with our Service.</li>
                             <li>Detect, investigate, and prevent fraudulent transactions and other illegal activities.</li>
                         </ul>
-                    </p>
+                    </div>
 
                     <h3>3. Sharing of Information</h3>
                     <p>
