@@ -89,6 +89,11 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
         console.log("Demo starting! Music URL:", formData.musicUrl);
         setDemoStarted(true);
         setIsPlaying(true);
+
+        // Immediate play attempt to satisfy browser interaction requirement
+        if (isDirectFile && audioRef.current) {
+            audioRef.current.play().catch(e => console.log("Direct play attempt failed", e));
+        }
     };
 
     const OpenerComponent = OPENERS[formData.opener];
