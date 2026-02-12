@@ -198,7 +198,7 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
                                 💖
                             </motion.div>
                             <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-                                A Love Story
+                                {formData.recipientName}'s Story
                             </h1>
                             <p className="text-white/60 text-lg mb-12">
                                 For {formData.recipientName}

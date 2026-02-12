@@ -274,7 +274,7 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => {
-                                    const newUrl = `${window.location.pathname}?demo=valentine`;
+                                    const newUrl = `${window.location.pathname}?demo=agradaa`;
                                     window.history.pushState({ path: newUrl }, '', newUrl);
                                     window.dispatchEvent(new PopStateEvent('popstate'));
                                     window.location.href = newUrl;
@@ -338,15 +338,6 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                                                 className="hidden md:flex absolute top-full mt-2 p-3 bg-white/10 backdrop-blur-xl border border-white/10 rounded-xl whitespace-nowrap z-50 flex-col items-center gap-2"
                                             >
                                                 <p className="text-xs text-white/80">{type.description}</p>
-                                                {['valentine'].includes(type.id) && (
-                                                    <a
-                                                        href={`/?demo=${type.id}`}
-                                                        className="px-3 py-1.5 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-purple-400 hover:text-white transition-colors flex items-center gap-2"
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        <Play size={10} fill="currentColor" /> Watch Demo
-                                                    </a>
-                                                )}
                                             </motion.div>
                                         )}
                                     </AnimatePresence>

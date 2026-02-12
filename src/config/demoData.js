@@ -1,12 +1,12 @@
 // Rich placeholder data for Cinematic Demo Mode
 
 export const DEMO_DATA = {
-    valentine: {
+    agradaa: {
         recipientName: "Nana Agradaa",
         celebrationType: "valentine",
         template: "RoseGarden",
         opener: "none",
-        musicUrl: "https://www.youtube.com/watch?v=SOJpE1KMUbo",
+        musicUrl: "https://cdn.pixabay.com/audio/2022/03/23/audio_145c259838.mp3", // Relaxing, cinematic gospel-style track
         senderName: "From Your Secret Admirer",
         secretMessage: "Sika Gari might be gone, but my love for you is eternal! 😂❤️",
         chapters: [
