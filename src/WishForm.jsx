@@ -450,6 +450,25 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
         }
     };
 
+    const selectMusic = (track) => {
+        setFormData(prev => ({ ...prev, musicUrl: track.previewUrl }));
+        setMusicResults([]);
+        setMusicSearch("");
+        if (audioRef.current) {
+            audioRef.current.pause();
+        }
+        setActivePreview(null);
+    };
+
+    const canAccessStep = (target) => {
+        if (target <= step) return true;
+        if (target === 1) return !!formData.celebrationType;
+        if (target === 2) return !!formData.celebrationType && !!formData.recipientName;
+        if (target === 3) return !!formData.celebrationType && !!formData.recipientName && formData.chapters.length > 0;
+        if (target === 4) return !!formData.celebrationType && !!formData.recipientName && formData.chapters.length > 0 && !!formData.template;
+        return false;
+    };
+
     // --- STEP LABELS ---
     // Theme selection is now available for ALL celebration types
     const steps = [
@@ -482,13 +501,13 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                             <React.Fragment key={s.num}>
                                 <button
                                     onClick={() => setStep(s.target)}
-                                    disabled={s.target > step && !formData.celebrationType}
+                                    disabled={!canAccessStep(s.target)}
                                     className={`flex items-center gap-1.5 md:gap-2 px-2.5 md:px-3 py-1.5 rounded-full text-xs font-bold transition ${step === s.target
                                         ? 'bg-white text-black'
                                         : step > s.target
                                             ? 'bg-purple-500/30 text-purple-300'
                                             : 'bg-white/10 text-white/40'
-                                        } disabled:cursor-not-allowed`}
+                                        } disabled:opacity-30 disabled:cursor-not-allowed`}
                                 >
                                     {step > i ? <Check size={12} /> : s.num}
                                     {/* Show label on desktop always, on mobile only for active step */}
@@ -751,7 +770,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                                 </div>
                                                             </div>
                                                             <button
-                                                                onClick={() => setFormData(prev => ({ ...prev, musicUrl: track.previewUrl }))}
+                                                                onClick={() => selectMusic(track)}
                                                                 className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${formData.musicUrl === track.previewUrl
                                                                     ? 'bg-green-500 text-white'
                                                                     : 'bg-white/10 text-white/60 hover:bg-white'
@@ -880,8 +899,8 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             <ChevronLeft size={20} /> Back
                                         </button>
                                         <button
-                                            onClick={() => formData.recipientName && setStep(2)}
-                                            disabled={!formData.recipientName}
+                                            onClick={() => canAccessStep(2) && setStep(2)}
+                                            disabled={!canAccessStep(2)}
                                             className="flex-[2] py-4 md:py-5 bg-white text-black font-bold text-sm md:text-lg rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-white/90 transition disabled:opacity-30 disabled:cursor-not-allowed"
                                         >
                                             Continue <ChevronRight size={20} />
@@ -1027,8 +1046,9 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             <ChevronLeft size={20} /> Back
                                         </button>
                                         <button
-                                            onClick={() => setStep(3)}
-                                            className="flex-[2] py-4 md:py-5 bg-white text-black font-bold text-sm md:text-lg rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-white/90 transition"
+                                            onClick={() => canAccessStep(3) && setStep(3)}
+                                            disabled={!canAccessStep(3)}
+                                            className="flex-[2] py-4 md:py-5 bg-white text-black font-bold text-sm md:text-lg rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-white/90 transition disabled:opacity-30 disabled:cursor-not-allowed"
                                         >
                                             Continue <ChevronRight size={20} />
                                         </button>
@@ -1114,8 +1134,9 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             <ChevronLeft size={20} /> Back
                                         </button>
                                         <button
-                                            onClick={() => setStep(4)}
-                                            className="flex-[2] py-4 md:py-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-black text-sm md:text-lg rounded-xl md:rounded-2xl hover:opacity-90 transition flex items-center justify-center gap-2"
+                                            onClick={() => canAccessStep(4) && setStep(4)}
+                                            disabled={!canAccessStep(4)}
+                                            className="flex-[2] py-4 md:py-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-black text-sm md:text-lg rounded-xl md:rounded-2xl hover:opacity-90 transition flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed"
                                         >
                                             <Eye size={20} /> Preview Story
                                         </button>
