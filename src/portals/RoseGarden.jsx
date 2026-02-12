@@ -112,7 +112,7 @@ function FloatingRoses() {
         , []);
 
     return (
-        <div className="fixed inset-0 pointer-events-none z-[20] overflow-hidden">
+        <div className="fixed inset-0 pointer-events-none z-[5] overflow-hidden">
             {roses.map((rose, i) => (
                 <motion.div
                     key={i}
@@ -179,7 +179,7 @@ function ChapterEntry({ chapter, index }) {
         >
             {/* Visual Module */}
             <div className="flex-1 w-full">
-                <div className="aspect-[4/5] bg-white p-4 shadow-2xl relative rotate-1 rounded-sm border border-pink-100 group">
+                <div className="aspect-[9/16] md:aspect-[4/5] bg-white p-4 shadow-2xl relative rotate-1 rounded-sm border border-pink-100 group">
                     <div className="w-full h-full overflow-hidden relative">
                         <AnimatePresence mode="wait">
                             {chapter.media?.length > 0 ? (
@@ -191,7 +191,13 @@ function ChapterEntry({ chapter, index }) {
                                     transition={{ duration: 1.5 }}
                                     src={chapter.media[photoIndex].data}
                                     className="w-full h-full object-cover"
-                                    style={{ imageRendering: '-webkit-optimize-contrast shadow-xl' }}
+                                    style={{
+                                        imageRendering: '-webkit-optimize-contrast',
+                                        WebkitBackfaceVisibility: 'hidden',
+                                        backfaceVisibility: 'hidden',
+                                        transform: 'translateZ(0)',
+                                        filter: 'contrast(1.05) brightness(1.02)'
+                                    }}
                                     alt=""
                                 />
                             ) : (
