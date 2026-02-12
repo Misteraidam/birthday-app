@@ -25,7 +25,7 @@ export function RoseGardenPreview({ isActive }) {
                 >
                     🌹
                 </motion.div>
-                <h4 className="text-xl font-serif italic mb-1">To Jill</h4>
+                <h4 className="text-xl font-serif italic mb-1">To Youri</h4>
                 <p className="text-[10px] font-light tracking-widest uppercase opacity-60">"The Spark that started it all"</p>
             </div>
         </div>
