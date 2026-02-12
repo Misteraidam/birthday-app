@@ -235,16 +235,16 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                             <span className="text-[10px] uppercase tracking-[0.2em] text-white/60 font-medium">Magic at your fingertips</span>
                         </motion.div>
 
-                        <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold mb-4 leading-[1.1] tracking-[-0.04em] px-4 flex flex-col items-center">
+                        <h1 className="text-[2.1rem] md:text-6xl lg:text-8xl font-bold mb-4 leading-none tracking-[-0.04em] px-4 flex flex-col items-center">
                             <StaggeredText
                                 text="Create a story"
-                                className="text-white font-serif tracking-tight"
+                                className="text-white font-serif tracking-tight whitespace-nowrap"
                                 style={{ fontFamily: "'Playfair Display', serif" }}
                                 delay={0.2}
                             />
                             <StaggeredText
                                 text="worth remembering"
-                                className="text-[#C5A059] italic font-serif mt-4"
+                                className="text-[#C5A059] italic font-serif mt-4 whitespace-nowrap"
                                 style={{ fontFamily: "'Playfair Display', serif" }}
                                 delay={0.6}
                             />
