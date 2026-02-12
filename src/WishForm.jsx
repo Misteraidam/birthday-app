@@ -889,8 +889,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 </div>
 
                                 {/* Navigation */}
-                                {/* Navigation - Sticky on Mobile */}
-                                <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0A0A0A] border-t border-white/10 md:static md:bg-transparent md:border-none md:p-0 z-40">
+                                <div className="mt-12 mb-8">
                                     <div className="flex gap-4 max-w-4xl mx-auto">
                                         <button
                                             onClick={() => setStep(0)}
@@ -907,8 +906,6 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         </button>
                                     </div>
                                 </div>
-                                {/* Spacer for sticky footer */}
-                                <div className="h-20 md:hidden" />
                             </motion.div>
                         )}
 
@@ -1036,8 +1033,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 />
 
                                 {/* Navigation */}
-                                {/* Navigation - Sticky on Mobile */}
-                                <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0A0A0A] border-t border-white/10 md:static md:bg-transparent md:border-none md:p-0 z-40">
+                                <div className="mt-12 mb-8">
                                     <div className="flex gap-4 max-w-4xl mx-auto">
                                         <button
                                             onClick={() => setStep(1)}
@@ -1054,8 +1050,6 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         </button>
                                     </div>
                                 </div>
-                                {/* Spacer for sticky footer */}
-                                <div className="h-20 md:hidden" />
                             </motion.div>
                         )}
 
@@ -1124,8 +1118,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 </div>
 
                                 {/* Navigation */}
-                                {/* Navigation - Sticky on Mobile */}
-                                <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0A0A0A] border-t border-white/10 md:static md:bg-transparent md:border-none md:p-0 z-40">
+                                <div className="mt-12 mb-8">
                                     <div className="flex gap-4 max-w-4xl mx-auto">
                                         <button
                                             onClick={() => setStep(2)}
@@ -1142,8 +1135,6 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         </button>
                                     </div>
                                 </div>
-                                {/* Spacer for sticky footer */}
-                                <div className="h-20 md:hidden" />
                             </motion.div>
                         )}
                         {/* Step 4: Live Preview */}
