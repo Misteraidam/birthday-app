@@ -467,10 +467,10 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                         </p>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                             {[
-                                { icon: <Heart size={24} />, title: 'Choose', desc: 'Select a celebration type or create your own' },
-                                { icon: <Camera size={24} />, title: 'Create', desc: 'Add chapters, photos, videos and music' },
-                                { icon: <Music size={24} />, title: 'Customize', desc: 'Pick a beautiful theme to match the mood' },
-                                { icon: <Send size={24} />, title: 'Share', desc: 'Send the magic link to your loved one' },
+                                { number: '01', icon: <Heart size={24} />, title: 'Choose', desc: 'Select a celebration type or create your own' },
+                                { number: '02', icon: <Camera size={24} />, title: 'Create', desc: 'Add chapters, photos, videos and music' },
+                                { number: '03', icon: <Music size={24} />, title: 'Customize', desc: 'Pick a beautiful theme to match the mood' },
+                                { number: '04', icon: <Send size={24} />, title: 'Share', desc: 'Send the magic link to your loved one' },
                             ].map((step, i) => (
                                 <motion.div
                                     key={i}
@@ -479,7 +479,10 @@ export default function LandingPage({ onCreateNew, onViewStory, onOpenLegal }) {
                                     transition={{ delay: 0.7 + i * 0.1 }}
                                     className="text-center group"
                                 >
-                                    <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-white/40 group-hover:text-white group-hover:border-white/30 group-hover:bg-white/[0.05] transition-all duration-500">
+                                    <div className="relative w-16 h-16 mx-auto mb-6 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-white/40 group-hover:text-white group-hover:border-white/30 group-hover:bg-white/[0.05] transition-all duration-500">
+                                        <span className="absolute -top-2 -right-2 text-[10px] font-black bg-white text-black px-1.5 py-0.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
+                                            {step.number}
+                                        </span>
                                         {step.icon}
                                     </div>
                                     <h3 className="font-bold mb-2 text-sm text-white/80">{step.title}</h3>
