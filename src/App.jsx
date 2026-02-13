@@ -105,7 +105,7 @@ function App() {
   const sanitizeFormData = (raw) => {
     if (!raw) return null;
     return {
-      celebrationType: String(raw.celebrationType || ''),
+      celebrationType: typeof raw.celebrationType === 'object' ? (raw.celebrationType?.id || 'custom') : String(raw.celebrationType || ''),
       recipientName: String(raw.recipientName || ''),
       senderName: String(raw.senderName || ''),
       birthday: String(raw.birthday || ''),
