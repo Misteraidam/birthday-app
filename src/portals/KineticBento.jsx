@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Layout, Maximize2, Sparkles, Heart, Star, Music, ExternalLink } from 'lucide-react';
+import MediaBox from './shared/MediaBox';
 
-export default function KineticBento({ formData }) {
+export default function KineticBento({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
     const [introComplete, setIntroComplete] = useState(false);
+
+    const primaryColor = templateConfig?.primaryColor || '#22D3EE';
+    const accentColor = templateConfig?.accentColor || '#06B6D4';
+    const fontFamily = templateConfig?.fontFamily || "'Space Grotesk', sans-serif";
 
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
@@ -15,7 +20,10 @@ export default function KineticBento({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-cyan-500/30 overflow-x-hidden p-4 md:p-8 relative">
+        <div
+            className="min-h-screen bg-[#050505] text-white selection:bg-cyan-500/30 overflow-x-hidden p-4 md:p-8 relative"
+            style={{ fontFamily }}
+        >
             <AnimatePresence mode="wait">
                 {!introComplete && (
                     <SystemBootIntro key="intro" onComplete={() => setIntroComplete(true)} recipientName={recipientName} />
@@ -35,7 +43,10 @@ export default function KineticBento({ formData }) {
                             animate={{ opacity: 1, y: 0 }}
                             className="max-w-7xl mx-auto mb-16 pt-12 text-center md:text-left"
                         >
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest text-cyan-400 mb-6 font-bold">
+                            <div
+                                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest mb-6 font-bold"
+                                style={{ color: primaryColor }}
+                            >
                                 <Layout size={12} /> System_Load
                             </div>
                             {recipientName && (
@@ -53,7 +64,12 @@ export default function KineticBento({ formData }) {
                         {/* Bento Grid */}
                         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 pb-32">
                             {chapters.map((chapter, index) => (
-                                <ChapterModule key={chapter.id || index} chapter={chapter} index={index} />
+                                <ChapterModule
+                                    key={chapter.id || index}
+                                    chapter={chapter}
+                                    index={index}
+                                    primaryColor={primaryColor}
+                                />
                             ))}
                         </div>
 
@@ -67,7 +83,7 @@ export default function KineticBento({ formData }) {
                                 <p className="text-3xl md:text-5xl font-light italic text-white/60 leading-relaxed mb-12">
                                     "{formData.secretMessage}"
                                 </p>
-                                <div className="text-xs uppercase tracking-[0.5em] text-cyan-500 font-black">
+                                <div className="text-xs uppercase tracking-[0.5em] font-black" style={{ color: primaryColor }}>
                                     End_Of_Transmission
                                 </div>
                             </motion.div>
@@ -99,7 +115,7 @@ function SystemBootIntro({ onComplete, recipientName }) {
     );
 }
 
-function ChapterModule({ chapter, index }) {
+function ChapterModule({ chapter, index, primaryColor }) {
     // Determine span based on index
     const spans = [
         'md:col-span-8 md:row-span-2', // Big focus
@@ -121,27 +137,22 @@ function ChapterModule({ chapter, index }) {
             viewport={{ once: true }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className={`${span} relative group bg-white/[0.03] border border-white/10 rounded-[2.5rem] overflow-hidden backdrop-blur-3xl hover:border-cyan-500/50 transition-all duration-500 hover:shadow-[0_0_50px_rgba(6,182,212,0.15)] flex flex-col min-h-[300px]`}
+            className={`${span} relative group bg-white/[0.03] border border-white/10 rounded-[2.5rem] overflow-hidden backdrop-blur-3xl transition-all duration-500 flex flex-col min-h-[300px]`}
+            style={{
+                borderColor: isHovered ? `${primaryColor}80` : undefined,
+                boxShadow: isHovered ? `0 0 50px ${primaryColor}26` : undefined
+            }}
         >
             {/* Visual Layer */}
             <div className="absolute inset-0 z-0">
-                <AnimatePresence mode="wait">
-                    {chapter.media?.length > 0 ? (
-                        <motion.img
-                            key={photoIndex}
-                            initial={{ opacity: 0, scale: 1.1 }}
-                            animate={{ opacity: isHovered ? 0.3 : 0.2, scale: 1 }}
-                            exit={{ opacity: 0 }}
-                            src={chapter.media[photoIndex].data}
-                            className="w-full h-full object-cover transition-all duration-1000 grayscale group-hover:grayscale-0"
-                            alt=""
-                        />
-                    ) : (
-                        <div className="w-full h-full bg-cyan-500/5 flex items-center justify-center opacity-10">
-                            <Sparkles size={64} className="text-cyan-500" />
-                        </div>
-                    )}
-                </AnimatePresence>
+                <MediaBox
+                    media={chapter.media}
+                    photoIndex={photoIndex}
+                    containerClassName="w-full h-full relative"
+                    className={`transition-all duration-1000 grayscale group-hover:grayscale-0 ${isHovered ? 'opacity-30' : 'opacity-20'}`}
+                    fallbackIcon={Sparkles}
+                    accentColor={primaryColor}
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/50 to-transparent pointer-events-none" />
             </div>
 

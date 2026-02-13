@@ -2,9 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Music, Feather, Star, Quote } from 'lucide-react';
 
-export default function SoftMemorial({ formData }) {
+import MediaBox from './shared/MediaBox';
+
+export default function SoftMemorial({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
     const [introComplete, setIntroComplete] = useState(false);
+
+    const primaryColor = templateConfig?.primaryColor || '#64748B';
+    const accentColor = templateConfig?.accentColor || '#8B9DC3';
+    const fontFamily = templateConfig?.fontFamily || "'Lora', serif";
 
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
@@ -15,7 +21,10 @@ export default function SoftMemorial({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] text-[#334155] font-serif selection:bg-slate-200 overflow-x-hidden relative">
+        <div
+            className="min-h-screen bg-[#F8FAFC] text-[#334155] selection:bg-slate-200 overflow-x-hidden relative"
+            style={{ fontFamily }}
+        >
             <AnimatePresence mode="wait">
                 {!introComplete && (
                     <DoveIntro key="intro" onComplete={() => setIntroComplete(true)} recipientName={recipientName} />
@@ -51,7 +60,7 @@ export default function SoftMemorial({ formData }) {
                                 className="mb-12"
                             >
                                 <div className="inline-block p-4 bg-white rounded-full shadow-sm border border-slate-100">
-                                    <Heart size={32} className="text-slate-400 fill-slate-50" />
+                                    <Heart size={32} style={{ color: primaryColor }} className="fill-slate-50" />
                                 </div>
                             </motion.div>
 
@@ -71,11 +80,11 @@ export default function SoftMemorial({ formData }) {
                                     animate={{ opacity: 0.5 }}
                                     className="flex items-center justify-center gap-4"
                                 >
-                                    <div className="h-px w-12 bg-white/20" />
+                                    <div className="h-px w-12 bg-black/10" />
                                     <p className="text-[10px] uppercase tracking-[0.5em] font-bold">
                                         {(formData.customOccasion || celebrationType).toUpperCase()}
                                     </p>
-                                    <div className="h-px w-12 bg-white/20" />
+                                    <div className="h-px w-12 bg-black/10" />
                                 </motion.div>
                             )}
                         </header>
@@ -83,7 +92,12 @@ export default function SoftMemorial({ formData }) {
                         {/* Feed */}
                         <main className="max-w-4xl mx-auto px-6 space-y-40 pb-60 relative z-10">
                             {chapters.map((chapter, index) => (
-                                <MemorialChapter key={chapter.id || index} chapter={chapter} index={index} />
+                                <MemorialChapter
+                                    key={chapter.id || index}
+                                    chapter={chapter}
+                                    index={index}
+                                    accentColor={accentColor}
+                                />
                             ))}
                         </main>
 
@@ -254,26 +268,14 @@ function MemorialChapter({ chapter, index }) {
             {/* Elegant Portrait */}
             <div className="max-w-2xl mx-auto">
                 <div className="aspect-[4/5] bg-white p-4 shadow-xl rounded-sm border border-slate-100 relative group">
-                    <div className="w-full h-full overflow-hidden relative grayscale-[0.2] hover:grayscale-0 transition-all duration-1000">
-                        <AnimatePresence mode="wait">
-                            {chapter.media?.length > 0 ? (
-                                <motion.img
-                                    key={photoIndex}
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 2 }}
-                                    src={chapter.media[photoIndex].data}
-                                    className="w-full h-full object-cover"
-                                    alt=""
-                                />
-                            ) : (
-                                <div className="w-full h-full bg-slate-50 flex items-center justify-center">
-                                    <Star size={64} className="text-slate-100" />
-                                </div>
-                            )}
-                        </AnimatePresence>
-                    </div>
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        className="grayscale-[0.2] hover:grayscale-0 transition-all duration-1000"
+                        fallbackIcon={Star}
+                        accentColor={accentColor}
+                    />
                 </div>
             </div>
 

@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, AlertTriangle, ArrowRight, Share2, Music } from 'lucide-react';
+import MediaBox from './shared/MediaBox';
 
-export default function NeoBrutalistFlow({ formData }) {
+export default function NeoBrutalistFlow({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
     const [introComplete, setIntroComplete] = useState(false);
+
+    const primaryColor = templateConfig?.primaryColor || '#FFFF00';
+    const accentColor = templateConfig?.accentColor || '#000000';
+    const fontFamily = templateConfig?.fontFamily || "'Syne', sans-serif";
 
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
@@ -15,7 +20,10 @@ export default function NeoBrutalistFlow({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#FFFF00] text-black font-black selection:bg-black selection:text-[#FFFF00] p-4 md:p-12 overflow-x-hidden relative">
+        <div
+            className="min-h-screen text-black font-black selection:bg-black selection:text-[#FFFF00] p-4 md:p-12 overflow-x-hidden relative"
+            style={{ backgroundColor: primaryColor, fontFamily }}
+        >
             <AnimatePresence mode="wait">
                 {!introComplete && (
                     <RawIntro key="intro" onComplete={() => setIntroComplete(true)} recipientName={recipientName} />
@@ -55,7 +63,12 @@ export default function NeoBrutalistFlow({ formData }) {
                         {/* Brutalist Blocks */}
                         <div className="max-w-7xl mx-auto space-y-40 pb-60">
                             {chapters.map((chapter, index) => (
-                                <BrutalistBlock key={chapter.id || index} chapter={chapter} index={index} />
+                                <BrutalistBlock
+                                    key={chapter.id || index}
+                                    chapter={chapter}
+                                    index={index}
+                                    accentColor={accentColor}
+                                />
                             ))}
                         </div>
 

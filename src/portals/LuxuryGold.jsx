@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Music, Quote, Zap } from 'lucide-react';
+import MediaBox from './shared/MediaBox';
 
-export default function LuxuryGold({ formData }) {
+export default function LuxuryGold({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
     const [introComplete, setIntroComplete] = useState(false);
+
+    const primaryColor = templateConfig?.primaryColor || '#FDB931';
+    const accentColor = templateConfig?.accentColor || '#CFB53B';
+    const fontFamily = templateConfig?.fontFamily || "'Playfair Display', serif";
 
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
@@ -15,7 +20,10 @@ export default function LuxuryGold({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-black text-[#FDB931] font-serif selection:bg-[#FDB931] selection:text-black overflow-x-hidden relative">
+        <div
+            className="min-h-screen bg-black text-[#FDB931] selection:bg-[#FDB931] selection:text-black overflow-x-hidden relative"
+            style={{ fontFamily }}
+        >
             <AnimatePresence mode="wait">
                 {!introComplete && (
                     <EliteIntro key="intro" onComplete={() => setIntroComplete(true)} recipientName={recipientName} />
@@ -39,8 +47,11 @@ export default function LuxuryGold({ formData }) {
                                 animate={{ scale: 1, opacity: 1 }}
                                 className="mb-12"
                             >
-                                <div className="w-20 h-20 rounded-full border border-[#FDB931]/30 flex items-center justify-center bg-black/50 backdrop-blur-xl mx-auto shadow-[0_0_30px_rgba(253,185,49,0.2)]">
-                                    <Star size={32} className="text-[#FDB931]" fill="#FDB931" />
+                                <div
+                                    className="w-20 h-20 rounded-full border flex items-center justify-center bg-black/50 backdrop-blur-xl mx-auto shadow-[0_0_30px_rgba(253,185,49,0.2)]"
+                                    style={{ borderColor: `${primaryColor}4D` }}
+                                >
+                                    <Star size={32} style={{ color: primaryColor }} fill={primaryColor} />
                                 </div>
                             </motion.div>
 
@@ -72,7 +83,12 @@ export default function LuxuryGold({ formData }) {
                         {/* Main Feed */}
                         <main className="max-w-6xl mx-auto px-6 space-y-48 pb-60 relative z-10 pt-20">
                             {chapters.map((chapter, index) => (
-                                <GoldenChapter key={chapter.id || index} chapter={chapter} index={index} />
+                                <GoldenChapter
+                                    key={chapter.id || index}
+                                    chapter={chapter}
+                                    index={index}
+                                    primaryColor={primaryColor}
+                                />
                             ))}
                         </main>
 
@@ -137,7 +153,7 @@ function EliteIntro({ onComplete, recipientName }) {
     );
 }
 
-function GoldenChapter({ chapter, index }) {
+function GoldenChapter({ chapter, index, primaryColor }) {
     const isEven = index % 2 === 0;
     const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -159,29 +175,22 @@ function GoldenChapter({ chapter, index }) {
         >
             {/* Visual Frame */}
             <div className="flex-1 w-full relative group">
-                <div className="absolute inset-0 border border-[#FDB931]/30 translate-x-4 translate-y-4 transition-transform duration-700 group-hover:translate-x-2 group-hover:translate-y-2" />
+                <div
+                    className="absolute inset-0 border translate-x-4 translate-y-4 transition-transform duration-700 group-hover:translate-x-2 group-hover:translate-y-2"
+                    style={{ borderColor: `${primaryColor}4D` }}
+                />
                 <div className="aspect-[4/5] bg-zinc-900 overflow-hidden relative shadow-2xl">
-                    <AnimatePresence mode="wait">
-                        {chapter.media?.length > 0 ? (
-                            <motion.img
-                                key={photoIndex}
-                                initial={{ opacity: 0, scale: 1.1 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 1.5 }}
-                                src={chapter.media[photoIndex].data}
-                                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
-                                alt=""
-                            />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                                <Star size={64} className="text-[#FDB931]/10" />
-                            </div>
-                        )}
-                    </AnimatePresence>
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        className="grayscale hover:grayscale-0 transition-all duration-1000"
+                        fallbackIcon={Star}
+                        accentColor={primaryColor}
+                    />
                     {/* Index Tag */}
                     <div className="absolute bottom-8 left-8 bg-black/60 backdrop-blur-xl px-4 py-2 border border-[#FDB931]/30">
-                        <span className="text-[10px] font-bold tracking-[0.2em] text-[#FDB931]">ASSET_{String(index + 1).padStart(2, '0')}</span>
+                        <span className="text-[10px] font-bold tracking-[0.2em]" style={{ color: primaryColor }}>ASSET_{String(index + 1).padStart(2, '0')}</span>
                     </div>
                 </div>
             </div>
@@ -191,15 +200,18 @@ function GoldenChapter({ chapter, index }) {
                 <h2 className="text-5xl md:text-8xl italic font-light text-white mb-10 leading-[0.85] tracking-tighter">
                     {chapter.title}
                 </h2>
-                <div className={`h-px w-20 bg-[#FDB931] mb-12 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'}`} />
-                <p className="text-xl md:text-3xl text-[#FDB931]/60 leading-relaxed italic mb-12 italic">
+                <div className="h-px w-20 mb-12" style={{ background: primaryColor, marginLeft: isEven ? '0' : 'auto', marginRight: isEven ? 'auto' : '0' }} />
+                <p className="text-xl md:text-3xl leading-relaxed italic mb-12" style={{ color: `${primaryColor}99` }}>
                     {chapter.content}
                 </p>
 
                 {chapter.voiceNote && (
-                    <div className="inline-flex items-center gap-4 py-3 px-6 border border-[#FDB931]/30 bg-[#FDB931]/5 text-[#FDB931]/80">
-                        <Music size={16} />
-                        <span className="text-[10px] uppercase font-bold tracking-widest font-sans">Premium Audio Fragment Detected</span>
+                    <div
+                        className="inline-flex items-center gap-4 py-3 px-6 border bg-opacity-5"
+                        style={{ borderColor: `${primaryColor}4D`, backgroundColor: primaryColor }}
+                    >
+                        <Music size={16} style={{ color: primaryColor }} />
+                        <span className="text-[10px] uppercase font-bold tracking-widest font-sans" style={{ color: primaryColor }}>Premium Audio Fragment Detected</span>
                     </div>
                 )}
             </div>

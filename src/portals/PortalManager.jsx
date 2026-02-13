@@ -148,20 +148,7 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
     };
 
     return (
-        <div
-            className="min-h-screen relative overflow-hidden bg-[#0A0A0A]"
-            style={formData.portalBg ? {
-                backgroundImage: `url(${formData.portalBg})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundAttachment: 'fixed'
-            } : {}}
-        >
-            {/* Background Overlay to ensure readability if there is a custom image */}
-            {formData.portalBg && (
-                <div className="absolute inset-0 bg-black/40 z-[1] pointer-events-none" />
-            )}
-
+        <div className="min-h-screen relative overflow-hidden bg-[#0A0A0A]">
             {/* Global Particle System */}
             {!showOpener && demoStarted && <GlobalParticles type={templateConfig?.particles} />}
 
@@ -174,7 +161,7 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
                         transition={{ duration: 0.8 }}
                         className="w-full"
                     >
-                        <TemplateComponent formData={formData} />
+                        <TemplateComponent formData={formData} templateConfig={templateConfig} />
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -186,7 +173,7 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] bg-gradient-to-br from-rose-900 via-pink-900 to-purple-900 flex flex-col items-center justify-center cursor-pointer"
+                        className="fixed inset-0 z-[100] bg-gradient-to-br from-rose-900 via-pink-900 to-purple-900 flex flex-col items-center justify-center cursor-pointer overflow-hidden"
                         onClick={handleDemoStart}
                     >
                         <motion.div
@@ -356,8 +343,8 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
                 )}
             </AnimatePresence>
 
-            {/* Back Button - HIDE IN DEMO MODE */}
-            {onBack && !isDemo && (
+            {/* Back Button - SHOW ALWAYS IF onBack IS PROVIDED */}
+            {onBack && (
                 <button
                     onClick={onBack}
                     className="fixed bottom-6 left-6 z-40 px-4 py-2 bg-black/50 backdrop-blur-md text-white/80 rounded-full text-sm hover:bg-black/70 transition flex items-center gap-2"

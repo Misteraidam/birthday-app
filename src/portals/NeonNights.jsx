@@ -2,8 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, Zap, Radio, Quote } from 'lucide-react';
 
-export default function NeonNights({ formData }) {
+import MediaBox from './shared/MediaBox';
+
+export default function NeonNights({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
+
+    const primaryColor = templateConfig?.primaryColor || '#06B6D4';
+    const accentColor = templateConfig?.accentColor || '#F0ABFC';
+    const fontFamily = templateConfig?.fontFamily || "'Orbitron', sans-serif";
+
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
         : null;
@@ -13,7 +20,10 @@ export default function NeonNights({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#0A0A0A] text-white font-mono selection:bg-cyan-500/30 overflow-x-hidden">
+        <div
+            className="min-h-screen bg-[#0A0A0A] text-white selection:bg-cyan-500/30 overflow-x-hidden"
+            style={{ fontFamily }}
+        >
             {/* Scan Lines Overlay */}
             <div
                 className="fixed inset-0 pointer-events-none z-50 opacity-10"
@@ -28,13 +38,13 @@ export default function NeonNights({ formData }) {
                     animate={{ x: [0, 50, 0], y: [0, -30, 0] }}
                     transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
                     className="absolute top-1/4 left-1/4 w-[60%] h-[60%] rounded-full blur-[120px]"
-                    style={{ background: 'rgba(6, 182, 212, 0.15)' }}
+                    style={{ background: `${primaryColor}26` }} // 15% opacity
                 />
                 <motion.div
                     animate={{ x: [0, -50, 0], y: [0, 30, 0] }}
                     transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
                     className="absolute bottom-1/4 right-1/4 w-[50%] h-[50%] rounded-full blur-[120px]"
-                    style={{ background: 'rgba(236, 72, 153, 0.15)' }}
+                    style={{ background: `${accentColor}26` }} // 15% opacity
                 />
             </div>
 
@@ -45,14 +55,14 @@ export default function NeonNights({ formData }) {
                     transition={{ repeat: Infinity, duration: 2 }}
                     className="mb-12"
                 >
-                    <Zap size={48} className="mx-auto text-cyan-400" style={{ filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.8))' }} />
+                    <Zap size={48} className="mx-auto" style={{ color: primaryColor, filter: `drop-shadow(0 0 20px ${primaryColor})` }} />
                 </motion.div>
                 {recipientName && (
                     <motion.h1
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         className="text-7xl md:text-[14rem] font-black tracking-tighter mb-8 leading-none"
-                        style={{ textShadow: '0 0 40px rgba(6, 182, 212, 0.5), 0 0 80px rgba(6, 182, 212, 0.2)' }}
+                        style={{ textShadow: `0 0 40px ${primaryColor}80, 0 0 80px ${primaryColor}33` }}
                     >
                         {recipientName.toUpperCase()}
                     </motion.h1>
@@ -63,11 +73,11 @@ export default function NeonNights({ formData }) {
                         animate={{ opacity: 1 }}
                         className="flex items-center justify-center gap-4"
                     >
-                        <div className="h-1 w-8 bg-cyan-500 shadow-[0_0_10px_#06b6d4]" />
-                        <p className="text-[10px] uppercase tracking-[0.5em] text-cyan-400 font-bold">
+                        <div className="h-1 w-8" style={{ background: primaryColor, boxShadow: `0 0 10px ${primaryColor}` }} />
+                        <p className="text-[10px] uppercase tracking-[0.5em] font-bold" style={{ color: primaryColor }}>
                             {(formData.customOccasion || celebrationType).toUpperCase()}
                         </p>
-                        <div className="h-1 w-8 bg-cyan-500 shadow-[0_0_10px_#06b6d4]" />
+                        <div className="h-1 w-8" style={{ background: primaryColor, boxShadow: `0 0 10px ${primaryColor}` }} />
                     </motion.div>
                 )}
             </header>
@@ -75,19 +85,25 @@ export default function NeonNights({ formData }) {
             {/* Main Feed */}
             <main className="max-w-6xl mx-auto px-6 space-y-48 pb-60 relative z-10 pt-20">
                 {chapters.map((chapter, index) => (
-                    <NeonChapter key={chapter.id || index} chapter={chapter} index={index} />
+                    <NeonChapter
+                        key={chapter.id || index}
+                        chapter={chapter}
+                        index={index}
+                        primaryColor={primaryColor}
+                        accentColor={accentColor}
+                    />
                 ))}
             </main>
 
             {/* Final Transmission */}
             {formData.secretMessage && (
                 <footer className="relative z-10 py-60 px-6 text-center border-t border-cyan-500/20 bg-gradient-to-t from-cyan-900/10 to-transparent">
-                    <Radio size={40} className="mx-auto mb-10 text-pink-500 shadow-pink-500/50" />
+                    <Radio size={40} className="mx-auto mb-10" style={{ color: accentColor, filter: `drop-shadow(0 0 20px ${accentColor})` }} />
                     <p className="text-4xl md:text-7xl font-black tracking-tight text-white leading-tight max-w-5xl mx-auto uppercase"
-                        style={{ textShadow: '0 0 30px rgba(236, 72, 153, 0.5)' }}>
+                        style={{ textShadow: `0 0 30px ${accentColor}80` }}>
                         "{formData.secretMessage}"
                     </p>
-                    <div className="mt-20 text-[10px] uppercase tracking-[1em] text-cyan-500 opacity-40">
+                    <div className="mt-20 text-[10px] uppercase tracking-[1em] opacity-40" style={{ color: primaryColor }}>
                         Transmission Complete
                     </div>
                 </footer>
@@ -96,7 +112,7 @@ export default function NeonNights({ formData }) {
     );
 }
 
-function NeonChapter({ chapter, index }) {
+function NeonChapter({ chapter, index, primaryColor, accentColor }) {
     const isEven = index % 2 === 0;
     const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -117,28 +133,21 @@ function NeonChapter({ chapter, index }) {
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-20 items-stretch`}
         >
             {/* Cyber Visor Visual */}
-            <div className="flex-1 w-full bg-black/40 border border-cyan-500/30 rounded-lg p-1.5 shadow-[0_0_50px_rgba(6,182,212,0.1)] group">
+            <div
+                className="flex-1 w-full bg-black/40 border rounded-lg p-1.5 shadow-[0_0_50px_rgba(6,182,212,0.1)] group"
+                style={{ borderColor: `${primaryColor}4D` }} // 30% opacity
+            >
                 <div className="w-full h-full min-h-[400px] overflow-hidden relative rounded-md">
-                    <AnimatePresence mode="wait">
-                        {chapter.media?.length > 0 ? (
-                            <motion.img
-                                key={photoIndex}
-                                initial={{ opacity: 0, filter: 'hue-rotate(90deg) brightness(2)' }}
-                                animate={{ opacity: 1, filter: 'hue-rotate(0deg) brightness(1)' }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.5 }}
-                                src={chapter.media[photoIndex].data}
-                                className="w-full h-full object-cover"
-                                alt=""
-                            />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-zinc-900">
-                                <Zap size={80} className="text-cyan-500/20" />
-                            </div>
-                        )}
-                    </AnimatePresence>
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        className="transition-all duration-500"
+                        fallbackIcon={Zap}
+                        accentColor={primaryColor}
+                    />
                     {/* CRT Scanline overlay for image */}
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(GREEN,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_2px,3px_100%] pointer-events-none" />
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_2px,3px_100%] pointer-events-none" />
                 </div>
             </div>
 

@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Heart, Star, Music, PartyPopper } from 'lucide-react';
+import MediaBox from './shared/MediaBox';
 
-export default function DopamineDream({ formData }) {
+export default function DopamineDream({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
     const [introComplete, setIntroComplete] = useState(false);
+
+    const primaryColor = templateConfig?.primaryColor || '#FF69B4';
+    const accentColor = templateConfig?.accentColor || '#00FFFF';
+    const fontFamily = templateConfig?.fontFamily || "'Poppins', sans-serif";
 
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
@@ -15,10 +17,19 @@ export default function DopamineDream({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#FFF0F5] text-[#2D2D2D] font-sans selection:bg-[#FF69B4]/30 overflow-x-hidden relative">
+        <div
+            className="min-h-screen bg-[#FFF0F5] text-[#2D2D2D] selection:bg-[#FF69B4]/30 overflow-x-hidden relative"
+            style={{ fontFamily }}
+        >
             <AnimatePresence mode="wait">
                 {!introComplete && (
-                    <EnergyIntro key="intro" onComplete={() => setIntroComplete(true)} recipientName={recipientName} />
+                    <EnergyIntro
+                        key="intro"
+                        onComplete={() => setIntroComplete(true)}
+                        recipientName={recipientName}
+                        primaryColor={primaryColor}
+                        accentColor={accentColor}
+                    />
                 )}
             </AnimatePresence>
 
@@ -34,12 +45,14 @@ export default function DopamineDream({ formData }) {
                             <motion.div
                                 animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
                                 transition={{ duration: 20, repeat: Infinity }}
-                                className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-[#FF69B4]/20 rounded-full blur-[120px]"
+                                className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full blur-[120px]"
+                                style={{ backgroundColor: `${primaryColor}33` }}
                             />
                             <motion.div
                                 animate={{ scale: [1.2, 1, 1.2], rotate: [0, -90, 0] }}
                                 transition={{ duration: 25, repeat: Infinity }}
-                                className="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-[#00FFFF]/20 rounded-full blur-[100px]"
+                                className="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] rounded-full blur-[100px]"
+                                style={{ backgroundColor: `${accentColor}33` }}
                             />
                             <motion.div
                                 animate={{ x: [-50, 50, -50], y: [-50, 50, -50] }}
@@ -59,7 +72,7 @@ export default function DopamineDream({ formData }) {
                                 transition={{ duration: 2, repeat: Infinity }}
                                 className="inline-block p-4 bg-white rounded-3xl shadow-2xl mb-8 rotate-12"
                             >
-                                <PartyPopper size={48} className="text-[#FF69B4]" />
+                                <PartyPopper size={48} style={{ color: primaryColor }} />
                             </motion.div>
                             {recipientName && (
                                 <h1 className="text-6xl md:text-[14rem] font-black leading-none mb-8 tracking-tighter"
@@ -88,7 +101,13 @@ export default function DopamineDream({ formData }) {
                         {/* Bouncy Chapters */}
                         <div className="max-w-5xl mx-auto px-6 space-y-24 pb-40 relative z-10">
                             {chapters.map((chapter, index) => (
-                                <BouncyChapter key={chapter.id || index} chapter={chapter} index={index} />
+                                <BouncyChapter
+                                    key={chapter.id || index}
+                                    chapter={chapter}
+                                    index={index}
+                                    primaryColor={primaryColor}
+                                    accentColor={accentColor}
+                                />
                             ))}
                         </div>
 
@@ -99,13 +118,16 @@ export default function DopamineDream({ formData }) {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 className="max-w-4xl mx-auto px-6 py-32"
                             >
-                                <div className="bg-white border-4 border-[#2D2D2D] p-12 md:p-20 rounded-[4rem] shadow-[20px_20px_0px_#FF69B4] -rotate-2 relative overflow-hidden">
+                                <div
+                                    className="bg-white border-4 border-[#2D2D2D] p-12 md:p-20 rounded-[4rem] -rotate-2 relative overflow-hidden"
+                                    style={{ boxShadow: `20px 20px 0px ${primaryColor}` }}
+                                >
                                     <motion.div
                                         animate={{ rotate: 360 }}
                                         transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
                                         className="absolute -top-10 -right-10 opacity-10"
                                     >
-                                        <Sparkles size={200} className="text-[#00FFFF]" />
+                                        <Sparkles size={200} style={{ color: accentColor }} />
                                     </motion.div>
                                     <p className="text-4xl md:text-6xl font-black text-[#2D2D2D] leading-tight text-center relative z-10">
                                         "{formData.secretMessage}"
@@ -120,7 +142,7 @@ export default function DopamineDream({ formData }) {
     );
 }
 
-function EnergyIntro({ onComplete, recipientName }) {
+function EnergyIntro({ onComplete, recipientName, primaryColor, accentColor }) {
     useEffect(() => {
         const timer = setTimeout(onComplete, 3500);
         return () => clearTimeout(timer);
@@ -137,13 +159,15 @@ function EnergyIntro({ onComplete, recipientName }) {
                 initial={{ x: '-100%' }}
                 animate={{ x: '100%' }}
                 transition={{ duration: 1.5, ease: 'easeInOut', delay: 0.2 }}
-                className="absolute top-0 bottom-0 left-0 w-full bg-[#FF69B4] mix-blend-multiply opacity-50"
+                className="absolute top-0 bottom-0 left-0 w-full mix-blend-multiply opacity-50"
+                style={{ backgroundColor: primaryColor }}
             />
             <motion.div
                 initial={{ x: '100%' }}
                 animate={{ x: '-100%' }}
                 transition={{ duration: 1.5, ease: 'easeInOut', delay: 0.2 }}
-                className="absolute top-0 bottom-0 right-0 w-full bg-[#00FFFF] mix-blend-multiply opacity-50"
+                className="absolute top-0 bottom-0 right-0 w-full mix-blend-multiply opacity-50"
+                style={{ backgroundColor: accentColor }}
             />
 
             {/* Burst */}
@@ -170,8 +194,18 @@ function EnergyIntro({ onComplete, recipientName }) {
     );
 }
 
-function BouncyChapter({ chapter, index }) {
+function BouncyChapter({ chapter, index, primaryColor, accentColor }) {
     const isEven = index % 2 === 0;
+    const [photoIndex, setPhotoIndex] = useState(0);
+
+    useEffect(() => {
+        if (chapter.media?.length > 1) {
+            const interval = setInterval(() => {
+                setPhotoIndex(prev => (prev + 1) % chapter.media.length);
+            }, 5000);
+            return () => clearInterval(interval);
+        }
+    }, [chapter.media]);
 
     return (
         <motion.div
@@ -179,29 +213,33 @@ function BouncyChapter({ chapter, index }) {
             whileInView={{ opacity: 1, scale: 1, x: 0 }}
             viewport={{ once: true }}
             whileHover={{ scale: 1.02 }}
-            className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-12 bg-white border-4 border-[#2D2D2D] rounded-[3rem] p-10 shadow-[12px_12px_0px_#2D2D2D] hover:shadow-[16px_16px_0px_#00FFFF] transition-all`}
+            className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-12 bg-white border-4 border-[#2D2D2D] rounded-[3rem] p-10 shadow-[12px_12px_0px_#2D2D2D] transition-all`}
+            style={{
+                boxShadow: isEven ? `12px 12px 0px #2D2D2D` : `12px 12px 0px #2D2D2D`,
+                ":hover": { boxShadow: `16px 16px 0px ${accentColor}` }
+            }}
         >
             {/* Visual Pop */}
             <div className="flex-1">
                 <div className="aspect-square rounded-[2rem] overflow-hidden border-4 border-[#2D2D2D] rotate-2">
-                    {chapter.media?.length > 0 ? (
-                        <img
-                            src={chapter.media[0].data}
-                            className="w-full h-full object-cover"
-                            alt=""
-                        />
-                    ) : (
-                        <div className="w-full h-full bg-[#FFF0F5] flex items-center justify-center">
-                            <Star size={64} className="text-[#FF69B4] animate-bounce" />
-                        </div>
-                    )}
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        className=""
+                        fallbackIcon={Star}
+                        accentColor={primaryColor}
+                    />
                 </div>
             </div>
 
             {/* Content Pop */}
             <div className="flex-1 flex flex-col justify-center">
                 <div className="mb-6">
-                    <span className="bg-[#00FFFF] border-2 border-[#2D2D2D] px-4 py-1.5 rounded-full text-xs font-black italic">
+                    <span
+                        className="border-2 border-[#2D2D2D] px-4 py-1.5 rounded-full text-xs font-black italic"
+                        style={{ backgroundColor: accentColor }}
+                    >
                         MOMENT_{index + 1}
                     </span>
                 </div>
@@ -213,7 +251,10 @@ function BouncyChapter({ chapter, index }) {
                 </p>
                 <div className="flex gap-4">
                     {chapter.voiceNote && (
-                        <div className="p-3 bg-[#FF69B4] border-2 border-[#2D2D2D] rounded-2xl shadow-[4px_4px_0px_#2D2D2D]">
+                        <div
+                            className="p-3 border-2 border-[#2D2D2D] rounded-2xl shadow-[4px_4px_0px_#2D2D2D]"
+                            style={{ backgroundColor: primaryColor }}
+                        >
                             <Music size={24} className="text-white" />
                         </div>
                     )}
@@ -224,7 +265,8 @@ function BouncyChapter({ chapter, index }) {
                                     key={i}
                                     animate={{ height: [8, 20, 8] }}
                                     transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.1 }}
-                                    className="w-1.5 bg-[#FF69B4] rounded-full"
+                                    className="w-1.5 rounded-full"
+                                    style={{ backgroundColor: primaryColor }}
                                 />
                             ))}
                         </div>

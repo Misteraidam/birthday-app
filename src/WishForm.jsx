@@ -59,7 +59,20 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
     const [audioRecorder, setAudioRecorder] = useState(null);
     const [videoRecorder, setVideoRecorder] = useState(null);
     const videoPreviewRef = useRef(null);
+    const editorRef = useRef(null);
     const [editingChapterId, setEditingChapterId] = useState(null);
+
+    // Auto-update chapter in formData when currentChapter changes during editing
+    useEffect(() => {
+        if (editingChapterId) {
+            setFormData(prev => ({
+                ...prev,
+                chapters: prev.chapters.map(ch =>
+                    ch.id === editingChapterId ? { ...currentChapter, id: editingChapterId } : ch
+                )
+            }));
+        }
+    }, [currentChapter, editingChapterId]);
     // TODO: Re-enable when payment is ready
     // const [showPayment, setShowPayment] = useState(false);
 
@@ -839,56 +852,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                     </div>
                                 </div>
 
-                                {/* Cover Image */}
-                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6">
-                                    <label className="text-xs uppercase tracking-wider text-white/40 block mb-4">
-                                        Cover Image (Optional)
-                                    </label>
-                                    <div className="flex items-center gap-4">
-                                        {formData.portalBg ? (
-                                            <div className="relative w-24 h-24 rounded-xl overflow-hidden">
-                                                <img src={formData.portalBg} alt="" className="w-full h-full object-cover" />
-                                                <button
-                                                    onClick={() => setFormData(prev => ({ ...prev, portalBg: null }))}
-                                                    className="absolute top-1 right-1 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center"
-                                                >
-                                                    <X size={12} />
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <label className="w-24 h-24 rounded-xl border-2 border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition">
-                                                <Image size={24} className="text-white/30" />
-                                                <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    className="hidden"
-                                                    onChange={async (e) => {
-                                                        const file = e.target.files[0];
-                                                        if (!file) return;
-
-                                                        try {
-                                                            setUploadStatus('Compressing Cover...');
-                                                            const compressedBlob = await compressImage(file);
-                                                            setUploadStatus('Uploading Cover...');
-                                                            const url = await uploadToCloud(compressedBlob, file.name);
-                                                            if (url) {
-                                                                setFormData(prev => ({ ...prev, portalBg: url }));
-                                                            }
-                                                        } catch (err) {
-                                                            console.error("Cover upload failed", err);
-                                                            alert("Failed to upload cover image");
-                                                        } finally {
-                                                            setUploadStatus(null);
-                                                        }
-                                                    }}
-                                                />
-                                            </label>
-                                        )}
-                                        <p className="text-sm text-white/40">Leave empty for auto-generated gradient</p>
-                                    </div>
-                                </div>
-
-                                {/* Navigation */}
+                                {/* Sender Name & Date */}
                                 <div className="mt-12 mb-8">
                                     <div className="flex gap-4 max-w-4xl mx-auto">
                                         <button
@@ -933,63 +897,126 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                         </h3>
                                     </div>
 
-                                    <AnimatePresence mode="popLayout">
+                                    <AnimatePresence mode="wait">
                                         {formData.chapters.length > 0 ? (
                                             <Reorder.Group
                                                 axis="y"
                                                 values={formData.chapters}
                                                 onReorder={(newOrder) => setFormData(prev => ({ ...prev, chapters: newOrder }))}
-                                                className="space-y-2"
+                                                className="space-y-4"
                                                 key="chapter-list"
                                             >
                                                 {formData.chapters.map((chapter) => (
                                                     <Reorder.Item
                                                         key={chapter.id}
                                                         value={chapter}
-                                                        initial={{ opacity: 0, scale: 0.95 }}
-                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        layout
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
                                                         exit={{ opacity: 0, scale: 0.95 }}
-                                                        className={`bg-white/5 border rounded-xl p-4 flex items-center gap-4 cursor-move ${editingChapterId === chapter.id
-                                                            ? 'border-purple-500 bg-purple-500/10'
-                                                            : 'border-white/10'
+                                                        transition={{
+                                                            layout: { duration: 0.4, type: "spring", bounce: 0, velocity: 5 },
+                                                            opacity: { duration: 0.2 }
+                                                        }}
+                                                        className={`bg-white/5 border rounded-[2rem] overflow-hidden cursor-move transition-colors duration-500 ${editingChapterId === chapter.id
+                                                            ? 'border-purple-500 bg-purple-500/10 shadow-[0_0_50px_-12px_rgba(168,85,247,0.2)]'
+                                                            : 'border-white/10 hover:border-white/20'
                                                             }`}
                                                     >
-                                                        <GripVertical size={16} className="text-white/30 flex-shrink-0" />
-
-                                                        <div className="flex-1 min-w-0" onClick={() => editChapter(chapter)}>
-                                                            <p className="font-medium truncate">{chapter.title}</p>
-                                                            <div className="flex items-center gap-2 mt-1">
-                                                                {chapter.media.length > 0 && (
-                                                                    <span className="text-xs text-white/40 flex items-center gap-1">
-                                                                        <Image size={10} /> {chapter.media.length}
-                                                                    </span>
-                                                                )}
-                                                                {chapter.voiceNote && (
-                                                                    <span className="text-xs text-green-400 flex items-center gap-1">
-                                                                        <Mic size={10} /> Voice
-                                                                    </span>
-                                                                )}
-                                                                {chapter.videoMessage && (
-                                                                    <span className="text-xs text-blue-400 flex items-center gap-1">
-                                                                        <Video size={10} /> Video
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="flex items-center gap-1">
-                                                            <button
-                                                                onClick={() => editChapter(chapter)}
-                                                                className="p-2 hover:bg-white/10 rounded-lg text-white/60 hover:text-white"
+                                                        {/* Header: visible only when expands */}
+                                                        {editingChapterId === chapter.id && (
+                                                            <motion.div
+                                                                layout
+                                                                initial={{ opacity: 0, y: -10 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-white/5"
                                                             >
-                                                                <Edit2 size={16} />
-                                                            </button>
-                                                            <button
-                                                                onClick={() => deleteChapter(chapter.id)}
-                                                                className="p-2 hover:bg-red-500/20 rounded-lg text-white/60 hover:text-red-400"
-                                                            >
-                                                                <Trash2 size={16} />
-                                                            </button>
+                                                                <h3 className="font-bold text-sm uppercase tracking-widest text-purple-400">Editing Story Chapter</h3>
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); resetCurrentChapter(); }}
+                                                                    className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors"
+                                                                >
+                                                                    Close Editor
+                                                                </button>
+                                                            </motion.div>
+                                                        )}
+
+                                                        <div className="relative">
+                                                            {editingChapterId === chapter.id ? (
+                                                                <motion.div
+                                                                    layout
+                                                                    initial={{ opacity: 0 }}
+                                                                    animate={{ opacity: 1 }}
+                                                                    className="relative"
+                                                                >
+                                                                    <ChapterEditor
+                                                                        chapter={currentChapter}
+                                                                        onChange={setCurrentChapter}
+                                                                        onSave={saveChapter}
+                                                                        onReset={resetCurrentChapter}
+                                                                        isEditing={true}
+                                                                        mediaHandlers={{
+                                                                            removeMedia,
+                                                                            handleImageUpload,
+                                                                            startAudio: startAudioRecording,
+                                                                            stopAudio: stopAudioRecording,
+                                                                            startVideo: startVideoRecording,
+                                                                            stopVideo: stopVideoRecording,
+                                                                            clearVoice: () => setCurrentChapter(prev => ({ ...prev, voiceNote: null })),
+                                                                            clearVideo: () => setCurrentChapter(prev => ({ ...prev, videoMessage: null }))
+                                                                        }}
+                                                                        recordingState={{
+                                                                            isRecordingAudio,
+                                                                            isRecordingVideo
+                                                                        }}
+                                                                        videoRef={videoPreviewRef}
+                                                                    />
+                                                                </motion.div>
+                                                            ) : (
+                                                                <motion.div
+                                                                    layout
+                                                                    className="p-4 md:p-6 flex items-center gap-4"
+                                                                    onClick={() => editChapter(chapter)}
+                                                                >
+                                                                    <GripVertical size={16} className="text-white/30 flex-shrink-0" />
+
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <p className="font-bold text-lg truncate">{chapter.title}</p>
+                                                                        <div className="flex items-center gap-2 mt-1">
+                                                                            {chapter.media.length > 0 && (
+                                                                                <span className="text-[10px] font-bold uppercase tracking-wider text-white/40 flex items-center gap-1">
+                                                                                    <Image size={10} /> {chapter.media.length} Photos
+                                                                                </span>
+                                                                            )}
+                                                                            {chapter.voiceNote && (
+                                                                                <span className="text-[10px] font-bold uppercase tracking-wider text-green-400 flex items-center gap-1">
+                                                                                    <Mic size={10} /> Voice Recorded
+                                                                                </span>
+                                                                            )}
+                                                                            {chapter.videoMessage && (
+                                                                                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1">
+                                                                                    <Video size={10} /> Video Ready
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="flex items-center gap-1">
+                                                                        <button
+                                                                            onClick={(e) => { e.stopPropagation(); editChapter(chapter); }}
+                                                                            className="p-2 hover:bg-white/10 rounded-lg text-white/60 hover:text-white"
+                                                                        >
+                                                                            <Edit2 size={16} />
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={(e) => { e.stopPropagation(); deleteChapter(chapter.id); }}
+                                                                            className="p-2 hover:bg-red-500/20 rounded-lg text-white/60 hover:text-red-400"
+                                                                        >
+                                                                            <Trash2 size={16} />
+                                                                        </button>
+                                                                    </div>
+                                                                </motion.div>
+                                                            )}
                                                         </div>
                                                     </Reorder.Item>
                                                 ))}
@@ -1000,37 +1027,47 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 exit={{ opacity: 0 }}
-                                                className="text-center py-8 text-white/40"
+                                                className="text-center py-12 bg-white/5 border border-dashed border-white/10 rounded-[2rem] text-white/30"
                                             >
-                                                <p>No chapters yet. Add your first chapter below!</p>
+                                                <p className="text-sm font-medium">No chapters yet. Add your first memories below.</p>
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
                                 </div>
 
-                                {/* Chapter Editor Component - extracted for cleaner architecture */}
-                                <ChapterEditor
-                                    chapter={currentChapter}
-                                    onChange={setCurrentChapter}
-                                    onSave={saveChapter}
-                                    onReset={resetCurrentChapter}
-                                    isEditing={!!editingChapterId}
-                                    mediaHandlers={{
-                                        removeMedia,
-                                        handleImageUpload,
-                                        startAudio: startAudioRecording,
-                                        stopAudio: stopAudioRecording,
-                                        startVideo: startVideoRecording,
-                                        stopVideo: stopVideoRecording,
-                                        clearVoice: () => setCurrentChapter(prev => ({ ...prev, voiceNote: null })),
-                                        clearVideo: () => setCurrentChapter(prev => ({ ...prev, videoMessage: null }))
-                                    }}
-                                    recordingState={{
-                                        isRecordingAudio,
-                                        isRecordingVideo
-                                    }}
-                                    videoRef={videoPreviewRef}
-                                />
+                                { /* New Chapter Editor (Always at bottom, only for adding) */}
+                                {!editingChapterId && (
+                                    <div className="mt-8 border-t border-white/5 pt-8">
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs ring-4 ring-purple-500/5">
+                                                <Plus size={14} />
+                                            </div>
+                                            <h3 className="font-bold text-lg uppercase tracking-wider text-white/80">Add New Memory</h3>
+                                        </div>
+                                        <ChapterEditor
+                                            chapter={currentChapter}
+                                            onChange={setCurrentChapter}
+                                            onSave={saveChapter}
+                                            onReset={resetCurrentChapter}
+                                            isEditing={false}
+                                            mediaHandlers={{
+                                                removeMedia,
+                                                handleImageUpload,
+                                                startAudio: startAudioRecording,
+                                                stopAudio: stopAudioRecording,
+                                                startVideo: startVideoRecording,
+                                                stopVideo: stopVideoRecording,
+                                                clearVoice: () => setCurrentChapter(prev => ({ ...prev, voiceNote: null })),
+                                                clearVideo: () => setCurrentChapter(prev => ({ ...prev, videoMessage: null }))
+                                            }}
+                                            recordingState={{
+                                                isRecordingAudio,
+                                                isRecordingVideo
+                                            }}
+                                            videoRef={videoPreviewRef}
+                                        />
+                                    </div>
+                                )}
 
                                 {/* Navigation */}
                                 <div className="mt-12 mb-8">

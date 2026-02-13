@@ -14,6 +14,7 @@ function App() {
   const [celebrationType, setCelebrationType] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [createdPortals, setCreatedPortals] = useState([]);
 
   // Helper to process loaded data safely
   const processLoadedData = (inputData) => {
@@ -146,6 +147,7 @@ function App() {
       window.history.pushState({ path: newUrl }, '', newUrl);
       setData(cleanData);
       setPortalId(json.id);
+      setCreatedPortals(prev => [...prev, { id: json.id, data: cleanData }]);
       setView('success');
     } catch (err) {
       console.error(err);
@@ -195,7 +197,7 @@ function App() {
       {view === 'landing' && <LandingPage onCreateNew={handleCreateNew} onViewStory={handleViewStory} />}
       {view === 'create' && <WishForm onGenerate={handleGenerate} onBack={handleBackToLanding} initialCelebrationType={celebrationType} />}
       {view === 'portal' && data && <PortalManager formData={data} onBack={handleBackToLanding} isDemo={!!new URLSearchParams(window.location.search).get('demo')} />}
-      {view === 'success' && data && portalId && <SuccessScreen portalId={portalId} formData={data} onBackToHome={handleBackToLanding} />}
+      {view === 'success' && data && portalId && <SuccessScreen portalId={portalId} formData={data} onBackToHome={handleBackToLanding} createdPortals={createdPortals} />}
     </div>
   );
 }

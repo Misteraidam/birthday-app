@@ -25,24 +25,18 @@ export default function ChapterEditor({
     const { isRecordingAudio, isRecordingVideo } = recordingState;
 
     return (
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 space-y-6 relative overflow-hidden">
+        <div className={`bg-transparent p-0 space-y-6 relative overflow-hidden ${isEditing ? 'px-6 py-6 pb-8' : 'bg-white/5 backdrop-blur-sm border border-white/10 rounded-[2rem] p-8'}`}>
             {isEditing && (
                 <div className="absolute top-0 inset-x-0 h-1 bg-purple-500 animate-pulse" />
             )}
 
-            <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold">
-                    {isEditing ? 'Edit Chapter' : 'Add New Chapter'}
-                </h3>
-                {isEditing && (
-                    <button
-                        onClick={onReset}
-                        className="text-xs text-white/40 hover:text-white"
-                    >
-                        Cancel Edit
-                    </button>
-                )}
-            </div>
+            {!isEditing && (
+                <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-bold">
+                        Add New Chapter
+                    </h3>
+                </div>
+            )}
 
             {/* Chapter Title */}
             <input
@@ -187,20 +181,19 @@ export default function ChapterEditor({
             </div>
 
             {/* Save Chapter Button */}
-            <button
-                onClick={onSave}
-                disabled={!chapter.title}
-                className={`w-full py-4 font-bold rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${isEditing
-                    ? 'bg-green-500 hover:bg-green-400 text-white'
-                    : 'bg-purple-500 hover:bg-purple-400 text-white'
-                    }`}
-            >
-                {isEditing ? (
-                    <><Check size={18} /> Update Chapter</>
-                ) : (
-                    <><Plus size={18} /> Add Chapter</>
-                )}
-            </button>
+            {!isEditing ? (
+                <button
+                    onClick={onSave}
+                    disabled={!chapter.title}
+                    className="w-full py-4 bg-purple-500 hover:bg-purple-400 text-white font-bold rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                    <Plus size={18} /> Add Chapter
+                </button>
+            ) : (
+                <div className="flex items-center justify-center gap-2 py-4 text-green-400 text-xs font-bold uppercase tracking-widest bg-green-500/5 rounded-xl border border-green-500/20">
+                    <Check size={14} /> Changes saved automatically
+                </div>
+            )}
         </div>
     );
 }

@@ -2,8 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Music, Quote, Star } from 'lucide-react';
 
-export default function EternalVow({ formData }) {
+import MediaBox from './shared/MediaBox';
+
+export default function EternalVow({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
+
+    const primaryColor = templateConfig?.primaryColor || '#B45309';
+    const accentColor = templateConfig?.accentColor || '#D4A574';
+    const fontFamily = templateConfig?.fontFamily || "'Lora', serif";
+
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
         : null;
@@ -17,12 +24,15 @@ export default function EternalVow({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#FFFBEB] text-[#78350F] font-serif selection:bg-amber-200 overflow-x-hidden">
+        <div
+            className="min-h-screen bg-[#FFFBEB] text-[#78350F] selection:bg-amber-200 overflow-x-hidden"
+            style={{ fontFamily }}
+        >
             {/* Elegant Ring Pattern Background */}
             <div className="fixed inset-0 pointer-events-none opacity-10">
                 <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px]" viewBox="0 0 400 400">
-                    <circle cx="180" cy="200" r="80" fill="none" stroke="#B45309" strokeWidth="2" />
-                    <circle cx="220" cy="200" r="80" fill="none" stroke="#B45309" strokeWidth="2" />
+                    <circle cx="180" cy="200" r="80" fill="none" stroke={primaryColor} strokeWidth="2" />
+                    <circle cx="220" cy="200" r="80" fill="none" stroke={accentColor} strokeWidth="2" />
                 </svg>
             </div>
 
@@ -35,8 +45,8 @@ export default function EternalVow({ formData }) {
                     className="mb-12"
                 >
                     <svg className="w-24 h-24 mx-auto" viewBox="0 0 100 100">
-                        <circle cx="40" cy="50" r="25" fill="none" stroke="#B45309" strokeWidth="3" />
-                        <circle cx="60" cy="50" r="25" fill="none" stroke="#D4A574" strokeWidth="3" />
+                        <circle cx="40" cy="50" r="25" fill="none" stroke={primaryColor} strokeWidth="3" />
+                        <circle cx="60" cy="50" r="25" fill="none" stroke={accentColor} strokeWidth="3" />
                     </svg>
                 </motion.div>
 
@@ -72,7 +82,12 @@ export default function EternalVow({ formData }) {
             {/* Chapters Feed */}
             <main className="max-w-6xl mx-auto px-6 space-y-48 pb-60 relative z-10">
                 {chapters.map((chapter, index) => (
-                    <VowChapter key={chapter.id || index} chapter={chapter} index={index} />
+                    <VowChapter
+                        key={chapter.id || index}
+                        chapter={chapter}
+                        index={index}
+                        accentColor={accentColor}
+                    />
                 ))}
             </main>
 
@@ -92,7 +107,7 @@ export default function EternalVow({ formData }) {
     );
 }
 
-function VowChapter({ chapter, index }) {
+function VowChapter({ chapter, index, accentColor }) {
     const isEven = index % 2 === 0;
     const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -114,28 +129,15 @@ function VowChapter({ chapter, index }) {
         >
             {/* Visual Capsule */}
             <div className="flex-1 w-full relative">
-                <div className="absolute inset-0 bg-amber-200/40 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-amber-200/40 blur-3xl opacity-0 hover:opacity-100 transition-opacity" />
                 <div className="aspect-[4/5] bg-white p-6 shadow-2xl relative rotate-[-1deg] rounded-lg border border-amber-100 space-y-4">
-                    <div className="w-full h-full overflow-hidden relative rounded-md">
-                        <AnimatePresence mode="wait">
-                            {chapter.media?.length > 0 ? (
-                                <motion.img
-                                    key={photoIndex}
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 1.5 }}
-                                    src={chapter.media[photoIndex].data}
-                                    className="w-full h-full object-cover"
-                                    alt=""
-                                />
-                            ) : (
-                                <div className="w-full h-full bg-amber-50 flex items-center justify-center">
-                                    <Heart size={48} className="text-amber-100" />
-                                </div>
-                            )}
-                        </AnimatePresence>
-                    </div>
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative rounded-md"
+                        fallbackIcon={Heart}
+                        accentColor={accentColor}
+                    />
                     {/* Floating Tape Effect */}
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-32 h-8 bg-amber-100/60 backdrop-blur-sm shadow-sm rotate-2" />
                 </div>

@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Quote, Star, Music, Zap, Radio } from 'lucide-react';
+import MediaBox from './shared/MediaBox';
 
-export default function MidnightLuxe({ formData }) {
+export default function MidnightLuxe({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
     const [introComplete, setIntroComplete] = useState(false);
+
+    const primaryColor = templateConfig?.primaryColor || '#FFD700';
+    const accentColor = templateConfig?.accentColor || '#B8860B';
+    const fontFamily = templateConfig?.fontFamily || "'Playfair Display', serif";
 
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
@@ -23,7 +28,10 @@ export default function MidnightLuxe({ formData }) {
     }, []);
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-amber-500 selection:text-black relative overflow-x-hidden">
+        <div
+            className="min-h-screen bg-[#050505] text-white selection:bg-[#FDB931]/20 overflow-x-hidden relative"
+            style={{ fontFamily }}
+        >
             <AnimatePresence mode="wait">
                 {!introComplete && (
                     <NoirIntro key="intro" onComplete={() => setIntroComplete(true)} recipientName={recipientName} />
@@ -42,7 +50,7 @@ export default function MidnightLuxe({ formData }) {
                             className="fixed w-[800px] h-[800px] rounded-full pointer-events-none z-0 blur-[150px] opacity-20"
                             animate={{ x: mousePos.x - 400, y: mousePos.y - 400 }}
                             transition={{ type: 'spring', damping: 40, stiffness: 40, mass: 1.5 }}
-                            style={{ background: 'radial-gradient(circle, rgba(255,215,0,0.2) 0%, transparent 70%)' }}
+                            style={{ background: `radial-gradient(circle, ${primaryColor}33 0%, transparent 70%)` }}
                         />
 
                         {/* Premium Noir Noise */}
@@ -55,8 +63,11 @@ export default function MidnightLuxe({ formData }) {
                                 animate={{ opacity: 1, scale: 1 }}
                                 className="mb-12"
                             >
-                                <div className="w-16 h-16 rounded-full border border-amber-500/30 flex items-center justify-center bg-black/50 backdrop-blur-xl mx-auto">
-                                    <Zap size={24} className="text-amber-500" />
+                                <div
+                                    className="w-16 h-16 rounded-full border flex items-center justify-center bg-black/50 backdrop-blur-xl mx-auto"
+                                    style={{ borderColor: `${primaryColor}4D` }}
+                                >
+                                    <Zap size={24} style={{ color: primaryColor }} />
                                 </div>
                             </motion.div>
 
@@ -66,10 +77,10 @@ export default function MidnightLuxe({ formData }) {
                                     animate={{ opacity: 1, scale: 1 }}
                                     className="text-8xl md:text-[15rem] font-serif italic font-light tracking-tighter mb-8 leading-[0.8]"
                                     style={{
-                                        background: 'linear-gradient(to bottom, #FFD700, #B8860B)',
+                                        background: `linear-gradient(to bottom, ${primaryColor}, ${accentColor})`,
                                         WebkitBackgroundClip: 'text',
                                         WebkitTextFillColor: 'transparent',
-                                        textShadow: '0 20px 60px rgba(184, 134, 11, 0.3)'
+                                        textShadow: `0 20px 60px ${accentColor}4D`
                                     }}
                                 >
                                     {recipientName}
@@ -94,7 +105,12 @@ export default function MidnightLuxe({ formData }) {
                         {/* Main Feed */}
                         <main className="max-w-7xl mx-auto px-6 space-y-60 pb-60 relative z-10 pt-20">
                             {chapters.map((chapter, index) => (
-                                <LuxeChapter key={chapter.id || index} chapter={chapter} index={index} />
+                                <LuxeChapter
+                                    key={chapter.id || index}
+                                    chapter={chapter}
+                                    index={index}
+                                    primaryColor={primaryColor}
+                                />
                             ))}
                         </main>
 
@@ -163,7 +179,7 @@ function NoirIntro({ onComplete, recipientName }) {
     );
 }
 
-function LuxeChapter({ chapter, index }) {
+function LuxeChapter({ chapter, index, primaryColor }) {
     const isEven = index % 2 === 0;
     const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -185,30 +201,23 @@ function LuxeChapter({ chapter, index }) {
         >
             {/* Visual Canvas */}
             <div className="flex-1 w-full relative group">
-                <div className="absolute -inset-10 bg-amber-500/10 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div
+                    className="absolute -inset-10 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ backgroundColor: `${primaryColor}1A` }}
+                />
                 <div className="aspect-[16/10] bg-zinc-900 rounded-[40px] overflow-hidden border border-white/5 relative shadow-2xl">
-                    <AnimatePresence mode="wait">
-                        {chapter.media?.length > 0 ? (
-                            <motion.img
-                                key={photoIndex}
-                                initial={{ opacity: 0, scale: 1.1 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 1.5 }}
-                                src={chapter.media[photoIndex].data}
-                                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
-                                alt=""
-                            />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-zinc-800">
-                                <Star size={40} className="text-white/10" />
-                            </div>
-                        )}
-                    </AnimatePresence>
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        className="grayscale hover:grayscale-0 transition-all duration-1000"
+                        fallbackIcon={Star}
+                        accentColor={primaryColor}
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
                     {/* Index Tag */}
                     <div className="absolute bottom-8 left-8 flex items-center gap-3 px-4 py-2 bg-black/40 backdrop-blur-xl rounded-full border border-white/10 text-[10px] uppercase tracking-widest font-black">
-                        <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                        <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: primaryColor }} />
                         NOIR_LOG_{String(index + 1).padStart(2, '0')}
                     </div>
                 </div>
@@ -229,10 +238,11 @@ function LuxeChapter({ chapter, index }) {
                             const audio = new Audio(chapter.voiceNote);
                             audio.play().catch(e => console.error("Voice playback failed", e));
                         }}
-                        className="inline-flex items-center gap-4 py-3 px-6 bg-white/5 rounded-full border border-white/10 text-amber-500/60 hover:bg-white/10 transition-colors group"
+                        className="inline-flex items-center gap-4 py-3 px-6 bg-white/5 rounded-full border transition-colors group"
+                        style={{ borderColor: `${primaryColor}1A` }}
                     >
-                        <Music size={16} className="group-hover:scale-110 transition-transform" />
-                        <span className="text-[10px] uppercase font-bold tracking-widest text-left">Decryption Request: Play Audio Archive</span>
+                        <Music size={16} className="group-hover:scale-110 transition-transform" style={{ color: `${primaryColor}99` }} />
+                        <span className="text-[10px] uppercase font-bold tracking-widest text-left" style={{ color: `${primaryColor}99` }}>Decryption Request: Play Audio Archive</span>
                     </button>
                 )}
 

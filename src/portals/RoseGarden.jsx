@@ -2,8 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Music, Maximize2, Sparkles, Quote, Flower2 } from 'lucide-react';
 
-export default function RoseGarden({ formData }) {
+import MediaBox from './shared/MediaBox';
+
+export default function RoseGarden({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
+
+    const primaryColor = templateConfig?.primaryColor || '#EC4899';
+    const accentColor = templateConfig?.accentColor || '#FDA4AF';
+    const fontFamily = templateConfig?.fontFamily || "'EB Garamond', serif";
+
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
         : null;
@@ -13,7 +20,10 @@ export default function RoseGarden({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#FFF5F7] text-[#831843] font-serif selection:bg-pink-200 overflow-x-hidden">
+        <div
+            className="min-h-screen bg-[#FFF5F7] text-[#831843] selection:bg-pink-200 overflow-x-hidden"
+            style={{ fontFamily }}
+        >
             {/* Liquid Blob Backgrounds */}
             {/* Floating Rose Petals */}
             <FloatingRoses />
@@ -22,12 +32,14 @@ export default function RoseGarden({ formData }) {
                 <motion.div
                     animate={{ x: [0, 100, 0], y: [0, -50, 0], scale: [1, 1.2, 1] }}
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-pink-300 rounded-full"
+                    className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full"
+                    style={{ background: primaryColor }}
                 />
                 <motion.div
                     animate={{ x: [0, -80, 0], y: [0, 100, 0], scale: [1, 1.3, 1] }}
                     transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                    className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-rose-200 rounded-full"
+                    className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full"
+                    style={{ background: accentColor }}
                 />
             </div>
 
@@ -38,7 +50,7 @@ export default function RoseGarden({ formData }) {
                     animate={{ opacity: 1, scale: 1 }}
                     className="mb-8"
                 >
-                    <Heart size={40} className="mx-auto text-pink-500 fill-pink-500/20" />
+                    <Heart size={40} className="mx-auto" style={{ color: primaryColor }} fill={`${primaryColor} 33`} />
                 </motion.div>
                 {recipientName && (
                     <motion.h1
@@ -74,18 +86,24 @@ export default function RoseGarden({ formData }) {
             {/* Chapters Feed */}
             <main className="max-w-6xl mx-auto px-6 space-y-32 pb-60 relative z-10">
                 {chapters.map((chapter, index) => (
-                    <ChapterEntry key={chapter.id || index} chapter={chapter} index={index} />
+                    <ChapterEntry
+                        key={chapter.id || index}
+                        chapter={chapter}
+                        index={index}
+                        primaryColor={primaryColor}
+                        accentColor={accentColor}
+                    />
                 ))}
             </main>
 
             {/* Secret Message Footer */}
             {formData.secretMessage && (
                 <footer className="relative z-10 py-60 px-6 text-center border-t border-pink-200/50">
-                    <Quote size={40} className="mx-auto mb-10 text-pink-300" />
+                    <Quote size={40} className="mx-auto mb-10" style={{ color: accentColor }} />
                     <p className="text-3xl md:text-5xl font-light italic leading-relaxed text-pink-900/70 max-w-3xl mx-auto">
                         "{formData.secretMessage}"
                     </p>
-                    <div className="mt-20 text-[10px] uppercase tracking-[0.5em] text-pink-300 font-bold">
+                    <div className="mt-20 text-[10px] uppercase tracking-[0.5em] font-bold" style={{ color: accentColor }}>
                         Forever Yours, {formData.senderName || 'Anonymous'}
                     </div>
                 </footer>
@@ -157,7 +175,7 @@ function FloatingRoses() {
     );
 }
 
-function ChapterEntry({ chapter, index }) {
+function ChapterEntry({ chapter, index, primaryColor, accentColor }) {
     const isEven = index % 2 === 0;
     const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -175,37 +193,20 @@ function ChapterEntry({ chapter, index }) {
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-10%" }}
-            className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-16 md:gap-24 items-center`}
+            className={`flex flex - col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap - 16 md: gap - 24 items - center`}
         >
             {/* Visual Module */}
             <div className="flex-1 w-full">
                 <div className="aspect-[9/16] md:aspect-[4/5] bg-white p-4 shadow-2xl relative rotate-1 rounded-sm border border-pink-100 group">
                     <div className="w-full h-full overflow-hidden relative">
-                        <AnimatePresence mode="wait">
-                            {chapter.media?.length > 0 ? (
-                                <motion.img
-                                    key={photoIndex}
-                                    initial={{ opacity: 0, scale: 1.05 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 1.5 }}
-                                    src={chapter.media[photoIndex].data}
-                                    className="w-full h-full object-cover"
-                                    style={{
-                                        imageRendering: '-webkit-optimize-contrast',
-                                        WebkitBackfaceVisibility: 'hidden',
-                                        backfaceVisibility: 'hidden',
-                                        transform: 'translateZ(0)',
-                                        filter: 'contrast(1.05) brightness(1.02)'
-                                    }}
-                                    alt=""
-                                />
-                            ) : (
-                                <div className="w-full h-full bg-pink-50 flex items-center justify-center">
-                                    <Sparkles size={64} className="text-pink-200" />
-                                </div>
-                            )}
-                        </AnimatePresence>
+                        <MediaBox
+                            media={chapter.media}
+                            photoIndex={photoIndex}
+                            containerClassName="w-full h-full relative"
+                            className="hover:scale-105 transition-all duration-1000 ease-in-out"
+                            fallbackIcon={Sparkles}
+                            accentColor={primaryColor}
+                        />
                     </div>
                     {/* Media Count Badge */}
                     {chapter.media?.length > 1 && (
@@ -217,14 +218,14 @@ function ChapterEntry({ chapter, index }) {
             </div>
 
             {/* Narrative Module */}
-            <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
+            <div className={`flex - 1 ${isEven ? 'text-left' : 'text-right md:text-left'} `}>
                 <span className="text-[10px] uppercase tracking-[0.5em] text-pink-400 font-bold block mb-8">
                     Fragment_{String(index + 1).padStart(2, '0')}
                 </span>
                 <h2 className="text-4xl md:text-6xl font-light italic text-pink-900 mb-8 leading-tight tracking-tight">
                     {chapter.title}
                 </h2>
-                <div className={`w-12 h-px bg-pink-200 mb-10 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'}`} />
+                <div className={`w - 12 h - px bg - pink - 200 mb - 10 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'} `} />
                 <p className="text-xl md:text-2xl font-light italic leading-relaxed text-pink-900/60">
                     {chapter.content}
                 </p>

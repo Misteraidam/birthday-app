@@ -2,8 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, Award, Star, Music, Trophy, Quote } from 'lucide-react';
 
-export default function CapAndGown({ formData }) {
+import MediaBox from './shared/MediaBox';
+
+export default function CapAndGown({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
+
+    const primaryColor = templateConfig?.primaryColor || '#EAB308';
+    const accentColor = templateConfig?.accentColor || '#FACC15';
+    const fontFamily = templateConfig?.fontFamily || "'Inter', sans-serif";
+
     const recipientName = formData.recipientName && formData.recipientName !== 'Graduate'
         ? String(formData.recipientName)
         : null;
@@ -13,11 +20,14 @@ export default function CapAndGown({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#0F172A] text-white font-sans selection:bg-yellow-500/30 overflow-x-hidden">
+        <div
+            className="min-h-screen bg-[#0F172A] text-white selection:bg-yellow-500/30 overflow-x-hidden"
+            style={{ fontFamily }}
+        >
             {/* Subtle Grid Pattern */}
             <div className="fixed inset-0 pointer-events-none opacity-10">
                 <div className="absolute inset-0" style={{
-                    backgroundImage: 'linear-gradient(rgba(255,215,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,215,0,0.1) 1px, transparent 1px)',
+                    backgroundImage: `linear-gradient(${primaryColor}1A 1px, transparent 1px), linear-gradient(90deg, ${primaryColor}1A 1px, transparent 1px)`,
                     backgroundSize: '50px 50px'
                 }} />
             </div>
@@ -29,7 +39,7 @@ export default function CapAndGown({ formData }) {
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-8"
                 >
-                    <GraduationCap size={64} className="mx-auto text-yellow-400" />
+                    <GraduationCap size={64} className="mx-auto" style={{ color: primaryColor }} />
                 </motion.div>
                 {recipientName && (
                     <motion.h1
@@ -46,11 +56,11 @@ export default function CapAndGown({ formData }) {
                         animate={{ opacity: 1 }}
                         className="flex items-center justify-center gap-4"
                     >
-                        <div className="h-px w-12 bg-yellow-500/30" />
-                        <p className="text-xs uppercase tracking-[0.5em] text-yellow-400 font-bold">
+                        <div className="h-px w-12 bg-white/10" />
+                        <p className="text-xs uppercase tracking-[0.5em] font-bold" style={{ color: primaryColor }}>
                             {(formData.customOccasion || celebrationType).toUpperCase()}
                         </p>
-                        <div className="h-px w-12 bg-yellow-500/30" />
+                        <div className="h-px w-12 bg-white/10" />
                     </motion.div>
                 )}
             </header>
@@ -58,7 +68,13 @@ export default function CapAndGown({ formData }) {
             {/* Main Feed */}
             <main className="max-w-6xl mx-auto px-6 space-y-48 pb-60 relative z-10 pt-20">
                 {chapters.map((chapter, index) => (
-                    <TriumphChapter key={chapter.id || index} chapter={chapter} index={index} />
+                    <TriumphChapter
+                        key={chapter.id || index}
+                        chapter={chapter}
+                        index={index}
+                        primaryColor={primaryColor}
+                        accentColor={accentColor}
+                    />
                 ))}
             </main>
 
@@ -78,7 +94,7 @@ export default function CapAndGown({ formData }) {
     );
 }
 
-function TriumphChapter({ chapter, index }) {
+function TriumphChapter({ chapter, index, primaryColor, accentColor }) {
     const isEven = index % 2 === 0;
     const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -101,24 +117,13 @@ function TriumphChapter({ chapter, index }) {
             {/* Visual Module */}
             <div className="flex-1 w-full bg-white/5 border border-white/10 rounded-3xl p-4 shadow-2xl overflow-hidden group">
                 <div className="w-full h-full min-h-[400px] overflow-hidden relative rounded-2xl">
-                    <AnimatePresence mode="wait">
-                        {chapter.media?.length > 0 ? (
-                            <motion.img
-                                key={photoIndex}
-                                initial={{ opacity: 0, scale: 1.1 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 1.5 }}
-                                src={chapter.media[photoIndex].data}
-                                className="w-full h-full object-cover"
-                                alt=""
-                            />
-                        ) : (
-                            <div className="w-full h-full bg-white/5 flex items-center justify-center">
-                                <Award size={80} className="text-yellow-500/20" />
-                            </div>
-                        )}
-                    </AnimatePresence>
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        fallbackIcon={Award}
+                        accentColor={primaryColor}
+                    />
                 </div>
             </div>
 

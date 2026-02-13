@@ -2,8 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, Star, Moon, Sparkles, Quote } from 'lucide-react';
 
-export default function CosmicDream({ formData }) {
+import MediaBox from './shared/MediaBox';
+
+export default function CosmicDream({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
+
+    const primaryColor = templateConfig?.primaryColor || '#A855F7';
+    const accentColor = templateConfig?.accentColor || '#3B82F6';
+    const fontFamily = templateConfig?.fontFamily || "'Space Grotesk', sans-serif";
+
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
         : null;
@@ -13,7 +20,10 @@ export default function CosmicDream({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#0F0A1A] text-[#E9D5FF] font-sans selection:bg-purple-500/30 overflow-x-hidden">
+        <div
+            className="min-h-screen bg-[#0F0A1A] text-[#E9D5FF] selection:bg-purple-500/30 overflow-x-hidden"
+            style={{ fontFamily }}
+        >
             {/* Starfield Background */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
                 {[...Array(60)].map((_, i) => (
@@ -32,8 +42,14 @@ export default function CosmicDream({ formData }) {
 
             {/* Nebula Glows */}
             <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-[60%] h-[60%] bg-purple-500/10 rounded-full blur-[120px]" />
-                <div className="absolute bottom-1/4 right-1/4 w-[50%] h-[50%] bg-blue-500/10 rounded-full blur-[100px]" />
+                <div
+                    className="absolute top-1/4 left-1/4 w-[60%] h-[60%] rounded-full blur-[120px]"
+                    style={{ background: `${primaryColor}1A` }} // 10% opacity
+                />
+                <div
+                    className="absolute bottom-1/4 right-1/4 w-[50%] h-[50%] rounded-full blur-[100px]"
+                    style={{ background: `${accentColor}1A` }} // 10% opacity
+                />
             </div>
 
             {/* Shooting Stars */}
@@ -53,7 +69,7 @@ export default function CosmicDream({ formData }) {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         className="text-7xl md:text-[12rem] font-black tracking-tighter mb-8 leading-none"
-                        style={{ textShadow: '0 0 80px rgba(168, 85, 247, 0.4)' }}
+                        style={{ textShadow: `0 0 80px ${primaryColor}66` }}
                     >
                         {recipientName.toUpperCase()}
                     </motion.h1>
@@ -66,7 +82,7 @@ export default function CosmicDream({ formData }) {
                         className="flex items-center justify-center gap-6"
                     >
                         <div className="h-px w-20 bg-purple-500/30" />
-                        <p className="text-xs uppercase tracking-[0.8em] text-purple-400 font-black">
+                        <p className="text-xs uppercase tracking-[0.8em] font-black" style={{ color: primaryColor }}>
                             {(formData.customOccasion || celebrationType).toUpperCase()}
                         </p>
                         <div className="h-px w-20 bg-purple-500/30" />
@@ -77,7 +93,13 @@ export default function CosmicDream({ formData }) {
             {/* Feed */}
             <main className="max-w-7xl mx-auto px-6 space-y-48 pb-60 relative z-10 pt-20">
                 {chapters.map((chapter, index) => (
-                    <CosmicChapter key={chapter.id || index} chapter={chapter} index={index} />
+                    <CosmicChapter
+                        key={chapter.id || index}
+                        chapter={chapter}
+                        index={index}
+                        primaryColor={primaryColor}
+                        accentColor={accentColor}
+                    />
                 ))}
             </main>
 
@@ -88,7 +110,7 @@ export default function CosmicDream({ formData }) {
                     <p className="text-3xl md:text-6xl font-light tracking-tight text-white leading-tight max-w-5xl mx-auto italic">
                         "{formData.secretMessage}"
                     </p>
-                    <div className="mt-20 text-[10px] uppercase tracking-[0.8em] text-purple-400 font-black">
+                    <div className="mt-20 text-[10px] uppercase tracking-[0.8em] font-black" style={{ color: primaryColor }}>
                         Stardust Memories
                     </div>
                 </footer>
@@ -118,7 +140,7 @@ function ShootingStars() {
     );
 }
 
-function CosmicChapter({ chapter, index }) {
+function CosmicChapter({ chapter, index, primaryColor, accentColor }) {
     const isEven = index % 2 === 0;
     const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -140,26 +162,19 @@ function CosmicChapter({ chapter, index }) {
         >
             {/* Visual Constellation */}
             <div className="flex-1 w-full relative group">
-                <div className="absolute -inset-10 bg-purple-500/10 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div
+                    className="absolute -inset-10 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ background: `${primaryColor}1A` }}
+                />
                 <div className="aspect-[4/5] bg-black/40 backdrop-blur-3xl rounded-[3rem] p-4 border border-purple-500/20 overflow-hidden relative shadow-[0_40px_100px_rgba(0,0,0,0.8)]">
-                    <AnimatePresence mode="wait">
-                        {chapter.media?.length > 0 ? (
-                            <motion.img
-                                key={photoIndex}
-                                initial={{ opacity: 0, scale: 1.1 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 2 }}
-                                src={chapter.media[photoIndex].data}
-                                className="w-full h-full object-cover opacity-80"
-                                alt=""
-                            />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                                <Sparkles size={80} className="text-purple-500/20" />
-                            </div>
-                        )}
-                    </AnimatePresence>
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        className="opacity-80"
+                        fallbackIcon={Sparkles}
+                        accentColor={primaryColor}
+                    />
                     {/* Index Tape */}
                     <div className="absolute top-8 left-8 bg-purple-900/60 backdrop-blur-xl px-4 py-2 rounded-full border border-purple-400/30">
                         <span className="text-[10px] font-black tracking-widest text-purple-200">SECTOR_{String(index + 1).padStart(2, '0')}</span>

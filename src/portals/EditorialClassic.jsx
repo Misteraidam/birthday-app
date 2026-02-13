@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Quote, Star, Music } from 'lucide-react';
+import MediaBox from './shared/MediaBox';
 
-export default function EditorialClassic({ formData }) {
+export default function EditorialClassic({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
+
+    const primaryColor = templateConfig?.primaryColor || '#110000';
+    const accentColor = templateConfig?.accentColor || '#110000';
+    const fontFamily = templateConfig?.fontFamily || "'EB Garamond', serif";
+
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
         : null;
@@ -13,7 +16,10 @@ export default function EditorialClassic({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#FDFBEE] text-[#110000] font-serif selection:bg-black/5 overflow-x-hidden">
+        <div
+            className="min-h-screen bg-[#FDFBEE] selection:bg-black/5 overflow-x-hidden"
+            style={{ color: primaryColor, fontFamily }}
+        >
             {/* Natural Paper Texture Overlay */}
             <div className="fixed inset-0 pointer-events-none z-[100] opacity-30" style={{
                 backgroundImage: 'url("https://www.transparenttextures.com/patterns/natural-paper.png")',
@@ -28,7 +34,7 @@ export default function EditorialClassic({ formData }) {
                     className="flex justify-center mb-12"
                 >
                     <div className="w-12 h-12 border border-[#110000]/20 rounded-full flex items-center justify-center">
-                        <Star size={16} className="text-[#110000]/40" />
+                        <Star size={16} style={{ color: `${primaryColor}66` }} />
                     </div>
                 </motion.div>
 
@@ -60,7 +66,12 @@ export default function EditorialClassic({ formData }) {
             {/* Main Feed */}
             <main className="max-w-6xl mx-auto px-6 space-y-48 pb-60 relative z-10 pt-20">
                 {chapters.map((chapter, index) => (
-                    <EditorialChapter key={chapter.id || index} chapter={chapter} index={index} />
+                    <EditorialChapter
+                        key={chapter.id || index}
+                        chapter={chapter}
+                        index={index}
+                        primaryColor={primaryColor}
+                    />
                 ))}
             </main>
 
@@ -80,7 +91,7 @@ export default function EditorialClassic({ formData }) {
     );
 }
 
-function EditorialChapter({ chapter, index }) {
+function EditorialChapter({ chapter, index, primaryColor }) {
     const isEven = index % 2 === 0;
     const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -103,42 +114,32 @@ function EditorialChapter({ chapter, index }) {
             {/* Visual Fragment */}
             <div className="flex-1 w-full relative">
                 <div className="aspect-[4/5] bg-black/[0.03] rounded-[40px] overflow-hidden shadow-2xl relative group">
-                    <AnimatePresence mode="wait">
-                        {chapter.media?.length > 0 ? (
-                            <motion.img
-                                key={photoIndex}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 1.5 }}
-                                src={chapter.media[photoIndex].data}
-                                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
-                                alt=""
-                            />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                                <Star size={80} className="text-black/5" />
-                            </div>
-                        )}
-                    </AnimatePresence>
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        className="grayscale hover:grayscale-0 transition-all duration-1000"
+                        fallbackIcon={Star}
+                        accentColor={primaryColor}
+                    />
                     {/* Index Tape */}
                     <div className="absolute bottom-8 left-8 bg-[#FDFBEE] px-4 py-2 rounded-full border border-black/5 shadow-sm">
-                        <span className="text-[10px] font-black tracking-widest text-[#110000]/60">FILE_{String(index + 1).padStart(2, '0')}</span>
+                        <span className="text-[10px] font-black tracking-widest opacity-60">FILE_{String(index + 1).padStart(2, '0')}</span>
                     </div>
                 </div>
             </div>
 
             {/* Narrative Fragment */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
-                <h2 className="text-5xl md:text-8xl font-black mb-10 leading-[0.85] tracking-tighter uppercase text-[#110000]">
+                <h2 className="text-5xl md:text-8xl font-black mb-10 leading-[0.85] tracking-tighter uppercase">
                     {chapter.title}
                 </h2>
-                <p className="text-xl md:text-3xl font-serif italic text-black/60 leading-relaxed mb-12">
+                <p className="text-xl md:text-3xl font-serif italic opacity-60 leading-relaxed mb-12">
                     {chapter.content}
                 </p>
 
                 {chapter.voiceNote && (
-                    <div className="inline-flex items-center gap-4 py-3 px-6 bg-black/5 rounded-full text-black/40">
+                    <div className="inline-flex items-center gap-4 py-3 px-6 bg-black/5 rounded-full opacity-40">
                         <Music size={16} />
                         <span className="text-[10px] uppercase font-bold tracking-widest font-sans">Audio Fragment Attached</span>
                     </div>

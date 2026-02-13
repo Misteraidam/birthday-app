@@ -2,8 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Music, Award, Sparkles, Quote } from 'lucide-react';
 
-export default function GoldenJubilee({ formData }) {
+import MediaBox from './shared/MediaBox';
+
+export default function GoldenJubilee({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
+
+    const primaryColor = templateConfig?.primaryColor || '#FFD700';
+    const accentColor = templateConfig?.accentColor || '#F59E0B';
+    const fontFamily = templateConfig?.fontFamily || "'Playfair Display', serif";
+
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
         : null;
@@ -13,11 +20,20 @@ export default function GoldenJubilee({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#0A0A0A] text-white font-sans selection:bg-amber-500/30 overflow-x-hidden">
+        <div
+            className="min-h-screen bg-[#0A0A0A] text-white selection:bg-amber-500/30 overflow-x-hidden"
+            style={{ fontFamily }}
+        >
             {/* Golden Particles/Glows */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-1/4 left-1/4 w-[50%] h-[50%] bg-amber-500/10 rounded-full blur-[120px] animate-pulse" />
-                <div className="absolute bottom-1/4 right-1/4 w-[40%] h-[40%] bg-yellow-600/5 rounded-full blur-[100px] animate-pulse delay-1000" />
+                <div
+                    className="absolute top-1/4 left-1/4 w-[50%] h-[50%] rounded-full blur-[120px] animate-pulse"
+                    style={{ background: `${primaryColor}1A` }} // 10% opacity
+                />
+                <div
+                    className="absolute bottom-1/4 right-1/4 w-[40%] h-[40%] rounded-full blur-[100px] animate-pulse delay-1000"
+                    style={{ background: `${accentColor}0D` }} // 5% opacity
+                />
             </div>
 
             {/* Header */}
@@ -29,7 +45,7 @@ export default function GoldenJubilee({ formData }) {
                     className="mb-12"
                 >
                     <div className="inline-block p-4 bg-white/5 rounded-full border border-white/10 backdrop-blur-xl">
-                        <Star size={40} className="text-amber-400 fill-amber-400/20" />
+                        <Star size={40} style={{ color: primaryColor }} className="fill-amber-400/20" />
                     </div>
                 </motion.div>
 
@@ -49,11 +65,11 @@ export default function GoldenJubilee({ formData }) {
                         animate={{ opacity: 1 }}
                         className="flex items-center justify-center gap-6"
                     >
-                        <div className="h-px w-20 bg-amber-500/50" />
-                        <p className="text-xs uppercase tracking-[0.6em] text-amber-500 font-black">
+                        <div className="h-px w-20" style={{ background: `${primaryColor}80` }} />
+                        <p className="text-xs uppercase tracking-[0.6em] font-black" style={{ color: primaryColor }}>
                             {(formData.customOccasion || celebrationType).toUpperCase()}
                         </p>
-                        <div className="h-px w-20 bg-amber-500/50" />
+                        <div className="h-px w-20" style={{ background: `${primaryColor}80` }} />
                     </motion.div>
                 )}
             </header>
@@ -61,14 +77,20 @@ export default function GoldenJubilee({ formData }) {
             {/* Main Feed */}
             <main className="max-w-7xl mx-auto px-6 space-y-48 pb-60 relative z-10 pt-20">
                 {chapters.map((chapter, index) => (
-                    <GoldenChapter key={chapter.id || index} chapter={chapter} index={index} />
+                    <GoldenChapter
+                        key={chapter.id || index}
+                        chapter={chapter}
+                        index={index}
+                        primaryColor={primaryColor}
+                        accentColor={accentColor}
+                    />
                 ))}
             </main>
 
             {/* Prestige Footer */}
             {formData.secretMessage && (
                 <footer className="relative z-10 py-60 px-6 text-center bg-gradient-to-t from-amber-950/20 to-transparent">
-                    <Quote size={40} className="mx-auto mb-12 text-amber-500/50" />
+                    <Quote size={40} className="mx-auto mb-12" style={{ color: `${primaryColor}80` }} />
                     <p className="text-4xl md:text-7xl font-bold italic text-white/90 leading-tight max-w-5xl mx-auto">
                         "{formData.secretMessage}"
                     </p>
@@ -81,7 +103,7 @@ export default function GoldenJubilee({ formData }) {
     );
 }
 
-function GoldenChapter({ chapter, index }) {
+function GoldenChapter({ chapter, index, primaryColor, accentColor }) {
     const isEven = index % 2 === 0;
     const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -103,31 +125,21 @@ function GoldenChapter({ chapter, index }) {
         >
             {/* Visual Display */}
             <div className="flex-1 w-full relative">
-                <div className="absolute inset-0 bg-amber-500/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div
+                    className="absolute inset-0 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ background: `${primaryColor}1A` }}
+                />
                 <div className="aspect-[3/4] md:aspect-video bg-[#111111] p-2 rounded-2xl border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] overflow-hidden group">
-                    <div className="w-full h-full overflow-hidden relative rounded-xl">
-                        <AnimatePresence mode="wait">
-                            {chapter.media?.length > 0 ? (
-                                <motion.img
-                                    key={photoIndex}
-                                    initial={{ opacity: 0, scale: 1.05 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 2 }}
-                                    src={chapter.media[photoIndex].data}
-                                    className="w-full h-full object-cover"
-                                    alt=""
-                                />
-                            ) : (
-                                <div className="w-full h-full bg-white/5 flex items-center justify-center">
-                                    <Award size={80} className="text-amber-500/20" />
-                                </div>
-                            )}
-                        </AnimatePresence>
-                    </div>
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative rounded-xl"
+                        fallbackIcon={Award}
+                        accentColor={primaryColor}
+                    />
                     {/* Catalog ID */}
                     <div className="absolute top-8 left-8 bg-black/60 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20">
-                        <span className="text-[10px] font-black tracking-widest text-amber-500">EXHIBIT_{String(index + 1).padStart(2, '0')}</span>
+                        <span className="text-[10px] font-black tracking-widest" style={{ color: primaryColor }}>EXHIBIT_{String(index + 1).padStart(2, '0')}</span>
                     </div>
                 </div>
             </div>

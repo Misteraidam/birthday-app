@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Music, Quote, Zap } from 'lucide-react';
+import MediaBox from './shared/MediaBox';
 
-export default function CosmicReveal({ formData }) {
+export default function CosmicReveal({ formData, templateConfig }) {
     const chapters = formData.chapters || formData.memories || [];
     const [introComplete, setIntroComplete] = useState(false);
+
+    const primaryColor = templateConfig?.primaryColor || '#111827';
+    const accentColor = templateConfig?.accentColor || '#6366F1';
+    const fontFamily = templateConfig?.fontFamily || "'Inter', sans-serif";
 
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
@@ -15,7 +20,10 @@ export default function CosmicReveal({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#f9fafb] text-gray-900 font-sans selection:bg-gray-100 overflow-x-hidden relative">
+        <div
+            className="min-h-screen bg-[#f9fafb] text-gray-900 selection:bg-gray-100 overflow-x-hidden relative"
+            style={{ fontFamily }}
+        >
             <AnimatePresence mode="wait">
                 {!introComplete && (
                     <EtherealSpaceIntro key="intro" onComplete={() => setIntroComplete(true)} recipientName={recipientName} />
@@ -36,8 +44,11 @@ export default function CosmicReveal({ formData }) {
                                 animate={{ opacity: 1, y: 0 }}
                                 className="mb-12"
                             >
-                                <div className="w-12 h-12 border border-gray-200 rounded-full flex items-center justify-center mx-auto">
-                                    <Star size={16} className="text-gray-400" />
+                                <div
+                                    className="w-12 h-12 border rounded-full flex items-center justify-center mx-auto"
+                                    style={{ borderColor: `${primaryColor}1A` }}
+                                >
+                                    <Star size={16} style={{ color: `${primaryColor}4D` }} />
                                 </div>
                             </motion.div>
 
@@ -68,7 +79,12 @@ export default function CosmicReveal({ formData }) {
                         {/* Main Feed */}
                         <main className="max-w-6xl mx-auto px-6 space-y-48 pb-60 relative z-10 pt-20">
                             {chapters.map((chapter, index) => (
-                                <RevealChapter key={chapter.id || index} chapter={chapter} index={index} />
+                                <RevealChapter
+                                    key={chapter.id || index}
+                                    chapter={chapter}
+                                    index={index}
+                                    primaryColor={primaryColor}
+                                />
                             ))}
                         </main>
 

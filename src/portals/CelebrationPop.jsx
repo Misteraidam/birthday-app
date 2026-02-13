@@ -2,8 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PartyPopper, Music, Sparkles, Quote } from 'lucide-react';
 
-export default function CelebrationPop({ formData }) {
+import MediaBox from './shared/MediaBox';
+
+export default function CelebrationPop({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
+
+    const primaryColor = templateConfig?.primaryColor || '#A855F7';
+    const accentColor = templateConfig?.accentColor || '#EC4899';
+    const fontFamily = templateConfig?.fontFamily || "'Poppins', sans-serif";
+
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
         : null;
@@ -13,7 +20,10 @@ export default function CelebrationPop({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#0A0A0A] text-white font-sans selection:bg-purple-500/30 overflow-x-hidden">
+        <div
+            className="min-h-screen bg-[#0A0A0A] text-white selection:bg-purple-500/30 overflow-x-hidden"
+            style={{ fontFamily }}
+        >
             {/* Animated Gradient Overlay */}
             <div className="fixed inset-0 pointer-events-none opacity-30">
                 <motion.div
@@ -21,7 +31,7 @@ export default function CelebrationPop({ formData }) {
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                     className="absolute inset-0"
                     style={{
-                        background: 'conic-gradient(from 0deg, #A855F7, #EC4899, #F97316, #22D3EE, #A855F7)',
+                        background: `conic-gradient(from 0deg, ${primaryColor}, ${accentColor}, #F97316, #22D3EE, ${primaryColor})`,
                         filter: 'blur(100px)'
                     }}
                 />
@@ -41,7 +51,8 @@ export default function CelebrationPop({ formData }) {
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl md:text-7xl lg:text-[10rem] font-black tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 leading-none break-words"
+                        className="text-5xl md:text-7xl lg:text-[10rem] font-black tracking-tighter mb-4 bg-clip-text text-transparent leading-none break-words"
+                        style={{ backgroundImage: `linear-gradient(to r, ${primaryColor}, ${accentColor}, #F97316)` }}
                     >
                         {recipientName.toUpperCase()}
                     </motion.h1>
@@ -60,14 +71,20 @@ export default function CelebrationPop({ formData }) {
             {/* Main Feed */}
             <main className="max-w-6xl mx-auto px-6 space-y-20 md:space-y-48 pb-60 relative z-10 pt-20">
                 {chapters.map((chapter, index) => (
-                    <PopChapter key={chapter.id || index} chapter={chapter} index={index} />
+                    <PopChapter
+                        key={chapter.id || index}
+                        chapter={chapter}
+                        index={index}
+                        primaryColor={primaryColor}
+                        accentColor={accentColor}
+                    />
                 ))}
             </main>
 
             {/* Final Message */}
             {formData.secretMessage && (
                 <footer className="relative z-10 py-60 px-6 text-center bg-gradient-to-t from-purple-500/20 to-transparent">
-                    <PartyPopper size={48} className="mx-auto mb-10 text-pink-400" />
+                    <PartyPopper size={48} className="mx-auto mb-10" style={{ color: accentColor }} />
                     <p className="text-4xl md:text-7xl font-black tracking-tight text-white leading-tight max-w-5xl mx-auto">
                         "{formData.secretMessage}"
                     </p>
@@ -80,7 +97,7 @@ export default function CelebrationPop({ formData }) {
     );
 }
 
-function PopChapter({ chapter, index }) {
+function PopChapter({ chapter, index, primaryColor, accentColor }) {
     const isEven = index % 2 === 0;
     const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -103,26 +120,13 @@ function PopChapter({ chapter, index }) {
             {/* Visual Pop */}
             <div className="flex-1 w-full">
                 <div className="aspect-square bg-white/5 border-4 border-white/20 rounded-[2.5rem] p-4 shadow-2xl relative group overflow-hidden">
-                    <div className="w-full h-full overflow-hidden relative rounded-[1.5rem]">
-                        <AnimatePresence mode="wait">
-                            {chapter.media?.length > 0 ? (
-                                <motion.img
-                                    key={photoIndex}
-                                    initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-                                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                                    exit={{ opacity: 0, scale: 1.2, rotate: 5 }}
-                                    transition={{ type: "spring", bounce: 0.4 }}
-                                    src={chapter.media[photoIndex].data}
-                                    className="w-full h-full object-cover"
-                                    alt=""
-                                />
-                            ) : (
-                                <div className="w-full h-full bg-purple-500/10 flex items-center justify-center">
-                                    <Sparkles size={64} className="text-purple-400/30" />
-                                </div>
-                            )}
-                        </AnimatePresence>
-                    </div>
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative rounded-[1.5rem]"
+                        fallbackIcon={Sparkles}
+                        accentColor={primaryColor}
+                    />
                 </div>
             </div>
 

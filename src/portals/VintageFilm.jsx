@@ -2,8 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, Film, Camera, Quote } from 'lucide-react';
 
-export default function VintageFilm({ formData }) {
+import MediaBox from './shared/MediaBox';
+
+export default function VintageFilm({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
+
+    const primaryColor = templateConfig?.primaryColor || '#78350F';
+    const accentColor = templateConfig?.accentColor || '#F59E0B';
+    const fontFamily = templateConfig?.fontFamily || "'EB Garamond', serif";
+
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
         : null;
@@ -13,7 +20,10 @@ export default function VintageFilm({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#FEF3C7] text-[#78350F] font-serif selection:bg-amber-200 overflow-x-hidden">
+        <div
+            className="min-h-screen bg-[#FEF3C7] text-[#78350F] selection:bg-amber-200 overflow-x-hidden"
+            style={{ fontFamily }}
+        >
             {/* Film Grain Overlay */}
             <div
                 className="fixed inset-0 pointer-events-none z-50 opacity-20"
@@ -27,12 +37,12 @@ export default function VintageFilm({ formData }) {
             <div
                 className="fixed inset-0 pointer-events-none z-40"
                 style={{
-                    background: 'radial-gradient(ellipse at center, transparent 50%, rgba(120,53,15,0.3) 100%)'
+                    background: `radial-gradient(ellipse at center, transparent 50%, ${primaryColor}4D 100%)`
                 }}
             />
 
             {/* Cinematic Light Leaks */}
-            <LightLeaks />
+            <LightLeaks accentColor={accentColor} />
 
             {/* Header */}
             <header className="relative z-10 pt-32 pb-40 px-6 text-center border-b border-[#78350F]/10">
@@ -41,7 +51,7 @@ export default function VintageFilm({ formData }) {
                     transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
                     className="mb-8 inline-block"
                 >
-                    <Camera size={48} className="text-amber-800" />
+                    <Camera size={48} style={{ color: primaryColor }} />
                 </motion.div>
                 {recipientName && (
                     <motion.h1
@@ -71,7 +81,12 @@ export default function VintageFilm({ formData }) {
             {/* Main Feed */}
             <main className="max-w-6xl mx-auto px-6 space-y-48 pb-60 relative z-10 pt-20">
                 {chapters.map((chapter, index) => (
-                    <FilmChapter key={chapter.id || index} chapter={chapter} index={index} />
+                    <FilmChapter
+                        key={chapter.id || index}
+                        chapter={chapter}
+                        index={index}
+                        accentColor={accentColor}
+                    />
                 ))}
             </main>
 
@@ -91,7 +106,7 @@ export default function VintageFilm({ formData }) {
     );
 }
 
-function LightLeaks() {
+function LightLeaks({ accentColor }) {
     return (
         <div className="fixed inset-0 pointer-events-none z-[45] overflow-hidden opacity-30">
             {[...Array(2)].map((_, i) => (
@@ -111,7 +126,7 @@ function LightLeaks() {
                     style={{
                         top: i === 0 ? '-100px' : 'auto',
                         bottom: i === 1 ? '-100px' : 'auto',
-                        background: 'radial-gradient(circle at center, #F59E0B 0%, transparent 70%)',
+                        background: `radial-gradient(circle at center, ${accentColor} 0%, transparent 70%)`,
                         filter: 'blur(100px)',
                     }}
                 />
@@ -120,7 +135,7 @@ function LightLeaks() {
     );
 }
 
-function FilmChapter({ chapter, index }) {
+function FilmChapter({ chapter, index, accentColor }) {
     const isEven = index % 2 === 0;
     const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -151,24 +166,14 @@ function FilmChapter({ chapter, index }) {
 
                 <div className="p-4 bg-white shadow-2xl rotate-1 border border-gray-200 mt-12">
                     <div className="w-full aspect-[4/3] bg-black overflow-hidden relative">
-                        <AnimatePresence mode="wait">
-                            {chapter.media?.length > 0 ? (
-                                <motion.img
-                                    key={photoIndex}
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 1 }}
-                                    src={chapter.media[photoIndex].data}
-                                    className="w-full h-full object-cover sepia-[0.3] contrast-110"
-                                    alt=""
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-zinc-900">
-                                    <Film size={80} className="text-zinc-800" />
-                                </div>
-                            )}
-                        </AnimatePresence>
+                        <MediaBox
+                            media={chapter.media}
+                            photoIndex={photoIndex}
+                            containerClassName="w-full h-full relative"
+                            className="sepia-[0.3] contrast-110"
+                            fallbackIcon={Film}
+                            accentColor={accentColor}
+                        />
                         {/* Grain overlay for image */}
                         <div className="absolute inset-0 bg-noise opacity-20 pointer-events-none mix-blend-overlay" />
                     </div>

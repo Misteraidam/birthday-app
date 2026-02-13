@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Volume2 } from 'lucide-react';
 
@@ -29,7 +30,7 @@ export default function EnvelopeOpener({ recipientName, onComplete, hasMusic }) 
             </div>
 
             <motion.div
-                className="cursor-pointer relative"
+                className="cursor-pointer relative z-20"
                 onClick={!isOpening ? handleClick : undefined}
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={isOpening ?

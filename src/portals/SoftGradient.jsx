@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Music, Quote, Star } from 'lucide-react';
+import MediaBox from './shared/MediaBox';
 
-export default function SoftGradient({ formData }) {
+export default function SoftGradient({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
     const [introComplete, setIntroComplete] = useState(false);
+
+    const primaryColor = templateConfig?.primaryColor || '#FDA4AF';
+    const accentColor = templateConfig?.accentColor || '#67E8F9';
+    const fontFamily = templateConfig?.fontFamily || "'Poppins', sans-serif";
 
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
@@ -15,12 +20,22 @@ export default function SoftGradient({ formData }) {
         : null;
 
     return (
-        <div className="min-h-screen bg-[#FDF4F5] text-[#4A3728] font-sans selection:bg-rose-100/50 overflow-x-hidden relative" style={{
-            background: 'linear-gradient(135deg, #FDF4F5 0%, #FCF0E4 50%, #F0F4FF 100%)'
-        }}>
+        <div
+            className="min-h-screen text-[#4A3728] selection:bg-rose-100/50 overflow-x-hidden relative"
+            style={{
+                background: `linear-gradient(135deg, #FDF4F5 0%, #FCF0E4 50%, #F0F4FF 100%)`,
+                fontFamily
+            }}
+        >
             <AnimatePresence mode="wait">
                 {!introComplete && (
-                    <KindredIntro key="intro" onComplete={() => setIntroComplete(true)} recipientName={recipientName} />
+                    <KindredIntro
+                        key="intro"
+                        onComplete={() => setIntroComplete(true)}
+                        recipientName={recipientName}
+                        primaryColor={primaryColor}
+                        accentColor={accentColor}
+                    />
                 )}
             </AnimatePresence>
 
@@ -39,7 +54,7 @@ export default function SoftGradient({ formData }) {
                                 transition={{ type: 'spring', stiffness: 200 }}
                                 className="mb-12"
                             >
-                                <Heart size={64} className="mx-auto text-rose-400" fill="#FDA4AF" />
+                                <Heart size={64} className="mx-auto" style={{ color: primaryColor }} fill={primaryColor} />
                             </motion.div>
                             {recipientName && (
                                 <motion.h1
@@ -47,7 +62,7 @@ export default function SoftGradient({ formData }) {
                                     animate={{ opacity: 1, y: 0 }}
                                     className="text-7xl md:text-[10rem] font-serif italic mb-8 leading-none"
                                     style={{
-                                        background: 'linear-gradient(135deg, #F472B6, #C084FC, #60A5FA)',
+                                        background: `linear-gradient(135deg, ${primaryColor}, ${accentColor}, #60A5FA)`,
                                         WebkitBackgroundClip: 'text',
                                         WebkitTextFillColor: 'transparent',
                                     }}
@@ -74,7 +89,13 @@ export default function SoftGradient({ formData }) {
                         {/* Main Feed */}
                         <main className="max-w-5xl mx-auto px-6 space-y-48 pb-60 relative z-10 pt-20">
                             {chapters.map((chapter, index) => (
-                                <GradientChapter key={chapter.id || index} chapter={chapter} index={index} />
+                                <GradientChapter
+                                    key={chapter.id || index}
+                                    chapter={chapter}
+                                    index={index}
+                                    primaryColor={primaryColor}
+                                    accentColor={accentColor}
+                                />
                             ))}
                         </main>
 
@@ -97,7 +118,7 @@ export default function SoftGradient({ formData }) {
     );
 }
 
-function KindredIntro({ onComplete, recipientName }) {
+function KindredIntro({ onComplete, recipientName, primaryColor, accentColor }) {
     useEffect(() => {
         const timer = setTimeout(onComplete, 3500);
         return () => clearTimeout(timer);
@@ -114,13 +135,15 @@ function KindredIntro({ onComplete, recipientName }) {
                 initial={{ scale: 0, x: -100, y: -50, opacity: 0 }}
                 animate={{ scale: 1.5, x: -20, y: 0, opacity: 0.6 }}
                 transition={{ duration: 3, ease: "easeInOut" }}
-                className="absolute w-[400px] h-[400px] rounded-full bg-[#FDA4AF] blur-[80px]"
+                className="absolute w-[400px] h-[400px] rounded-full blur-[80px]"
+                style={{ backgroundColor: primaryColor }}
             />
             <motion.div
                 initial={{ scale: 0, x: 100, y: 50, opacity: 0 }}
                 animate={{ scale: 1.5, x: 20, y: 0, opacity: 0.6 }}
                 transition={{ duration: 3, ease: "easeInOut", delay: 0.2 }}
-                className="absolute w-[400px] h-[400px] rounded-full bg-[#67E8F9] blur-[80px]"
+                className="absolute w-[400px] h-[400px] rounded-full blur-[80px]"
+                style={{ backgroundColor: accentColor }}
             />
 
             {/* Content */}
@@ -138,7 +161,8 @@ function KindredIntro({ onComplete, recipientName }) {
                             initial={{ width: 0 }}
                             animate={{ width: 100 }}
                             transition={{ duration: 1.5, delay: 1 }}
-                            className="h-1 bg-gradient-to-r from-[#FDA4AF] to-[#67E8F9] mx-auto rounded-full"
+                            className="h-1 mx-auto rounded-full"
+                            style={{ background: `linear-gradient(to right, ${primaryColor}, ${accentColor})` }}
                         />
                     </motion.div>
                 )}
@@ -147,7 +171,7 @@ function KindredIntro({ onComplete, recipientName }) {
     );
 }
 
-function GradientChapter({ chapter, index }) {
+function GradientChapter({ chapter, index, primaryColor, accentColor }) {
     const isEven = index % 2 === 0;
     const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -170,24 +194,14 @@ function GradientChapter({ chapter, index }) {
             {/* Visual Frame */}
             <div className="flex-1 w-full relative">
                 <div className="aspect-[4/3] bg-white/60 backdrop-blur-3xl rounded-[3rem] p-4 border border-white/50 overflow-hidden shadow-2xl relative">
-                    <AnimatePresence mode="wait">
-                        {chapter.media?.length > 0 ? (
-                            <motion.img
-                                key={photoIndex}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 1.5 }}
-                                src={chapter.media[photoIndex].data}
-                                className="w-full h-full object-cover rounded-[2rem]"
-                                alt=""
-                            />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                                <Heart size={80} className="text-rose-200/40" />
-                            </div>
-                        )}
-                    </AnimatePresence>
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative rounded-[2rem] overflow-hidden"
+                        className=""
+                        fallbackIcon={Heart}
+                        accentColor={primaryColor}
+                    />
                     {/* Index Tag */}
                     <div className="absolute top-8 left-8 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-rose-100 shadow-sm">
                         <span className="text-[10px] font-bold tracking-widest text-rose-400">MEMO_{String(index + 1).padStart(2, '0')}</span>
@@ -200,7 +214,7 @@ function GradientChapter({ chapter, index }) {
                 <h2 className="text-4xl md:text-7xl font-serif mb-10 text-[#4A3728] leading-tight italic">
                     {chapter.title}
                 </h2>
-                <div className={`h-1 w-20 bg-rose-200 mb-10 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'}`} />
+                <div className={`h-1 w-20 mb-10 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'}`} style={{ backgroundColor: `${primaryColor}4D` }} />
                 <p className="text-xl md:text-2xl text-[#4A3728]/70 leading-relaxed mb-12">
                     {chapter.content}
                 </p>

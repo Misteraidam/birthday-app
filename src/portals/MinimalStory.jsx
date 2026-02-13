@@ -2,9 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, Minus, Quote } from 'lucide-react';
 
-export default function MinimalStory({ formData }) {
+import MediaBox from './shared/MediaBox';
+
+export default function MinimalStory({ formData, templateConfig }) {
     const chapters = formData.chapters || [];
     const [introComplete, setIntroComplete] = useState(false);
+
+    const primaryColor = templateConfig?.primaryColor || '#000000';
+    const accentColor = templateConfig?.accentColor || '#666666';
+    const fontFamily = templateConfig?.fontFamily || "'Inter', sans-serif";
 
     const recipientName = formData.recipientName && formData.recipientName !== 'Someone Special'
         ? String(formData.recipientName)
@@ -16,7 +22,10 @@ export default function MinimalStory({ formData }) {
 
     return (
 
-        <div className="min-h-screen bg-white text-black font-sans selection:bg-gray-100 overflow-x-hidden relative">
+        <div
+            className="min-h-screen bg-white text-black selection:bg-gray-100 overflow-x-hidden relative"
+            style={{ fontFamily }}
+        >
             <AnimatePresence mode="wait">
                 {!introComplete && (
                     <CurtainIntro key="intro" onComplete={() => setIntroComplete(true)} recipientName={recipientName} />
@@ -37,7 +46,7 @@ export default function MinimalStory({ formData }) {
                                 animate={{ opacity: 1, scale: 1 }}
                                 className="mb-12"
                             >
-                                <Minus className="mx-auto text-gray-200" size={64} />
+                                <Minus className="mx-auto" style={{ color: `${primaryColor}22` }} size={64} />
                             </motion.div>
                             {recipientName && (
                                 <motion.h1
@@ -66,7 +75,12 @@ export default function MinimalStory({ formData }) {
                         {/* Chapters Feed */}
                         <main className="max-w-4xl mx-auto px-6 space-y-48 pb-60 relative z-10 pt-20">
                             {chapters.map((chapter, index) => (
-                                <MinimalChapter key={chapter.id || index} chapter={chapter} index={index} />
+                                <MinimalChapter
+                                    key={chapter.id || index}
+                                    chapter={chapter}
+                                    index={index}
+                                    primaryColor={primaryColor}
+                                />
                             ))}
                         </main>
 
@@ -133,7 +147,18 @@ function CurtainIntro({ onComplete, recipientName }) {
     );
 }
 
-function MinimalChapter({ chapter, index }) {
+function MinimalChapter({ chapter, index, primaryColor }) {
+    const [photoIndex, setPhotoIndex] = useState(0);
+
+    useEffect(() => {
+        if (chapter.media?.length > 1) {
+            const interval = setInterval(() => {
+                setPhotoIndex(prev => (prev + 1) % chapter.media.length);
+            }, 6000);
+            return () => clearInterval(interval);
+        }
+    }, [chapter.media]);
+
     return (
         <motion.section
             initial={{ opacity: 0 }}
@@ -161,19 +186,15 @@ function MinimalChapter({ chapter, index }) {
             <div className="grid grid-cols-1 gap-2">
                 {chapter.media?.length > 0 ? (
                     chapter.media.map((item, i) => (
-                        <motion.div
+                        <MediaBox
                             key={i}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="bg-gray-50 overflow-hidden"
-                        >
-                            <img
-                                src={item.data}
-                                className="w-full object-cover grayscale hover:grayscale-0 transition-all duration-1000 ease-in-out"
-                                alt=""
-                            />
-                        </motion.div>
+                            media={chapter.media}
+                            photoIndex={i}
+                            containerClassName="w-full relative bg-gray-50"
+                            className="grayscale hover:grayscale-0 transition-all duration-1000 ease-in-out"
+                            fallbackIcon={Minus}
+                            accentColor={primaryColor}
+                        />
                     ))
                 ) : (
                     <div className="aspect-video bg-gray-50 flex items-center justify-center border border-gray-100">
