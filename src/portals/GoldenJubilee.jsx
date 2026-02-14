@@ -123,27 +123,6 @@ function GoldenChapter({ chapter, index, primaryColor, accentColor }) {
             viewport={{ once: true, margin: "-15%" }}
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-20 items-center`}
         >
-            {/* Visual Display */}
-            <div className="flex-1 w-full relative">
-                <div
-                    className="absolute inset-0 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ background: `${primaryColor}1A` }}
-                />
-                <div className="aspect-[3/4] md:aspect-video bg-[#111111] p-2 rounded-2xl border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] overflow-hidden group">
-                    <MediaBox
-                        media={chapter.media}
-                        photoIndex={photoIndex}
-                        containerClassName="w-full h-full relative rounded-xl"
-                        fallbackIcon={Award}
-                        accentColor={primaryColor}
-                    />
-                    {/* Catalog ID */}
-                    <div className="absolute top-8 left-8 bg-black/60 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20">
-                        <span className="text-[10px] font-black tracking-widest" style={{ color: primaryColor }}>EXHIBIT_{String(index + 1).padStart(2, '0')}</span>
-                    </div>
-                </div>
-            </div>
-
             {/* Narrative Content */}
             <div className={`flex-[0.8] ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
                 <div className="flex items-center gap-4 mb-10">
@@ -188,6 +167,27 @@ function GoldenChapter({ chapter, index, primaryColor, accentColor }) {
                         </div>
                     </div>
                 )}
+            </div>
+
+            {/* Visual Display */}
+            <div className="flex-1 w-full relative">
+                <div
+                    className="absolute inset-0 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ background: `${primaryColor}1A` }}
+                />
+                <div className="aspect-[3/4] md:aspect-video bg-[#111111] p-2 rounded-2xl border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] overflow-hidden group">
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative rounded-xl"
+                        fallbackIcon={Award}
+                        accentColor={primaryColor}
+                    />
+                    {/* Catalog ID */}
+                    <div className="absolute top-8 left-8 bg-black/60 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20">
+                        <span className="text-[10px] font-black tracking-widest" style={{ color: primaryColor }}>EXHIBIT_{String(index + 1).padStart(2, '0')}</span>
+                    </div>
+                </div>
             </div>
         </motion.section>
     );

@@ -132,25 +132,6 @@ function NeonChapter({ chapter, index, primaryColor, accentColor }) {
             viewport={{ once: true, margin: "-10%" }}
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-20 items-stretch`}
         >
-            {/* Cyber Visor Visual */}
-            <div
-                className="flex-1 w-full bg-black/40 border rounded-lg p-1.5 shadow-[0_0_50px_rgba(6,182,212,0.1)] group"
-                style={{ borderColor: `${primaryColor}4D` }} // 30% opacity
-            >
-                <div className="w-full h-full min-h-[400px] overflow-hidden relative rounded-md">
-                    <MediaBox
-                        media={chapter.media}
-                        photoIndex={photoIndex}
-                        containerClassName="w-full h-full relative"
-                        className="transition-all duration-500"
-                        fallbackIcon={Zap}
-                        accentColor={primaryColor}
-                    />
-                    {/* CRT Scanline overlay for image */}
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_2px,3px_100%] pointer-events-none" />
-                </div>
-            </div>
-
             {/* Neural Data Content */}
             <div className={`flex-1 flex flex-col justify-center ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
                 <div className="flex items-center gap-4 mb-8">
@@ -171,6 +152,25 @@ function NeonChapter({ chapter, index, primaryColor, accentColor }) {
                         <span className="text-[10px] uppercase font-black tracking-widest">Neural Audio Thread Linked</span>
                     </div>
                 )}
+            </div>
+
+            {/* Cyber Visor Visual */}
+            <div
+                className="flex-1 w-full bg-black/40 border rounded-lg p-1.5 shadow-[0_0_50px_rgba(6,182,212,0.1)] group"
+                style={{ borderColor: `${primaryColor}4D` }} // 30% opacity
+            >
+                <div className="w-full h-full min-h-[400px] overflow-hidden relative rounded-md">
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        className="transition-all duration-500"
+                        fallbackIcon={Zap}
+                        accentColor={primaryColor}
+                    />
+                    {/* CRT Scanline overlay for image */}
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_2px,3px_100%] pointer-events-none" />
+                </div>
             </div>
         </motion.section>
     );

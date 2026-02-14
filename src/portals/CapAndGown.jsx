@@ -114,19 +114,6 @@ function TriumphChapter({ chapter, index, primaryColor, accentColor }) {
             viewport={{ once: true, margin: "-10%" }}
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-20 items-stretch`}
         >
-            {/* Visual Module */}
-            <div className="flex-1 w-full bg-white/5 border border-white/10 rounded-3xl p-4 shadow-2xl overflow-hidden group">
-                <div className="w-full h-full min-h-[400px] overflow-hidden relative rounded-2xl">
-                    <MediaBox
-                        media={chapter.media}
-                        photoIndex={photoIndex}
-                        containerClassName="w-full h-full relative"
-                        fallbackIcon={Award}
-                        accentColor={primaryColor}
-                    />
-                </div>
-            </div>
-
             {/* Information Module */}
             <div className={`flex-1 flex flex-col justify-center ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
                 <div className="flex items-center gap-4 mb-8">
@@ -146,6 +133,19 @@ function TriumphChapter({ chapter, index, primaryColor, accentColor }) {
                         <span className="text-[10px] uppercase font-bold tracking-widest">Graduation Shoutout Attached</span>
                     </div>
                 )}
+            </div>
+
+            {/* Visual Module */}
+            <div className="flex-1 w-full bg-white/5 border border-white/10 rounded-3xl p-4 shadow-2xl overflow-hidden group">
+                <div className="w-full h-full min-h-[400px] overflow-hidden relative rounded-2xl">
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        fallbackIcon={Award}
+                        accentColor={primaryColor}
+                    />
+                </div>
             </div>
         </motion.section>
     );

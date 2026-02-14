@@ -219,22 +219,8 @@ function BouncyChapter({ chapter, index, primaryColor, accentColor }) {
                 ":hover": { boxShadow: `16px 16px 0px ${accentColor}` }
             }}
         >
-            {/* Visual Pop */}
-            <div className="flex-1">
-                <div className="aspect-square rounded-[2rem] overflow-hidden border-4 border-[#2D2D2D] rotate-2">
-                    <MediaBox
-                        media={chapter.media}
-                        photoIndex={photoIndex}
-                        containerClassName="w-full h-full relative"
-                        className=""
-                        fallbackIcon={Star}
-                        accentColor={primaryColor}
-                    />
-                </div>
-            </div>
-
             {/* Content Pop */}
-            <div className="flex-1 flex flex-col justify-center">
+            <div className={`flex-1 flex flex-col justify-center ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
                 <div className="mb-6">
                     <span
                         className="border-2 border-[#2D2D2D] px-4 py-1.5 rounded-full text-xs font-black italic"
@@ -271,6 +257,20 @@ function BouncyChapter({ chapter, index, primaryColor, accentColor }) {
                             ))}
                         </div>
                     </div>
+                </div>
+            </div>
+
+            {/* Visual Pop */}
+            <div className="flex-1">
+                <div className="aspect-square rounded-[2rem] overflow-hidden border-4 border-[#2D2D2D] rotate-2">
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        className=""
+                        fallbackIcon={Star}
+                        accentColor={primaryColor}
+                    />
                 </div>
             </div>
         </motion.div>

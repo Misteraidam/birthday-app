@@ -195,28 +195,6 @@ function ChapterEntry({ chapter, index, primaryColor, accentColor }) {
             viewport={{ once: true, margin: "-10%" }}
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-16 md:gap-24 items-center`}
         >
-            {/* Visual Module */}
-            <div className="flex-1 w-full">
-                <div className="aspect-[9/16] md:aspect-[4/5] bg-white p-4 shadow-2xl relative rotate-1 rounded-sm border border-pink-100 group">
-                    <div className="w-full h-full overflow-hidden relative">
-                        <MediaBox
-                            media={chapter.media}
-                            photoIndex={photoIndex}
-                            containerClassName="w-full h-full relative"
-                            className="hover:scale-105 transition-all duration-1000 ease-in-out"
-                            fallbackIcon={Sparkles}
-                            accentColor={primaryColor}
-                        />
-                    </div>
-                    {/* Media Count Badge */}
-                    {chapter.media?.length > 1 && (
-                        <div className="absolute bottom-8 right-8 px-3 py-1 bg-white/50 backdrop-blur-md rounded-full text-[10px] uppercase font-bold text-pink-600">
-                            Ensemble {photoIndex + 1}/{chapter.media.length}
-                        </div>
-                    )}
-                </div>
-            </div>
-
             {/* Narrative Module */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
                 <span className="text-[10px] uppercase tracking-[0.5em] text-pink-400 font-bold block mb-8">
@@ -255,6 +233,28 @@ function ChapterEntry({ chapter, index, primaryColor, accentColor }) {
                         </div>
                     </div>
                 )}
+            </div>
+
+            {/* Visual Module */}
+            <div className="flex-1 w-full">
+                <div className="aspect-[9/16] md:aspect-[4/5] bg-white p-4 shadow-2xl relative rotate-1 rounded-sm border border-pink-100 group">
+                    <div className="w-full h-full overflow-hidden relative">
+                        <MediaBox
+                            media={chapter.media}
+                            photoIndex={photoIndex}
+                            containerClassName="w-full h-full relative"
+                            className="hover:scale-105 transition-all duration-1000 ease-in-out"
+                            fallbackIcon={Sparkles}
+                            accentColor={primaryColor}
+                        />
+                    </div>
+                    {/* Media Count Badge */}
+                    {chapter.media?.length > 1 && (
+                        <div className="absolute bottom-8 right-8 px-3 py-1 bg-white/50 backdrop-blur-md rounded-full text-[10px] uppercase font-bold text-pink-600">
+                            Ensemble {photoIndex + 1}/{chapter.media.length}
+                        </div>
+                    )}
+                </div>
             </div>
         </motion.section>
     );

@@ -127,22 +127,6 @@ function VowChapter({ chapter, index, accentColor }) {
             viewport={{ once: true, margin: "-10%" }}
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-16 md:gap-32 items-center`}
         >
-            {/* Visual Capsule */}
-            <div className="flex-1 w-full relative">
-                <div className="absolute inset-0 bg-amber-200/40 blur-3xl opacity-0 hover:opacity-100 transition-opacity" />
-                <div className="aspect-[4/5] bg-white p-6 shadow-2xl relative rotate-[-1deg] rounded-lg border border-amber-100 space-y-4">
-                    <MediaBox
-                        media={chapter.media}
-                        photoIndex={photoIndex}
-                        containerClassName="w-full h-full relative rounded-md"
-                        fallbackIcon={Heart}
-                        accentColor={accentColor}
-                    />
-                    {/* Floating Tape Effect */}
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-32 h-8 bg-amber-100/60 backdrop-blur-sm shadow-sm rotate-2" />
-                </div>
-            </div>
-
             {/* Text Narrative */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
                 <div className="flex items-center gap-4 mb-10">
@@ -162,6 +146,22 @@ function VowChapter({ chapter, index, accentColor }) {
                         <span className="text-[10px] uppercase font-bold tracking-[0.2em]">Playback Memory Attached</span>
                     </div>
                 )}
+            </div>
+
+            {/* Visual Capsule */}
+            <div className="flex-1 w-full relative">
+                <div className="absolute inset-0 bg-amber-200/40 blur-3xl opacity-0 hover:opacity-100 transition-opacity" />
+                <div className="aspect-[4/5] bg-white p-6 shadow-2xl relative rotate-[-1deg] rounded-lg border border-amber-100 space-y-4">
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative rounded-md"
+                        fallbackIcon={Heart}
+                        accentColor={accentColor}
+                    />
+                    {/* Floating Tape Effect */}
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-32 h-8 bg-amber-100/60 backdrop-blur-sm shadow-sm rotate-2" />
+                </div>
             </div>
         </motion.section>
     );

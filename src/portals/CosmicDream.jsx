@@ -160,28 +160,6 @@ function CosmicChapter({ chapter, index, primaryColor, accentColor }) {
             viewport={{ once: true, margin: "-10%" }}
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-20 items-center`}
         >
-            {/* Visual Constellation */}
-            <div className="flex-1 w-full relative group">
-                <div
-                    className="absolute -inset-10 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ background: `${primaryColor}1A` }}
-                />
-                <div className="aspect-[4/5] bg-black/40 backdrop-blur-3xl rounded-[3rem] p-4 border border-purple-500/20 overflow-hidden relative shadow-[0_40px_100px_rgba(0,0,0,0.8)]">
-                    <MediaBox
-                        media={chapter.media}
-                        photoIndex={photoIndex}
-                        containerClassName="w-full h-full relative"
-                        className="opacity-80"
-                        fallbackIcon={Sparkles}
-                        accentColor={primaryColor}
-                    />
-                    {/* Index Tape */}
-                    <div className="absolute top-8 left-8 bg-purple-900/60 backdrop-blur-xl px-4 py-2 rounded-full border border-purple-400/30">
-                        <span className="text-[10px] font-black tracking-widest text-purple-200">SECTOR_{String(index + 1).padStart(2, '0')}</span>
-                    </div>
-                </div>
-            </div>
-
             {/* Narrative Burst */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
                 <h2 className="text-4xl md:text-7xl font-bold mb-8 leading-[0.9] tracking-tighter text-white">
@@ -203,6 +181,28 @@ function CosmicChapter({ chapter, index, primaryColor, accentColor }) {
                         </div>
                     </div>
                 )}
+            </div>
+
+            {/* Visual Constellation */}
+            <div className="flex-1 w-full relative group">
+                <div
+                    className="absolute -inset-10 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ background: `${primaryColor}1A` }}
+                />
+                <div className="aspect-[4/5] bg-black/40 backdrop-blur-3xl rounded-[3rem] p-4 border border-purple-500/20 overflow-hidden relative shadow-[0_40px_100px_rgba(0,0,0,0.8)]">
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        className="opacity-80"
+                        fallbackIcon={Sparkles}
+                        accentColor={primaryColor}
+                    />
+                    {/* Index Tape */}
+                    <div className="absolute top-8 left-8 bg-purple-900/60 backdrop-blur-xl px-4 py-2 rounded-full border border-purple-400/30">
+                        <span className="text-[10px] font-black tracking-widest text-purple-200">SECTOR_{String(index + 1).padStart(2, '0')}</span>
+                    </div>
+                </div>
             </div>
         </motion.section>
     );

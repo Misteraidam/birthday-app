@@ -199,30 +199,6 @@ function LuxeChapter({ chapter, index, primaryColor }) {
             viewport={{ once: true, margin: "-10%" }}
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-24 items-center`}
         >
-            {/* Visual Canvas */}
-            <div className="flex-1 w-full relative group">
-                <div
-                    className="absolute -inset-10 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ backgroundColor: `${primaryColor}1A` }}
-                />
-                <div className="aspect-[16/10] bg-zinc-900 rounded-[40px] overflow-hidden border border-white/5 relative shadow-2xl">
-                    <MediaBox
-                        media={chapter.media}
-                        photoIndex={photoIndex}
-                        containerClassName="w-full h-full relative"
-                        className="grayscale hover:grayscale-0 transition-all duration-1000"
-                        fallbackIcon={Star}
-                        accentColor={primaryColor}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-                    {/* Index Tag */}
-                    <div className="absolute bottom-8 left-8 flex items-center gap-3 px-4 py-2 bg-black/40 backdrop-blur-xl rounded-full border border-white/10 text-[10px] uppercase tracking-widest font-black">
-                        <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: primaryColor }} />
-                        NOIR_LOG_{String(index + 1).padStart(2, '0')}
-                    </div>
-                </div>
-            </div>
-
             {/* Narrative Context */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
                 <h2 className="text-5xl md:text-8xl font-black italic tracking-tighter text-white mb-10 leading-[0.85]">
@@ -258,6 +234,30 @@ function LuxeChapter({ chapter, index, primaryColor }) {
                         </div>
                     </div>
                 )}
+            </div>
+
+            {/* Visual Canvas */}
+            <div className="flex-1 w-full relative group">
+                <div
+                    className="absolute -inset-10 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ backgroundColor: `${primaryColor}1A` }}
+                />
+                <div className="aspect-[16/10] bg-zinc-900 rounded-[40px] overflow-hidden border border-white/5 relative shadow-2xl">
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        className="grayscale hover:grayscale-0 transition-all duration-1000"
+                        fallbackIcon={Star}
+                        accentColor={primaryColor}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+                    {/* Index Tag */}
+                    <div className="absolute bottom-8 left-8 flex items-center gap-3 px-4 py-2 bg-black/40 backdrop-blur-xl rounded-full border border-white/10 text-[10px] uppercase tracking-widest font-black">
+                        <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: primaryColor }} />
+                        NOIR_LOG_{String(index + 1).padStart(2, '0')}
+                    </div>
+                </div>
             </div>
         </motion.section>
     );

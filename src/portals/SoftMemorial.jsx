@@ -263,24 +263,10 @@ function MemorialChapter({ chapter, index }) {
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="space-y-12"
+            className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-16 md:gap-24 items-center`}
         >
-            {/* Elegant Portrait */}
-            <div className="max-w-2xl mx-auto">
-                <div className="aspect-[4/5] bg-white p-4 shadow-xl rounded-sm border border-slate-100 relative group">
-                    <MediaBox
-                        media={chapter.media}
-                        photoIndex={photoIndex}
-                        containerClassName="w-full h-full relative"
-                        className="grayscale-[0.2] hover:grayscale-0 transition-all duration-1000"
-                        fallbackIcon={Star}
-                        accentColor={accentColor}
-                    />
-                </div>
-            </div>
-
             {/* Narrative */}
-            <div className="text-center max-w-2xl mx-auto">
+            <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
                 <span className="text-[10px] uppercase tracking-[0.4em] text-slate-400 block mb-6">
                     Memory_{String(index + 1).padStart(2, '0')}
                 </span>
@@ -297,6 +283,20 @@ function MemorialChapter({ chapter, index }) {
                         <span className="text-[10px] uppercase font-bold tracking-widest">A Voice from the Past</span>
                     </div>
                 )}
+            </div>
+
+            {/* Elegant Portrait */}
+            <div className="flex-1 w-full max-w-xl">
+                <div className="aspect-[4/5] bg-white p-4 shadow-xl rounded-sm border border-slate-100 relative group">
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        className="grayscale-[0.2] hover:grayscale-0 transition-all duration-1000"
+                        fallbackIcon={Star}
+                        accentColor={accentColor}
+                    />
+                </div>
             </div>
         </motion.section>
     );

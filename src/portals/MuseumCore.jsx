@@ -185,6 +185,27 @@ function ExhibitionPiece({ chapter, index, primaryColor }) {
             className={`py-40 flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-20 items-center border-b last:border-0`}
             style={{ borderColor: `${primaryColor}1A` }}
         >
+            {/* Narrative Content */}
+            <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
+                <span className="text-[10px] uppercase tracking-[0.5em] text-[#D4AF37] font-bold block mb-8">
+                    Memory Archive
+                </span>
+                <h2 className="text-5xl md:text-7xl font-light mb-10 leading-none tracking-tighter">
+                    {chapter.title}
+                </h2>
+                <div className={`w-20 h-[1px] bg-[#D4AF37] mb-12 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'}`} />
+                <p className="text-xl md:text-2xl leading-relaxed text-[#4A4A4A] font-light italic">
+                    {chapter.content}
+                </p>
+
+                {chapter.voiceNote && (
+                    <div className="mt-12 flex items-center gap-4 py-3 px-6 bg-white border border-[#D4AF37]/20 shadow-sm w-fit">
+                        <div className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
+                        <span className="text-[10px] uppercase tracking-widest font-bold">Audio Commentary Attached</span>
+                    </div>
+                )}
+            </div>
+
             {/* Visual Exhibit */}
             <div className="flex-1 w-full relative">
                 <div
@@ -211,27 +232,6 @@ function ExhibitionPiece({ chapter, index, primaryColor }) {
                     <p className="text-[10px] uppercase tracking-widest font-bold mb-1" style={{ color: primaryColor }}>Catalog No.</p>
                     <p className="font-sans text-xs opacity-40">2026_EX_#{String(index + 1).padStart(2, '0')}</p>
                 </div>
-            </div>
-
-            {/* Narrative Content */}
-            <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
-                <span className="text-[10px] uppercase tracking-[0.5em] text-[#D4AF37] font-bold block mb-8">
-                    Memory Archive
-                </span>
-                <h2 className="text-5xl md:text-7xl font-light mb-10 leading-none tracking-tighter">
-                    {chapter.title}
-                </h2>
-                <div className={`w-20 h-[1px] bg-[#D4AF37] mb-12 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'}`} />
-                <p className="text-xl md:text-2xl leading-relaxed text-[#4A4A4A] font-light italic">
-                    {chapter.content}
-                </p>
-
-                {chapter.voiceNote && (
-                    <div className="mt-12 flex items-center gap-4 py-3 px-6 bg-white border border-[#D4AF37]/20 shadow-sm w-fit">
-                        <div className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
-                        <span className="text-[10px] uppercase tracking-widest font-bold">Audio Commentary Attached</span>
-                    </div>
-                )}
             </div>
         </motion.section>
     );

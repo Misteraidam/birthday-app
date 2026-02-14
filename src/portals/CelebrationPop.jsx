@@ -117,19 +117,6 @@ function PopChapter({ chapter, index, primaryColor, accentColor }) {
             viewport={{ once: true, margin: "-10%" }}
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-16 items-center`}
         >
-            {/* Visual Pop */}
-            <div className="flex-1 w-full">
-                <div className="aspect-square bg-white/5 border-4 border-white/20 rounded-[2.5rem] p-4 shadow-2xl relative group overflow-hidden">
-                    <MediaBox
-                        media={chapter.media}
-                        photoIndex={photoIndex}
-                        containerClassName="w-full h-full relative rounded-[1.5rem]"
-                        fallbackIcon={Sparkles}
-                        accentColor={primaryColor}
-                    />
-                </div>
-            </div>
-
             {/* Content Pop */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
                 <div className={`inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 rounded-full text-[10px] font-black tracking-widest text-purple-300 mb-8`}>
@@ -167,6 +154,19 @@ function PopChapter({ chapter, index, primaryColor, accentColor }) {
                         </div>
                     </div>
                 )}
+            </div>
+
+            {/* Visual Pop */}
+            <div className="flex-1 w-full">
+                <div className="aspect-square bg-white/5 border-4 border-white/20 rounded-[2.5rem] p-4 shadow-2xl relative group overflow-hidden">
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative rounded-[1.5rem]"
+                        fallbackIcon={Sparkles}
+                        accentColor={primaryColor}
+                    />
+                </div>
             </div>
         </motion.section>
     );

@@ -111,6 +111,23 @@ function EditorialChapter({ chapter, index, primaryColor }) {
             viewport={{ once: true, margin: "-10%" }}
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-20 items-center`}
         >
+            {/* Narrative Fragment */}
+            <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
+                <h2 className="text-5xl md:text-8xl font-black mb-10 leading-[0.85] tracking-tighter uppercase">
+                    {chapter.title}
+                </h2>
+                <p className="text-xl md:text-3xl font-serif italic opacity-60 leading-relaxed mb-12">
+                    {chapter.content}
+                </p>
+
+                {chapter.voiceNote && (
+                    <div className="inline-flex items-center gap-4 py-3 px-6 bg-black/5 rounded-full opacity-40">
+                        <Music size={16} />
+                        <span className="text-[10px] uppercase font-bold tracking-widest font-sans">Audio Fragment Attached</span>
+                    </div>
+                )}
+            </div>
+
             {/* Visual Fragment */}
             <div className="flex-1 w-full relative">
                 <div className="aspect-[4/5] bg-black/[0.03] rounded-[40px] overflow-hidden shadow-2xl relative group">
@@ -127,23 +144,6 @@ function EditorialChapter({ chapter, index, primaryColor }) {
                         <span className="text-[10px] font-black tracking-widest opacity-60">FILE_{String(index + 1).padStart(2, '0')}</span>
                     </div>
                 </div>
-            </div>
-
-            {/* Narrative Fragment */}
-            <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
-                <h2 className="text-5xl md:text-8xl font-black mb-10 leading-[0.85] tracking-tighter uppercase">
-                    {chapter.title}
-                </h2>
-                <p className="text-xl md:text-3xl font-serif italic opacity-60 leading-relaxed mb-12">
-                    {chapter.content}
-                </p>
-
-                {chapter.voiceNote && (
-                    <div className="inline-flex items-center gap-4 py-3 px-6 bg-black/5 rounded-full opacity-40">
-                        <Music size={16} />
-                        <span className="text-[10px] uppercase font-bold tracking-widest font-sans">Audio Fragment Attached</span>
-                    </div>
-                )}
             </div>
         </motion.section>
     );

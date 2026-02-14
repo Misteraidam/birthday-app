@@ -173,6 +173,27 @@ function GoldenChapter({ chapter, index, primaryColor }) {
             viewport={{ once: true, margin: "-10%" }}
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-24 items-center`}
         >
+            {/* Narrative Content */}
+            <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
+                <h2 className="text-5xl md:text-8xl italic font-light text-white mb-10 leading-[0.85] tracking-tighter">
+                    {chapter.title}
+                </h2>
+                <div className="h-px w-20 mb-12" style={{ background: primaryColor, marginLeft: isEven ? '0' : 'auto', marginRight: isEven ? 'auto' : '0' }} />
+                <p className="text-xl md:text-3xl leading-relaxed italic mb-12" style={{ color: `${primaryColor}99` }}>
+                    {chapter.content}
+                </p>
+
+                {chapter.voiceNote && (
+                    <div
+                        className="inline-flex items-center gap-4 py-3 px-6 border bg-opacity-5"
+                        style={{ borderColor: `${primaryColor}4D`, backgroundColor: primaryColor }}
+                    >
+                        <Music size={16} style={{ color: primaryColor }} />
+                        <span className="text-[10px] uppercase font-bold tracking-widest font-sans" style={{ color: primaryColor }}>Premium Audio Fragment Detected</span>
+                    </div>
+                )}
+            </div>
+
             {/* Visual Frame */}
             <div className="flex-1 w-full relative group">
                 <div
@@ -193,27 +214,6 @@ function GoldenChapter({ chapter, index, primaryColor }) {
                         <span className="text-[10px] font-bold tracking-[0.2em]" style={{ color: primaryColor }}>ASSET_{String(index + 1).padStart(2, '0')}</span>
                     </div>
                 </div>
-            </div>
-
-            {/* Narrative Content */}
-            <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
-                <h2 className="text-5xl md:text-8xl italic font-light text-white mb-10 leading-[0.85] tracking-tighter">
-                    {chapter.title}
-                </h2>
-                <div className="h-px w-20 mb-12" style={{ background: primaryColor, marginLeft: isEven ? '0' : 'auto', marginRight: isEven ? 'auto' : '0' }} />
-                <p className="text-xl md:text-3xl leading-relaxed italic mb-12" style={{ color: `${primaryColor}99` }}>
-                    {chapter.content}
-                </p>
-
-                {chapter.voiceNote && (
-                    <div
-                        className="inline-flex items-center gap-4 py-3 px-6 border bg-opacity-5"
-                        style={{ borderColor: `${primaryColor}4D`, backgroundColor: primaryColor }}
-                    >
-                        <Music size={16} style={{ color: primaryColor }} />
-                        <span className="text-[10px] uppercase font-bold tracking-widest font-sans" style={{ color: primaryColor }}>Premium Audio Fragment Detected</span>
-                    </div>
-                )}
             </div>
         </motion.section>
     );

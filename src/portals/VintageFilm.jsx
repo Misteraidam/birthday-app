@@ -155,6 +155,27 @@ function FilmChapter({ chapter, index, accentColor }) {
             viewport={{ once: true, margin: "-10%" }}
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-20 items-center`}
         >
+            {/* Narrative Reel Section */}
+            <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
+                <div className="flex items-center gap-4 mb-10">
+                    <span className="text-[10px] font-mono tracking-widest text-amber-900/40 uppercase">Frame_{String(index + 1).padStart(2, '0')}</span>
+                    <div className="flex-grow h-px bg-amber-900/10" />
+                </div>
+                <h2 className="text-4xl md:text-7xl font-light italic text-[#78350F] mb-10 leading-none">
+                    {chapter.title}
+                </h2>
+                <p className="text-xl md:text-2xl font-light text-amber-900 leading-relaxed italic">
+                    {chapter.content}
+                </p>
+
+                {chapter.voiceNote && (
+                    <div className="mt-12 inline-flex items-center gap-4 py-3 px-6 bg-amber-100 rounded-full border border-amber-200 text-amber-700">
+                        <Music size={16} />
+                        <span className="text-[10px] uppercase font-bold tracking-widest font-sans">Recorded Narrative Found</span>
+                    </div>
+                )}
+            </div>
+
             {/* Visual Reel Section */}
             <div className="flex-1 w-full relative">
                 {/* Film sprocket decoration */}
@@ -178,27 +199,6 @@ function FilmChapter({ chapter, index, accentColor }) {
                         <div className="absolute inset-0 bg-noise opacity-20 pointer-events-none mix-blend-overlay" />
                     </div>
                 </div>
-            </div>
-
-            {/* Narrative Reel Section */}
-            <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
-                <div className="flex items-center gap-4 mb-10">
-                    <span className="text-[10px] font-mono tracking-widest text-amber-900/40 uppercase">Frame_{String(index + 1).padStart(2, '0')}</span>
-                    <div className="flex-grow h-px bg-amber-900/10" />
-                </div>
-                <h2 className="text-4xl md:text-7xl font-light italic text-[#78350F] mb-10 leading-none">
-                    {chapter.title}
-                </h2>
-                <p className="text-xl md:text-2xl font-light text-amber-900 leading-relaxed italic">
-                    {chapter.content}
-                </p>
-
-                {chapter.voiceNote && (
-                    <div className="mt-12 inline-flex items-center gap-4 py-3 px-6 bg-amber-100 rounded-full border border-amber-200 text-amber-700">
-                        <Music size={16} />
-                        <span className="text-[10px] uppercase font-bold tracking-widest font-sans">Recorded Narrative Found</span>
-                    </div>
-                )}
             </div>
         </motion.section>
     );

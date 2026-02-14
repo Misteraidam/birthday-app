@@ -180,24 +180,8 @@ function BrutalistBlock({ chapter, index }) {
             viewport={{ once: true, margin: "-10%" }}
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-0 items-stretch border-8 border-black bg-white shadow-[15px_15px_0px_rgba(0,0,0,1)] hover:shadow-[0px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[15px] hover:translate-y-[15px] transition-all duration-300`}
         >
-            {/* VISUAL MODULE */}
-            <div className="flex-1 min-h-[400px] border-b-8 md:border-b-0 md:border-r-8 md:last:border-r-0 border-black overflow-hidden group relative">
-                <MediaBox
-                    media={chapter.media}
-                    photoIndex={photoIndex}
-                    containerClassName="w-full h-full relative"
-                    className="grayscale group-hover:grayscale-0 transition-all duration-500"
-                    fallbackIcon={AlertTriangle}
-                />
-                {chapter.media?.length > 1 && (
-                    <div className="absolute bottom-4 right-4 bg-black text-white px-3 py-1 text-xs font-bold uppercase tracking-widest z-20">
-                        {photoIndex + 1} / {chapter.media.length}
-                    </div>
-                )}
-            </div>
-
             {/* CONTENT MODULE */}
-            <div className="flex-1 p-8 md:p-16 flex flex-col justify-center bg-white">
+            <div className={`flex-1 p-8 md:p-16 flex flex-col justify-center bg-white ${isEven ? '' : 'md:border-l-8 md:border-r-0'} border-black`}>
                 <div className="flex items-center gap-4 mb-8">
                     <span className="bg-black text-white px-4 py-2 text-xl font-bold">#{index + 1}</span>
                     <div className="h-1 bg-black flex-grow" />
@@ -227,6 +211,22 @@ function BrutalistBlock({ chapter, index }) {
                         DETAILS <ArrowRight size={24} />
                     </button>
                 </div>
+            </div>
+
+            {/* VISUAL MODULE */}
+            <div className={`flex-1 min-h-[400px] border-t-8 md:border-t-0 ${isEven ? 'md:border-l-8' : 'md:border-r-8'} border-black overflow-hidden group relative`}>
+                <MediaBox
+                    media={chapter.media}
+                    photoIndex={photoIndex}
+                    containerClassName="w-full h-full relative"
+                    className="grayscale group-hover:grayscale-0 transition-all duration-500"
+                    fallbackIcon={AlertTriangle}
+                />
+                {chapter.media?.length > 1 && (
+                    <div className="absolute bottom-4 right-4 bg-black text-white px-3 py-1 text-xs font-bold uppercase tracking-widest z-20">
+                        {photoIndex + 1} / {chapter.media.length}
+                    </div>
+                )}
             </div>
         </motion.div>
     );

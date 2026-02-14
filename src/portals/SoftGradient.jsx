@@ -191,24 +191,6 @@ function GradientChapter({ chapter, index, primaryColor, accentColor }) {
             viewport={{ once: true, margin: "-10%" }}
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-20 items-center`}
         >
-            {/* Visual Frame */}
-            <div className="flex-1 w-full relative">
-                <div className="aspect-[4/3] bg-white/60 backdrop-blur-3xl rounded-[3rem] p-4 border border-white/50 overflow-hidden shadow-2xl relative">
-                    <MediaBox
-                        media={chapter.media}
-                        photoIndex={photoIndex}
-                        containerClassName="w-full h-full relative rounded-[2rem] overflow-hidden"
-                        className=""
-                        fallbackIcon={Heart}
-                        accentColor={primaryColor}
-                    />
-                    {/* Index Tag */}
-                    <div className="absolute top-8 left-8 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-rose-100 shadow-sm">
-                        <span className="text-[10px] font-bold tracking-widest text-rose-400">MEMO_{String(index + 1).padStart(2, '0')}</span>
-                    </div>
-                </div>
-            </div>
-
             {/* Narrative Content */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
                 <h2 className="text-4xl md:text-7xl font-serif mb-10 text-[#4A3728] leading-tight italic">
@@ -225,6 +207,24 @@ function GradientChapter({ chapter, index, primaryColor, accentColor }) {
                         <span className="text-[10px] uppercase font-bold tracking-widest font-sans">Audio Memory Decrypted</span>
                     </div>
                 )}
+            </div>
+
+            {/* Visual Frame */}
+            <div className="flex-1 w-full relative">
+                <div className="aspect-[4/3] bg-white/60 backdrop-blur-3xl rounded-[3rem] p-4 border border-white/50 overflow-hidden shadow-2xl relative">
+                    <MediaBox
+                        media={chapter.media}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative rounded-[2rem] overflow-hidden"
+                        className=""
+                        fallbackIcon={Heart}
+                        accentColor={primaryColor}
+                    />
+                    {/* Index Tag */}
+                    <div className="absolute top-8 left-8 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-rose-100 shadow-sm">
+                        <span className="text-[10px] font-bold tracking-widest text-rose-400">MEMO_{String(index + 1).padStart(2, '0')}</span>
+                    </div>
+                </div>
             </div>
         </motion.section>
     );

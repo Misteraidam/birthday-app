@@ -203,34 +203,6 @@ function RevealChapter({ chapter, index }) {
             viewport={{ once: true, margin: "-10%" }}
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-20 items-center`}
         >
-            {/* Visual Frame */}
-            <div className="flex-1 w-full relative">
-                <div className="aspect-[16/10] bg-white rounded-3xl overflow-hidden shadow-2xl relative group border border-gray-100">
-                    <AnimatePresence mode="wait">
-                        {mediaArray.length > 0 ? (
-                            <motion.img
-                                key={photoIndex}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 1.5 }}
-                                src={mediaArray[photoIndex].data || mediaArray[photoIndex]}
-                                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
-                                alt=""
-                            />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gray-50">
-                                <Zap size={80} className="text-gray-100" />
-                            </div>
-                        )}
-                    </AnimatePresence>
-                    {/* Index Tag */}
-                    <div className="absolute top-8 left-8 bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm text-[10px] font-black tracking-widest text-gray-400">
-                        NODE_{String(index + 1).padStart(2, '0')}
-                    </div>
-                </div>
-            </div>
-
             {/* Narrative Content */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
                 <h2 className="text-5xl md:text-8xl font-extrabold mb-10 leading-[0.85] tracking-tighter uppercase text-gray-900">
@@ -247,6 +219,23 @@ function RevealChapter({ chapter, index }) {
                         <span className="text-[10px] uppercase font-bold tracking-widest">Audio Narrative Linked</span>
                     </div>
                 )}
+            </div>
+
+            {/* Visual Frame */}
+            <div className="flex-1 w-full relative">
+                <div className="aspect-[16/10] bg-white rounded-3xl overflow-hidden shadow-2xl relative group border border-gray-100">
+                    <MediaBox
+                        media={mediaArray}
+                        photoIndex={photoIndex}
+                        containerClassName="w-full h-full relative"
+                        className="grayscale hover:grayscale-0 transition-all duration-1000"
+                        fallbackIcon={Zap}
+                    />
+                    {/* Index Tag */}
+                    <div className="absolute top-8 left-8 bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm text-[10px] font-black tracking-widest text-gray-400">
+                        NODE_{String(index + 1).padStart(2, '0')}
+                    </div>
+                </div>
             </div>
         </motion.section>
     );
