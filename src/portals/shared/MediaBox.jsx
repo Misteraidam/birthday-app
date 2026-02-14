@@ -10,11 +10,12 @@ export default function MediaBox({
     accentColor = "rgba(255,255,255,0.1)"
 }) {
     const currentMedia = media?.[photoIndex];
+    const mediaUrl = currentMedia?.data || (typeof currentMedia === 'string' ? currentMedia : null);
 
     return (
         <div className={`relative overflow-hidden ${containerClassName}`}>
             <AnimatePresence mode="wait">
-                {currentMedia ? (
+                {mediaUrl ? (
                     <motion.div
                         key={photoIndex}
                         initial={{ opacity: 0 }}
@@ -27,7 +28,7 @@ export default function MediaBox({
                         <div
                             className="absolute inset-0 z-0 scale-110 blur-2xl opacity-50 grayscale-[0.3]"
                             style={{
-                                backgroundImage: `url(${currentMedia.data})`,
+                                backgroundImage: `url(${mediaUrl})`,
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center'
                             }}
@@ -38,7 +39,7 @@ export default function MediaBox({
 
                         {/* Foreground Image Layer (The "Contained" actual photo) */}
                         <img
-                            src={currentMedia.data}
+                            src={mediaUrl}
                             className="relative z-[2] w-full h-full object-contain"
                             alt=""
                         />
