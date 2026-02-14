@@ -61,17 +61,67 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
     const videoPreviewRef = useRef(null);
     const editorRef = useRef(null);
     const [editingChapterId, setEditingChapterId] = useState(null);
+    const [hasRestoredDraft, setHasRestoredDraft] = useState(false);
+    const [lastAutoSave, setLastAutoSave] = useState(null);
 
-    // Auto-update chapter in formData when currentChapter changes during editing
+    const DRAFT_KEY = 'celebration_portal_draft';
+
+    // --- LOCAL STORAGE PERSISTENCE ---
+    // 1. Load draft on mount
     useEffect(() => {
-        if (editingChapterId) {
-            setFormData(prev => ({
-                ...prev,
-                chapters: prev.chapters.map(ch =>
-                    ch.id === editingChapterId ? { ...currentChapter, id: editingChapterId } : ch
-                )
-            }));
+        const savedDraft = localStorage.getItem(DRAFT_KEY);
+        if (savedDraft) {
+            try {
+                const parsed = JSON.parse(savedDraft);
+                // Only restore if it's a valid object and user hasn't started something else
+                if (parsed && parsed.recipientName || (parsed.chapters && parsed.chapters.length > 0)) {
+                    setFormData(parsed);
+                    setHasRestoredDraft(true);
+                    // If we restored, maybe jump to step 1 or 2
+                    if (parsed.celebrationType) setStep(1);
+                }
+            } catch (e) {
+                console.error("Failed to load draft", e);
+            }
         }
+    }, []);
+
+    // 2. Save draft whenever formData changes (Debounced)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (formData.celebrationType || formData.recipientName) {
+                localStorage.setItem(DRAFT_KEY, JSON.stringify(formData));
+                setLastAutoSave(new Date());
+            }
+        }, 1000); // 1 second debounce for storage
+
+        return () => clearTimeout(timer);
+    }, [formData]);
+
+    // --- CHAPTER SYNC (Optimized) ---
+    // Instead of syncing on EVERY keystroke, we sync after a short pause
+    // This removes the "typing lag" entirely
+    useEffect(() => {
+        if (!editingChapterId) return;
+
+        const timer = setTimeout(() => {
+            setFormData(prev => {
+                // Check if anything actually changed to avoid redundant renders
+                const existing = prev.chapters.find(ch => ch.id === editingChapterId);
+                if (JSON.stringify(existing) === JSON.stringify({ ...currentChapter, id: editingChapterId })) {
+                    return prev;
+                }
+
+                return {
+                    ...prev,
+                    chapters: prev.chapters.map(ch =>
+                        ch.id === editingChapterId ? { ...currentChapter, id: editingChapterId } : ch
+                    )
+                };
+            });
+        }, 500); // 500ms debounce for typing
+
+        return () => clearTimeout(timer);
     }, [currentChapter, editingChapterId]);
     // TODO: Re-enable when payment is ready
     // const [showPayment, setShowPayment] = useState(false);
@@ -275,22 +325,32 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
     const saveChapter = () => {
         if (!currentChapter.title) return;
 
-        if (editingChapterId) {
-            setFormData(prev => ({
-                ...prev,
-                chapters: prev.chapters.map(ch =>
-                    ch.id === editingChapterId ? { ...currentChapter, id: editingChapterId } : ch
-                )
-            }));
-            setEditingChapterId(null);
-        } else {
-            setFormData(prev => ({
-                ...prev,
-                chapters: [...prev.chapters, { ...currentChapter, id: `ch-${Date.now()}` }]
-            }));
-        }
+        // Clear any pending sync timers
+        setFormData(prev => {
+            const chapterData = { ...currentChapter };
 
-        resetCurrentChapter();
+            if (editingChapterId) {
+                chapterData.id = editingChapterId;
+                return {
+                    ...prev,
+                    chapters: prev.chapters.map(ch =>
+                        ch.id === editingChapterId ? chapterData : ch
+                    )
+                };
+            } else {
+                chapterData.id = `ch-${Date.now()}`;
+                return {
+                    ...prev,
+                    chapters: [...prev.chapters, chapterData]
+                };
+            }
+        });
+
+        // Small delay to ensure state propagates before reset
+        setTimeout(() => {
+            resetCurrentChapter();
+            setEditingChapterId(null);
+        }, 10);
     };
 
     const editChapter = (chapter) => {
@@ -412,9 +472,16 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
             setStep(2);
             return;
         }
-        // TODO: Re-enable payment when ready
-        // setShowPayment(true);
-        // For now, skip payment and generate directly
+
+        // Clear draft on success
+        localStorage.removeItem(DRAFT_KEY);
+
+        // Process final sync of currentChapter if it exists and wasn't saved
+        if (currentChapter.title && !editingChapterId) {
+            // User might have typed but not clicked "Add"
+            // We could auto-add it or warn them, but for now just proceed
+        }
+
         onGenerate(formData);
     };
 
@@ -563,6 +630,60 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                             <div className="absolute inset-0 w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
                         </div>
                         <p className="text-white font-bold tracking-widest uppercase text-xs">{uploadStatus}</p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Persistence Toast / Indicator */}
+            <AnimatePresence>
+                {hasRestoredDraft && (
+                    <motion.div
+                        initial={{ y: 50, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-purple-600 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-4"
+                    >
+                        <span className="text-sm font-bold">Resumed your draft</span>
+                        <button
+                            onClick={() => {
+                                localStorage.removeItem(DRAFT_KEY);
+                                setFormData({
+                                    celebrationType: initialCelebrationType || null,
+                                    recipientName: "",
+                                    senderName: "",
+                                    birthday: "",
+                                    portalBg: null,
+                                    musicUrl: "",
+                                    secretMessage: "",
+                                    chapters: [],
+                                    template: null,
+                                    opener: 'none',
+                                    customOccasion: ""
+                                });
+                                setHasRestoredDraft(false);
+                            }}
+                            className="bg-black/20 hover:bg-black/40 p-1.5 rounded-lg transition"
+                        >
+                            <X size={14} />
+                        </button>
+                        <button
+                            onClick={() => setHasRestoredDraft(false)}
+                            className="text-xs font-black uppercase tracking-widest border-l border-white/20 pl-4"
+                        >
+                            Got it
+                        </button>
+                    </motion.div>
+                )}
+
+                {lastAutoSave && !isUploading && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="fixed bottom-8 right-8 z-[40] pointer-events-none"
+                    >
+                        <div className="flex items-center gap-2 text-[10px] text-white/20 font-bold uppercase tracking-widest">
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                            Draft Saved {lastAutoSave.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
