@@ -61,7 +61,7 @@ export default function NeoBrutalistFlow({ formData, templateConfig }) {
                         </motion.header>
 
                         {/* Brutalist Blocks */}
-                        <div className="max-w-7xl mx-auto space-y-40 pb-60">
+                        <div className="max-w-6xl mx-auto space-y-32 pb-60">
                             {chapters.map((chapter, index) => (
                                 <BrutalistBlock
                                     key={chapter.id || index}

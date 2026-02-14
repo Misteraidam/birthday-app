@@ -1,3 +1,6 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Star, Music, Quote } from 'lucide-react';
 import MediaBox from './shared/MediaBox';
 
 export default function EditorialClassic({ formData, templateConfig }) {
@@ -64,7 +67,7 @@ export default function EditorialClassic({ formData, templateConfig }) {
             </header>
 
             {/* Main Feed */}
-            <main className="max-w-6xl mx-auto px-6 space-y-48 pb-60 relative z-10 pt-20">
+            <main className="max-w-6xl mx-auto px-6 space-y-32 pb-60 relative z-10 pt-20">
                 {chapters.map((chapter, index) => (
                     <EditorialChapter
                         key={chapter.id || index}

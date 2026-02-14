@@ -90,7 +90,7 @@ export default function NeonGlow({ formData, templateConfig }) {
                         </header>
 
                         {/* Main Feed */}
-                        <main className="max-w-7xl mx-auto px-6 space-y-48 pb-60 relative z-10 pt-20">
+                        <main className="max-w-6xl mx-auto px-6 space-y-32 pb-60 relative z-10 pt-20">
                             {chapters.map((chapter, index) => (
                                 <NeonChapter
                                     key={chapter.id || index}

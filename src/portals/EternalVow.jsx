@@ -80,7 +80,7 @@ export default function EternalVow({ formData, templateConfig }) {
             </header>
 
             {/* Chapters Feed */}
-            <main className="max-w-6xl mx-auto px-6 space-y-48 pb-60 relative z-10">
+            <main className="max-w-6xl mx-auto px-6 space-y-32 pb-60 relative z-10">
                 {chapters.map((chapter, index) => (
                     <VowChapter
                         key={chapter.id || index}

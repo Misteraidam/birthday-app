@@ -41,7 +41,7 @@ export default function KineticBento({ formData, templateConfig }) {
                         <motion.header
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="max-w-7xl mx-auto mb-16 pt-12 text-center md:text-left"
+                            className="max-w-6xl mx-auto mb-16 pt-12 text-center md:text-left"
                         >
                             <div
                                 className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest mb-6 font-bold"
@@ -62,7 +62,7 @@ export default function KineticBento({ formData, templateConfig }) {
                         </motion.header>
 
                         {/* Bento Grid */}
-                        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 pb-32">
+                        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 pb-32">
                             {chapters.map((chapter, index) => (
                                 <ChapterModule
                                     key={chapter.id || index}

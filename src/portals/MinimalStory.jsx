@@ -73,7 +73,7 @@ export default function MinimalStory({ formData, templateConfig }) {
                         </header>
 
                         {/* Chapters Feed */}
-                        <main className="max-w-4xl mx-auto px-6 space-y-48 pb-60 relative z-10 pt-20">
+                        <main className="max-w-6xl mx-auto px-6 space-y-32 pb-60 relative z-10 pt-20">
                             {chapters.map((chapter, index) => (
                                 <MinimalChapter
                                     key={chapter.id || index}

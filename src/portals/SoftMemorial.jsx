@@ -90,7 +90,7 @@ export default function SoftMemorial({ formData, templateConfig }) {
                         </header>
 
                         {/* Feed */}
-                        <main className="max-w-4xl mx-auto px-6 space-y-40 pb-60 relative z-10">
+                        <main className="max-w-6xl mx-auto px-6 space-y-32 pb-60 relative z-10">
                             {chapters.map((chapter, index) => (
                                 <MemorialChapter
                                     key={chapter.id || index}
