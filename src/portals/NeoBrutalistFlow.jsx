@@ -162,6 +162,16 @@ function RawIntro({ onComplete, recipientName }) {
 
 function BrutalistBlock({ chapter, index }) {
     const isEven = index % 2 === 0;
+    const [photoIndex, setPhotoIndex] = useState(0);
+
+    useEffect(() => {
+        if (chapter.media?.length > 1) {
+            const interval = setInterval(() => {
+                setPhotoIndex(prev => (prev + 1) % chapter.media.length);
+            }, 5000);
+            return () => clearInterval(interval);
+        }
+    }, [chapter.media]);
 
     return (
         <motion.div
@@ -171,17 +181,17 @@ function BrutalistBlock({ chapter, index }) {
             className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-0 items-stretch border-8 border-black bg-white shadow-[15px_15px_0px_rgba(0,0,0,1)] hover:shadow-[0px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[15px] hover:translate-y-[15px] transition-all duration-300`}
         >
             {/* VISUAL MODULE */}
-            <div className="flex-1 min-h-[400px] border-b-8 md:border-b-0 md:border-r-8 md:last:border-r-0 border-black overflow-hidden group">
-                {chapter.media?.length > 0 ? (
-                    <motion.img
-                        whileHover={{ scale: 1.1, filter: 'contrast(1.5) grayscale(1)' }}
-                        src={chapter.media[0].data}
-                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
-                        alt=""
-                    />
-                ) : (
-                    <div className="w-full h-full bg-[#FF5F1F] flex items-center justify-center">
-                        <AlertTriangle size={80} />
+            <div className="flex-1 min-h-[400px] border-b-8 md:border-b-0 md:border-r-8 md:last:border-r-0 border-black overflow-hidden group relative">
+                <MediaBox
+                    media={chapter.media}
+                    photoIndex={photoIndex}
+                    containerClassName="w-full h-full relative"
+                    className="grayscale group-hover:grayscale-0 transition-all duration-500"
+                    fallbackIcon={AlertTriangle}
+                />
+                {chapter.media?.length > 1 && (
+                    <div className="absolute bottom-4 right-4 bg-black text-white px-3 py-1 text-xs font-bold uppercase tracking-widest z-20">
+                        {photoIndex + 1} / {chapter.media.length}
                     </div>
                 )}
             </div>
@@ -203,7 +213,13 @@ function BrutalistBlock({ chapter, index }) {
 
                 <div className="mt-auto flex flex-wrap gap-4">
                     {chapter.voiceNote && (
-                        <button className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-black text-white py-4 px-8 text-xl hover:bg-[#FF5F1F] transition-colors">
+                        <button
+                            onClick={() => {
+                                const audio = new Audio(chapter.voiceNote);
+                                audio.play().catch(e => console.error("Voice playback failed", e));
+                            }}
+                            className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-black text-white py-4 px-8 text-xl hover:bg-[#FF5F1F] transition-colors"
+                        >
                             <Music size={24} /> PLAY_VOX
                         </button>
                     )}

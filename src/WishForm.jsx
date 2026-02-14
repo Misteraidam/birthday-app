@@ -634,60 +634,6 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                 )}
             </AnimatePresence>
 
-            {/* Persistence Toast / Indicator */}
-            <AnimatePresence>
-                {hasRestoredDraft && (
-                    <motion.div
-                        initial={{ y: 50, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-purple-600 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-4"
-                    >
-                        <span className="text-sm font-bold">Resumed your draft</span>
-                        <button
-                            onClick={() => {
-                                localStorage.removeItem(DRAFT_KEY);
-                                setFormData({
-                                    celebrationType: initialCelebrationType || null,
-                                    recipientName: "",
-                                    senderName: "",
-                                    birthday: "",
-                                    portalBg: null,
-                                    musicUrl: "",
-                                    secretMessage: "",
-                                    chapters: [],
-                                    template: null,
-                                    opener: 'none',
-                                    customOccasion: ""
-                                });
-                                setHasRestoredDraft(false);
-                            }}
-                            className="bg-black/20 hover:bg-black/40 p-1.5 rounded-lg transition"
-                        >
-                            <X size={14} />
-                        </button>
-                        <button
-                            onClick={() => setHasRestoredDraft(false)}
-                            className="text-xs font-black uppercase tracking-widest border-l border-white/20 pl-4"
-                        >
-                            Got it
-                        </button>
-                    </motion.div>
-                )}
-
-                {lastAutoSave && !isUploading && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="fixed bottom-8 right-8 z-[40] pointer-events-none"
-                    >
-                        <div className="flex items-center gap-2 text-[10px] text-white/20 font-bold uppercase tracking-widest">
-                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                            Draft Saved {lastAutoSave.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
             <div className="pt-20 pb-32 px-6">
                 <div className="max-w-4xl mx-auto">
                     <AnimatePresence mode="wait">

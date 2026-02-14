@@ -193,7 +193,7 @@ function ChapterEntry({ chapter, index, primaryColor, accentColor }) {
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-10%" }}
-            className={`flex flex - col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap - 16 md: gap - 24 items - center`}
+            className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-16 md:gap-24 items-center`}
         >
             {/* Visual Module */}
             <div className="flex-1 w-full">
@@ -218,14 +218,14 @@ function ChapterEntry({ chapter, index, primaryColor, accentColor }) {
             </div>
 
             {/* Narrative Module */}
-            <div className={`flex - 1 ${isEven ? 'text-left' : 'text-right md:text-left'} `}>
+            <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
                 <span className="text-[10px] uppercase tracking-[0.5em] text-pink-400 font-bold block mb-8">
                     Fragment_{String(index + 1).padStart(2, '0')}
                 </span>
                 <h2 className="text-4xl md:text-6xl font-light italic text-pink-900 mb-8 leading-tight tracking-tight">
                     {chapter.title}
                 </h2>
-                <div className={`w - 12 h - px bg - pink - 200 mb - 10 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'} `} />
+                <div className={`w-12 h-px bg-pink-200 mb-10 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'}`} />
                 <p className="text-xl md:text-2xl font-light italic leading-relaxed text-pink-900/60">
                     {chapter.content}
                 </p>

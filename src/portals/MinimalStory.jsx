@@ -190,7 +190,7 @@ function MinimalChapter({ chapter, index, primaryColor }) {
                             key={i}
                             media={chapter.media}
                             photoIndex={i}
-                            containerClassName="w-full relative bg-gray-50"
+                            containerClassName="w-full aspect-video relative bg-gray-50"
                             className="grayscale hover:grayscale-0 transition-all duration-1000 ease-in-out"
                             fallbackIcon={Minus}
                             accentColor={primaryColor}
