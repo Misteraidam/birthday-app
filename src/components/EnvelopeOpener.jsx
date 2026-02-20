@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Volume2 } from 'lucide-react';
 
-export default function EnvelopeOpener({ recipientName, onComplete, hasMusic }) {
+export default function EnvelopeOpener({ recipientName, onComplete, hasMusic, onStartMusic }) {
     const [isOpening, setIsOpening] = useState(false);
 
-    const handleClick = () => {
+    const handleClick = (e) => {
         setIsOpening(true);
+        if (onStartMusic) onStartMusic(e);
         setTimeout(onComplete, 1500); // Wait for animation to finish before unmounting
     };
 

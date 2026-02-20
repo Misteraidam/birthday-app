@@ -141,9 +141,36 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
         }
     }, [isPlaying, isDirectFile]);
 
+    const startMusic = (e) => {
+        if (e) e.stopPropagation();
+        console.log("Starting music...");
+        setIsPlaying(true);
+        setShowSoundPrompt(false);
+
+        if (isDirectFile && audioRef.current) {
+            audioRef.current.play().catch(err => {
+                console.log("Direct play failed, showing prompt:", err);
+                setShowSoundPrompt(true);
+            });
+        }
+    };
+
+    const toggleMusic = (e) => {
+        if (e) e.stopPropagation();
+        if (isPlaying) {
+            setIsPlaying(false);
+            if (isDirectFile && audioRef.current) {
+                audioRef.current.pause();
+            }
+        } else {
+            startMusic(e);
+        }
+    };
+
     const handleOpenerComplete = () => {
         setShowOpener(false);
         setOpenerComplete(true);
+        // Fallback: set playing if it wasn't already started by a direct click inside the opener
         setIsPlaying(true);
     };
 
@@ -220,6 +247,7 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
                             recipientName={formData.recipientName}
                             celebrationType={formData.celebrationType}
                             onComplete={handleOpenerComplete}
+                            onStartMusic={startMusic}
                             hasMusic={!!formData.musicUrl}
                         />
                     </motion.div>
@@ -233,6 +261,7 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
                         type={formData.opener}
                         recipientName={formData.recipientName}
                         onComplete={handleOpenerComplete}
+                        onStartMusic={startMusic}
                         hasMusic={!!formData.musicUrl}
                     />
                 )}
@@ -242,14 +271,16 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
             {formData.musicUrl && (
                 <>
                     <button
-                        onClick={() => setIsPlaying(!isPlaying)}
-                        className={`fixed top-6 right-6 z-[9999] flex items-center gap-3 bg-black/80 hover:bg-black/90 p-2 pr-4 rounded-full border border-white/20 backdrop-blur-xl transition-all group scale-100 md:scale-110 shadow-2xl`}
+                        onClick={toggleMusic}
+                        className={`fixed top-6 right-6 z-[9999] flex items-center gap-3 bg-black/80 hover:bg-black/90 p-2 pr-4 rounded-full border border-white/20 backdrop-blur-xl transition-all group scale-100 md:scale-110 shadow-2xl ${!isPlaying ? 'ring-2 ring-purple-500 ring-offset-2 ring-offset-black' : ''}`}
                     >
                         <div className="w-8 h-8 md:w-10 md:h-10 bg-white/10 rounded-full flex items-center justify-center">
-                            {isPlaying ? <Volume2 size={18} className="text-white animate-pulse" /> : <VolumeX size={18} className="text-white/50" />}
+                            {isPlaying ? <Volume2 size={18} className="text-white animate-pulse" /> : <Play size={18} className="text-purple-400 fill-purple-400" />}
                         </div>
                         <div className="flex flex-col items-start pr-2">
-                            <span className="text-[9px] font-black uppercase tracking-widest text-white/50 leading-none mb-1">Background</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-white/50 leading-none mb-1">
+                                {!isPlaying ? 'Play Music' : 'Experience'}
+                            </span>
                             <div className="flex gap-[2px] items-end h-3">
                                 {[1, 2, 3, 4, 5].map(i => (
                                     <motion.div
@@ -304,41 +335,50 @@ export default function PortalManager({ formData, onBack, isDemo = false }) {
                 </>
             )}
 
-            {/* High Visibility Sound Prompt - Always on top */}
+            {/* High Visibility Sound Prompt - Centered Alert as requested */}
             <AnimatePresence>
-                {!showOpener && !isPlaying && showSoundPrompt && (
+                {!showOpener && !isPlaying && (showSoundPrompt || !openerComplete) && formData.musicUrl && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 50 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 50 }}
-                        className="fixed inset-x-0 bottom-12 md:bottom-auto md:top-24 flex justify-center z-[10000] px-6 pointer-events-none"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[10000] flex items-center justify-center px-6 bg-black/60 backdrop-blur-md"
                     >
-                        <motion.button
-                            onClick={() => {
-                                setIsPlaying(true);
-                                setShowSoundPrompt(false);
-                                if (isDirectFile && audioRef.current) {
-                                    audioRef.current.play();
-                                }
-                            }}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="pointer-events-auto flex items-center gap-5 bg-white text-black px-8 py-4 rounded-full shadow-[0_30px_60px_rgba(0,0,0,0.4)] border border-white/20 group"
-                        >
-                            <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center group-hover:bg-purple-600 transition-colors">
-                                <Play size={20} fill="currentColor" />
-                            </div>
-                            <div className="flex flex-col items-start pr-2">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40 mb-0.5">Audio Detected</span>
-                                <span className="font-bold text-base tracking-tight">Tap to Enable Music</span>
-                            </div>
-                        </motion.button>
-
                         <motion.div
-                            animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                            className="absolute -inset-2 bg-purple-500/20 blur-2xl rounded-full z-[-1]"
-                        />
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            className="bg-zinc-900 border border-white/10 p-8 rounded-[40px] max-w-sm w-full text-center shadow-[0_0_100px_rgba(168,85,247,0.2)]"
+                        >
+                            <div className="w-20 h-20 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-purple-500/20">
+                                <Music size={32} className="text-white" />
+                            </div>
+
+                            <h2 className="text-2xl font-bold text-white mb-2">Sound Recommended</h2>
+                            <p className="text-white/60 text-sm mb-8">
+                                For the full immersive experience, we recommend playing the curated soundtrack.
+                            </p>
+
+                            <motion.button
+                                onClick={startMusic}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="w-full py-4 bg-white text-black font-black uppercase tracking-widest rounded-full shadow-xl transition-all flex items-center justify-center gap-3"
+                            >
+                                <Play size={18} fill="black" />
+                                Play Music for Experience
+                            </motion.button>
+
+                            <button
+                                onClick={() => {
+                                    setIsPlaying(false);
+                                    setShowSoundPrompt(false);
+                                    setOpenerComplete(true);
+                                }}
+                                className="mt-6 text-white/30 text-[10px] uppercase tracking-[0.3em] hover:text-white transition-colors"
+                            >
+                                Continue without sound
+                            </button>
+                        </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -392,7 +432,10 @@ function SimpleOpener({ type, recipientName, onComplete, hasMusic }) {
         <motion.div
             exit={{ opacity: 0, scale: 1.1 }}
             className={`fixed inset-0 z-50 ${style.bg} flex flex-col items-center justify-center text-white cursor-pointer`}
-            onClick={onComplete}
+            onClick={() => {
+                if (onStartMusic) onStartMusic();
+                onComplete();
+            }}
         >
             {hasMusic && (
                 <motion.div

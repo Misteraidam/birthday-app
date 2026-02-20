@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2 } from 'lucide-react';
 
-export default function BalloonPopper({ recipientName, onComplete, hasMusic }) {
+export default function BalloonPopper({ recipientName, onComplete, hasMusic, onStartMusic }) {
     // Generate random balloons
     const [balloons, setBalloons] = useState(() =>
         Array.from({ length: 15 }).map((_, i) => ({
@@ -16,7 +16,10 @@ export default function BalloonPopper({ recipientName, onComplete, hasMusic }) {
     const [poppedCount, setPoppedCount] = useState(0);
     const requiredPops = 3;
 
-    const popBalloon = (id) => {
+    const popBalloon = (id, e) => {
+        if (poppedCount === 0 && onStartMusic) {
+            onStartMusic(e);
+        }
         setBalloons(prev => prev.filter(b => b.id !== id));
         setPoppedCount(prev => {
             const newCount = prev + 1;
@@ -80,8 +83,7 @@ export default function BalloonPopper({ recipientName, onComplete, hasMusic }) {
                             }
                         }}
                         onClick={(e) => {
-                            e.stopPropagation();
-                            popBalloon(b.id);
+                            popBalloon(b.id, e);
                         }}
                         className="absolute bottom-0 cursor-pointer p-8 -m-8 group" // Padding increases hit area
                         style={{ left: 0 }}

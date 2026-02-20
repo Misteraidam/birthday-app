@@ -23,6 +23,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
     const [musicSearch, setMusicSearch] = useState('');
     const [musicResults, setMusicResults] = useState([]);
     const [isSearchingMusic, setIsSearchingMusic] = useState(false);
+    const [musicError, setMusicError] = useState(null);
     const [activePreview, setActivePreview] = useState(null);
     const audioRef = useRef(null);
 
@@ -504,6 +505,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
     const searchMusic = async (query) => {
         if (!query || query.length < 2) return;
         setIsSearchingMusic(true);
+        setMusicError(null);
         try {
             // Use our own server-side proxy to avoid CORS/Network issues on mobile
             const response = await fetch(`/api/music_search?query=${encodeURIComponent(query)}`);
@@ -511,9 +513,12 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
 
             const json = await response.json();
             setMusicResults(json.results || []);
+            if (!json.results || json.results.length === 0) {
+                setMusicError("No songs found. Try a different artist or title.");
+            }
         } catch (err) {
             console.error("Music search failed:", err);
-            // alert("Tips: Try a simpler search term"); // Optional feedback
+            setMusicError("Could not connect to song library. Please ensure the backend server is running.");
         } finally {
             setIsSearchingMusic(false);
         }
@@ -539,6 +544,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
         setFormData(prev => ({ ...prev, musicUrl: track.previewUrl }));
         setMusicResults([]);
         setMusicSearch("");
+        setMusicError(null);
         if (audioRef.current) {
             audioRef.current.pause();
         }
@@ -837,8 +843,18 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             </div>
                                         </form>
 
-                                        {/* Search Results */}
+                                        {/* Search Feedback */}
                                         <AnimatePresence>
+                                            {musicError && (
+                                                <motion.p
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    className="mt-4 text-[10px] text-rose-400 font-bold uppercase tracking-widest text-center"
+                                                >
+                                                    {musicError}
+                                                </motion.p>
+                                            )}
+
                                             {musicResults.length > 0 && (
                                                 <motion.div
                                                     initial={{ opacity: 0, y: 10 }}
