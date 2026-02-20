@@ -57,7 +57,7 @@ export default function VintageFilm({ formData, templateConfig }) {
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-7xl md:text-[10rem] font-light italic leading-none tracking-tighter mb-8"
+                        className="text-4xl md:text-8xl lg:text-[10rem] font-light italic leading-none tracking-tighter mb-8"
                     >
                         {recipientName}
                     </motion.h1>
@@ -170,10 +170,10 @@ function FilmChapter({ chapter, index, accentColor }) {
                     <span className="text-[10px] font-mono tracking-widest text-amber-900/40 uppercase">Frame_{String(index + 1).padStart(2, '0')}</span>
                     <div className="flex-grow h-px bg-amber-900/10" />
                 </div>
-                <h2 className="text-4xl md:text-7xl font-light italic text-[#78350F] mb-10 leading-none">
+                <h2 className="text-2xl md:text-5xl lg:text-7xl font-light italic text-[#78350F] mb-10 leading-none">
                     {chapter.title}
                 </h2>
-                <p className="text-xl md:text-2xl font-light text-amber-900 leading-relaxed italic">
+                <p className="text-base md:text-xl lg:text-2xl font-light text-amber-100 leading-relaxed italic">
                     {chapter.content}
                 </p>
 

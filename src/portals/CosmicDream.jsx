@@ -68,7 +68,7 @@ export default function CosmicDream({ formData, templateConfig }) {
                     <motion.h1
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="text-7xl md:text-[12rem] font-black tracking-tighter mb-8 leading-none"
+                        className="text-5xl md:text-8xl lg:text-[12rem] font-black tracking-tighter mb-8 leading-none"
                         style={{ textShadow: `0 0 80px ${primaryColor}66` }}
                     >
                         {recipientName.toUpperCase()}
@@ -171,11 +171,11 @@ function CosmicChapter({ chapter, index, primaryColor, accentColor }) {
         >
             {/* Narrative Burst */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
-                <h2 className="text-4xl md:text-7xl font-bold mb-8 leading-[0.9] tracking-tighter text-white">
+                <h2 className="text-2xl md:text-4xl lg:text-7xl font-bold mb-8 leading-[0.9] tracking-tighter text-white">
                     {chapter.title}
                 </h2>
                 <div className={`h-1 w-20 bg-gradient-to-r from-purple-500 to-blue-500 mb-10 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'}`} />
-                <p className="text-xl md:text-3xl font-light text-purple-200/60 leading-relaxed mb-12">
+                <p className="text-base md:text-xl lg:text-3xl font-light text-purple-200/60 leading-relaxed mb-12">
                     {chapter.content}
                 </p>
 

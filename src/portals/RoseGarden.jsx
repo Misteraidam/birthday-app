@@ -56,7 +56,8 @@ export default function RoseGarden({ formData, templateConfig }) {
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl md:text-[8rem] font-light italic leading-none tracking-tighter mb-6"
+                        className="text-4xl md:text-8xl lg:text-[14rem] font-serif italic text-white mb-4 leading-none"
+                        style={{ textShadow: `0 0 40px ${primaryColor}80` }}
                     >
                         {recipientName}
                     </motion.h1>
@@ -116,7 +117,7 @@ export default function RoseGarden({ formData, templateConfig }) {
                     )}
                     <div className="relative z-20">
                         <Quote size={40} className="mx-auto mb-10" style={{ color: accentColor }} />
-                        <p className="text-2xl md:text-5xl font-light italic leading-relaxed text-pink-900/70 max-w-3xl mx-auto">
+                        <p className="text-base md:text-2xl lg:text-3xl font-light italic leading-relaxed text-[#BE123C]/60 mb-10 max-w-3xl mx-auto">
                             "{formData.secretMessage}"
                         </p>
                         <div className="mt-20 text-[10px] uppercase tracking-[0.5em] font-bold" style={{ color: accentColor }}>

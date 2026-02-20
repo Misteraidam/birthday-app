@@ -52,7 +52,8 @@ export default function MinimalStory({ formData, templateConfig }) {
                                 <motion.h1
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="text-7xl md:text-[12rem] font-black tracking-tighter leading-none mb-8"
+                                    className="text-4xl md:text-8xl lg:text-[14rem] font-black tracking-tighter mb-8 leading-none"
+                                    style={{ color: primaryColor }}
                                 >
                                     {recipientName.toUpperCase()}
                                 </motion.h1>
@@ -183,10 +184,10 @@ function MinimalChapter({ chapter, index, primaryColor }) {
 
             {/* Narrative Content */}
             <div className="max-w-2xl">
-                <h2 className="text-5xl md:text-8xl font-black mb-10 tracking-tighter leading-none">
+                <h2 className="text-2xl md:text-5xl lg:text-[7rem] font-black text-black mb-10 leading-[0.8] tracking-tighter uppercase">
                     {chapter.title}
                 </h2>
-                <p className="text-xl md:text-3xl font-serif text-gray-500 leading-relaxed italic border-l-4 border-gray-100 pl-8">
+                <p className="text-base md:text-xl lg:text-3xl font-light text-black/50 leading-relaxed mb-12">
                     {chapter.content}
                 </p>
             </div>

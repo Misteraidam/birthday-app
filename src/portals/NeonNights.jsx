@@ -61,7 +61,7 @@ export default function NeonNights({ formData, templateConfig }) {
                     <motion.h1
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="text-7xl md:text-[14rem] font-black tracking-tighter mb-8 leading-none"
+                        className="text-4xl md:text-8xl lg:text-[14rem] font-black tracking-tighter mb-8 leading-none"
                         style={{ textShadow: `0 0 40px ${primaryColor}80, 0 0 80px ${primaryColor}33` }}
                     >
                         {recipientName.toUpperCase()}
@@ -147,11 +147,11 @@ function NeonChapter({ chapter, index, primaryColor, accentColor }) {
                     <span className="text-[10px] font-black uppercase tracking-[0.5em] text-cyan-400">DATA_NODE_{String(index + 1).padStart(2, '0')}</span>
                     <div className="flex-grow h-px bg-cyan-500/20" />
                 </div>
-                <h2 className="text-5xl md:text-8xl font-black mb-8 leading-[0.85] tracking-tighter uppercase"
+                <h2 className="text-3xl md:text-5xl lg:text-8xl font-black mb-8 leading-[0.85] tracking-tighter uppercase"
                     style={{ textShadow: '0 0 20px rgba(6, 182, 212, 0.3)' }}>
                     {chapter.title}
                 </h2>
-                <p className="text-xl md:text-2xl font-mono text-cyan-300/60 leading-relaxed mb-12">
+                <p className="text-base md:text-xl lg:text-2xl font-mono text-cyan-300/60 leading-relaxed mb-12">
                     {chapter.content}
                 </p>
 

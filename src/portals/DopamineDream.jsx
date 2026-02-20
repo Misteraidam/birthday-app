@@ -78,7 +78,7 @@ export default function DopamineDream({ formData, templateConfig }) {
                                 <PartyPopper size={48} style={{ color: primaryColor }} />
                             </motion.div>
                             {recipientName && (
-                                <h1 className="text-6xl md:text-[14rem] font-black leading-none mb-8 tracking-tighter"
+                                <h1 className="text-4xl md:text-8xl lg:text-[14rem] font-black leading-none mb-8 tracking-tighter"
                                     style={{
                                         WebkitTextFillColor: 'transparent',
                                         WebkitTextStrokeWidth: '2px',
@@ -141,7 +141,7 @@ export default function DopamineDream({ formData, templateConfig }) {
                                     >
                                         <Sparkles size={200} style={{ color: accentColor }} />
                                     </motion.div>
-                                    <p className="text-4xl md:text-6xl font-black text-[#2D2D2D] leading-tight text-center relative z-10">
+                                    <p className="text-2xl md:text-4xl lg:text-6xl font-black text-[#2D2D2D] leading-tight text-center relative z-10">
                                         "{formData.secretMessage}"
                                     </p>
                                 </div>
@@ -225,7 +225,7 @@ function BouncyChapter({ chapter, index, primaryColor, accentColor }) {
             whileInView={{ opacity: 1, scale: 1, x: 0 }}
             viewport={{ once: true }}
             whileHover={{ scale: 1.02 }}
-            className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-12 bg-white border-4 border-[#2D2D2D] rounded-[3rem] p-10 shadow-[12px_12px_0px_#2D2D2D] transition-all`}
+            className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-8 md:gap-12 bg-white border-4 border-[#2D2D2D] rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-[8px_8px_0px_#2D2D2D] md:shadow-[12px_12px_0px_#2D2D2D] transition-all`}
             style={{
                 boxShadow: isEven ? `12px 12px 0px #2D2D2D` : `12px 12px 0px #2D2D2D`,
                 ":hover": { boxShadow: `16px 16px 0px ${accentColor}` }
@@ -241,10 +241,10 @@ function BouncyChapter({ chapter, index, primaryColor, accentColor }) {
                         MOMENT_{index + 1}
                     </span>
                 </div>
-                <h3 className="text-4xl md:text-6xl font-black mb-6 leading-none">
+                <h3 className="text-2xl md:text-4xl lg:text-6xl font-black mb-6 leading-none">
                     {chapter.title}
                 </h3>
-                <p className="text-lg md:text-xl font-bold text-[#2D2D2D]/70 leading-relaxed mb-8">
+                <p className="text-base md:text-lg lg:text-xl font-bold text-[#2D2D2D]/70 leading-relaxed mb-8"> suicide
                     {chapter.content}
                 </p>
                 <div className="flex gap-4">

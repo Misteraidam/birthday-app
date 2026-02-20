@@ -43,9 +43,9 @@ export default function EditorialClassic({ formData, templateConfig }) {
 
                 {recipientName && (
                     <motion.h1
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="text-7xl md:text-[14rem] font-black tracking-tighter mb-8 leading-[0.85] uppercase"
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-4xl md:text-7xl lg:text-[12rem] font-bold uppercase tracking-tighter mb-8 leading-[0.8]"
                     >
                         {recipientName}
                     </motion.h1>
@@ -125,10 +125,10 @@ function EditorialChapter({ chapter, index, primaryColor }) {
         >
             {/* Narrative Fragment */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
-                <h2 className="text-5xl md:text-8xl font-black mb-10 leading-[0.85] tracking-tighter uppercase">
+                <h2 className="text-2xl md:text-4xl lg:text-8xl italic font-light text-black mb-10 leading-[0.85] tracking-tighter">
                     {chapter.title}
                 </h2>
-                <p className="text-xl md:text-3xl font-serif italic opacity-60 leading-relaxed mb-12">
+                <p className="text-base md:text-xl lg:text-3xl font-serif leading-relaxed italic mb-12">
                     {chapter.content}
                 </p>
 

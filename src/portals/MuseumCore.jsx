@@ -57,7 +57,8 @@ export default function MuseumCore({ formData, templateConfig }) {
                                 <div className="w-12 h-[1px] self-center" style={{ background: primaryColor }} />
                             </div>
                             {recipientName && (
-                                <h1 className="text-7xl md:text-[12rem] font-light italic leading-none tracking-tighter mb-8">
+                                <h1 className="text-4xl md:text-8xl lg:text-[14rem] font-serif font-light italic leading-none mb-8 tracking-tighter"
+                                    style={{ color: primaryColor }}>
                                     {recipientName}
                                 </h1>
                             )}
@@ -99,7 +100,7 @@ export default function MuseumCore({ formData, templateConfig }) {
                                     End
                                 </div>
                                 <Quote size={40} className="mx-auto mb-12" style={{ color: primaryColor }} />
-                                <p className="text-4xl md:text-6xl font-light italic leading-relaxed text-[#2A2A2A]">
+                                <p className="text-base md:text-xl lg:text-3xl font-light text-gray-500 leading-relaxed italic mb-12">
                                     {formData.secretMessage}
                                 </p>
                                 <div className="mt-20 flex justify-center gap-4">
@@ -195,11 +196,11 @@ function ExhibitionPiece({ chapter, index, primaryColor }) {
                 <span className="text-[10px] uppercase tracking-[0.5em] text-[#D4AF37] font-bold block mb-8">
                     Memory Archive
                 </span>
-                <h2 className="text-5xl md:text-7xl font-light mb-10 leading-none tracking-tighter">
+                <h2 className="text-2xl md:text-5xl lg:text-7xl font-light mb-10 leading-none tracking-tighter">
                     {chapter.title}
                 </h2>
                 <div className={`w-20 h-[1px] bg-[#D4AF37] mb-12 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'}`} />
-                <p className="text-xl md:text-2xl leading-relaxed text-[#4A4A4A] font-light italic">
+                <p className="text-base md:text-xl lg:text-2xl leading-relaxed text-[#4A4A4A] font-light italic">
                     {chapter.content}
                 </p>
 

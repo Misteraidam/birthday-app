@@ -53,7 +53,8 @@ export default function GoldenJubilee({ formData, templateConfig }) {
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl md:text-[10rem] font-black tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 leading-[0.85]"
+                        className="text-4xl md:text-8xl lg:text-[14rem] font-black tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-b from-[#FFD700] to-[#B45309] leading-[0.85]"
+                        style={{ textShadow: `0 0 30px ${primaryColor}4D` }}
                     >
                         {recipientName.toUpperCase()}
                     </motion.h1>
@@ -146,10 +147,11 @@ function GoldenChapter({ chapter, index, primaryColor, accentColor }) {
                     <div className="w-12 h-0.5 bg-amber-500" />
                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">The Legacy</span>
                 </div>
-                <h2 className="text-4xl md:text-8xl font-black mb-8 md:mb-10 tracking-tighter leading-none">
+                <h2 className="text-3xl md:text-5xl lg:text-[10rem] font-black text-rose-50 mb-10 leading-[0.8] tracking-tighter uppercase"
+                    style={{ textShadow: `0 10px 30px ${primaryColor}33` }}>
                     {chapter.title}
                 </h2>
-                <p className="text-lg md:text-3xl font-light text-white/50 leading-relaxed italic mb-8 md:mb-12">
+                <p className="text-lg md:text-2xl lg:text-3xl font-light text-amber-100/50 leading-relaxed mb-12">
                     {chapter.content}
                 </p>
 

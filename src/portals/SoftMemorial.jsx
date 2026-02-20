@@ -68,7 +68,7 @@ export default function SoftMemorial({ formData, templateConfig }) {
                                 <motion.h1
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="text-5xl md:text-9xl font-light tracking-tight mb-8 text-slate-800"
+                                    className="text-4xl md:text-8xl lg:text-9xl font-light tracking-tight mb-8 text-slate-800"
                                 >
                                     {recipientName}
                                 </motion.h1>
@@ -288,10 +288,10 @@ function MemorialChapter({ chapter, index, accentColor }) {
                 <span className="text-[10px] uppercase tracking-[0.4em] text-slate-400 block mb-6">
                     Memory_{String(index + 1).padStart(2, '0')}
                 </span>
-                <h2 className="text-3xl md:text-5xl font-light italic text-slate-800 mb-6 leading-tight">
+                <h2 className="text-2xl md:text-4xl lg:text-5xl font-light italic text-slate-800 mb-6 leading-tight">
                     {chapter.title}
                 </h2>
-                <p className="text-lg md:text-2xl font-light italic leading-relaxed text-slate-600/80">
+                <p className="text-base md:text-xl lg:text-2xl font-light italic leading-relaxed text-slate-600/80">
                     {chapter.content}
                 </p>
 

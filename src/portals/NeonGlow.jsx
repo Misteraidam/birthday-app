@@ -68,7 +68,7 @@ export default function NeonGlow({ formData, templateConfig }) {
                                 <motion.h1
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
-                                    className="text-7xl md:text-[14rem] font-black tracking-tighter mb-8 leading-none"
+                                    className="text-4xl md:text-8xl lg:text-[14rem] font-black tracking-tighter mb-8 leading-none"
                                     style={{ textShadow: `0 0 40px ${primaryColor}80` }}
                                 >
                                     {recipientName.toUpperCase()}
@@ -206,11 +206,11 @@ function NeonChapter({ chapter, index, primaryColor, accentColor }) {
                     <span className="text-[10px] font-black uppercase tracking-[0.5em]" style={{ color: primaryColor }}>MEMORY_NODE_{String(index + 1).padStart(2, '0')}</span>
                     <div className="flex-grow h-px" style={{ backgroundColor: `${primaryColor}33` }} />
                 </div>
-                <h2 className="text-5xl md:text-8xl font-black mb-10 leading-[0.85] tracking-tighter uppercase"
-                    style={{ textShadow: `0 0 20px ${primaryColor}4D` }}>
+                <h2 className="text-3xl md:text-5xl lg:text-[10rem] font-black mb-10 leading-[0.8] tracking-tighter text-white uppercase"
+                    style={{ textShadow: `0 0 30px ${primaryColor}66` }}>
                     {chapter.title}
                 </h2>
-                <p className="text-xl md:text-2xl font-mono leading-relaxed mb-12" style={{ color: `${primaryColor}99` }}>
+                <p className="text-base md:text-xl lg:text-3xl font-light text-cyan-100/50 leading-relaxed mb-12">
                     {chapter.content}
                 </p>
 

@@ -45,7 +45,7 @@ export default function CapAndGown({ formData, templateConfig }) {
                     <motion.h1
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="text-5xl md:text-[10rem] font-black tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 leading-none"
+                        className="text-4xl md:text-7xl lg:text-[10rem] font-black tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 leading-none"
                     >
                         {recipientName.toUpperCase()}
                     </motion.h1>
@@ -137,10 +137,10 @@ function TriumphChapter({ chapter, index, primaryColor, accentColor }) {
                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-yellow-400">ACHIEVEMENT_{String(index + 1).padStart(2, '0')}</span>
                     <div className="flex-grow h-px bg-white/10" />
                 </div>
-                <h2 className="text-3xl md:text-7xl font-black mb-8 leading-none tracking-tighter">
+                <h2 className="text-2xl md:text-4xl lg:text-7xl font-black mb-8 leading-none tracking-tighter">
                     {chapter.title}
                 </h2>
-                <p className="text-lg md:text-2xl font-light text-white/50 leading-relaxed max-w-xl">
+                <p className="text-base md:text-xl lg:text-2xl font-light text-white/50 leading-relaxed max-w-xl">
                     {chapter.content}
                 </p>
 

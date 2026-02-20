@@ -50,9 +50,9 @@ export default function KineticBento({ formData, templateConfig }) {
                                 <Layout size={12} /> System_Load
                             </div>
                             {recipientName && (
-                                <h1 className="text-6xl md:text-9xl font-black tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 leading-none">
+                                <h3 className="text-lg md:text-2xl font-black mb-1 md:mb-2 uppercase tracking-tighter" style={{ color: primaryColor }}>
                                     {recipientName.toUpperCase()}
-                                </h1>
+                                </h3>
                             )}
                             {(formData.customOccasion || celebrationType) && (
                                 <p className="text-xl md:text-2xl text-white/40 max-w-2xl font-light italic">
@@ -60,7 +60,7 @@ export default function KineticBento({ formData, templateConfig }) {
                                 </p>
                             )}
                             {formData.eventVenue && (
-                                <p className="mt-4 text-sm text-white/30 tracking-wide">
+                                <p className="text-sm md:text-lg font-bold text-white/40 leading-tight">
                                     📍 {formData.eventVenue}
                                 </p>
                             )}

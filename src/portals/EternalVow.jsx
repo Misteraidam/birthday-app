@@ -54,7 +54,7 @@ export default function EternalVow({ formData, templateConfig }) {
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl md:text-9xl font-light italic leading-tight tracking-tight mb-4"
+                        className="text-4xl md:text-7xl lg:text-9xl font-light italic leading-tight tracking-tight mb-4"
                     >
                         {recipientName}
                     </motion.h1>
@@ -150,10 +150,10 @@ function VowChapter({ chapter, index, accentColor }) {
                     <span className="text-[10px] uppercase tracking-[0.6em] text-amber-600/40 font-bold">Volume_{String(index + 1).padStart(2, '0')}</span>
                     <div className="flex-grow h-px bg-amber-200/50" />
                 </div>
-                <h2 className="text-3xl md:text-7xl font-light italic text-[#78350F] mb-8 md:mb-10 leading-tight">
+                <h2 className="text-2xl md:text-4xl lg:text-7xl font-light italic text-[#78350F] mb-8 md:mb-10 leading-tight">
                     {chapter.title}
                 </h2>
-                <p className="text-lg md:text-2xl font-light italic leading-relaxed text-[#78350F]/70">
+                <p className="text-base md:text-xl lg:text-2xl font-light italic leading-relaxed text-[#78350F]/70">
                     {chapter.content}
                 </p>
 

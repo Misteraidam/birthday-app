@@ -45,7 +45,7 @@ export default function NeoBrutalistFlow({ formData, templateConfig }) {
                         >
                             <div className="flex flex-col md:flex-row md:items-end gap-6">
                                 {recipientName && (
-                                    <h1 className="text-8xl md:text-[18rem] leading-[0.8] tracking-tighter uppercase break-words">
+                                    <h1 className="text-4xl md:text-8xl lg:text-[15rem] font-black leading-[0.8] tracking-tighter uppercase break-words">
                                         {recipientName}
                                     </h1>
                                 )}
@@ -87,9 +87,10 @@ export default function NeoBrutalistFlow({ formData, templateConfig }) {
                                 <div className="absolute -top-10 -left-10 bg-black text-white p-4 rotate-[-5deg]">
                                     <Zap size={40} />
                                 </div>
-                                <p className="text-4xl md:text-7xl uppercase italic leading-[0.9]">
+                                <h1 className="text-4xl md:text-8xl lg:text-[12rem] font-black leading-[0.8] mb-8"
+                                    style={{ WebkitTextStroke: '3px black', color: primaryColor }}>
                                     {formData.secretMessage}
-                                </p>
+                                </h1>
                                 <div className="mt-12 flex justify-between items-center border-t-4 border-black pt-8">
                                     <span className="text-xl uppercase">End_Of_Story</span>
                                     <Share2 size={32} />
@@ -183,7 +184,7 @@ function BrutalistBlock({ chapter, index }) {
             initial={{ y: 100, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true, margin: "-10%" }}
-            className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-0 items-stretch border-8 border-black bg-white shadow-[15px_15px_0px_rgba(0,0,0,1)] hover:shadow-[0px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[15px] hover:translate-y-[15px] transition-all duration-300`}
+            className={`p-6 md:p-10 border-4 md:border-8 border-black shadow-[8px_8px_0px_#000] md:shadow-[20px_20px_0px_#000] transition-transform hover:translate-x-1 hover:translate-y-1`}
         >
             {/* CONTENT MODULE */}
             <div className={`flex-1 p-8 md:p-16 flex flex-col justify-center bg-white ${isEven ? '' : 'md:border-l-8 md:border-r-0'} border-black`}>
@@ -192,7 +193,7 @@ function BrutalistBlock({ chapter, index }) {
                     <div className="h-1 bg-black flex-grow" />
                 </div>
 
-                <h3 className="text-5xl md:text-8xl uppercase mb-8 leading-none tracking-tight">
+                <h3 className="text-2xl md:text-4xl lg:text-7xl font-black uppercase mb-6 leading-none tracking-tight">
                     {chapter.title}
                 </h3>
 

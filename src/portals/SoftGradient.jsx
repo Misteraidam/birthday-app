@@ -60,7 +60,7 @@ export default function SoftGradient({ formData, templateConfig }) {
                                 <motion.h1
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="text-7xl md:text-[10rem] font-serif italic mb-8 leading-none"
+                                    className="text-4xl md:text-8xl lg:text-[10rem] font-serif italic mb-8 leading-none"
                                     style={{
                                         background: `linear-gradient(135deg, ${primaryColor}, ${accentColor}, #60A5FA)`,
                                         WebkitBackgroundClip: 'text',
@@ -202,11 +202,11 @@ function GradientChapter({ chapter, index, primaryColor, accentColor }) {
         >
             {/* Narrative Content */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
-                <h2 className="text-4xl md:text-7xl font-serif mb-10 text-[#4A3728] leading-tight italic">
+                <h2 className="text-3xl md:text-5xl lg:text-7xl font-serif mb-10 text-[#4A3728] leading-tight italic">
                     {chapter.title}
                 </h2>
                 <div className={`h-1 w-20 mb-10 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'}`} style={{ backgroundColor: `${primaryColor}4D` }} />
-                <p className="text-xl md:text-2xl text-[#4A3728]/70 leading-relaxed mb-12">
+                <p className="text-base md:text-xl lg:text-2xl text-[#4A3728]/70 leading-relaxed mb-12">
                     {chapter.content}
                 </p>
 

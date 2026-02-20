@@ -59,7 +59,7 @@ export default function LuxuryGold({ formData, templateConfig }) {
                                 <motion.h1
                                     initial={{ opacity: 0, y: 30 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="text-7xl md:text-[12rem] font-bold uppercase tracking-tighter mb-8 leading-[0.8] text-transparent bg-clip-text bg-gradient-to-br from-[#FDB931] via-[#FFFACD] to-[#CFB53B]"
+                                    className="text-4xl md:text-8xl lg:text-[12rem] font-bold uppercase tracking-tighter mb-8 leading-[0.8] text-transparent bg-clip-text bg-gradient-to-br from-[#FDB931] via-[#FFFACD] to-[#CFB53B]"
                                 >
                                     {recipientName}
                                 </motion.h1>
@@ -184,11 +184,11 @@ function GoldenChapter({ chapter, index, primaryColor }) {
         >
             {/* Narrative Content */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
-                <h2 className="text-5xl md:text-8xl italic font-light text-white mb-10 leading-[0.85] tracking-tighter">
+                <h2 className="text-3xl md:text-5xl lg:text-8xl italic font-light text-white mb-10 leading-[0.85] tracking-tighter">
                     {chapter.title}
                 </h2>
                 <div className="h-px w-20 mb-12" style={{ background: primaryColor, marginLeft: isEven ? '0' : 'auto', marginRight: isEven ? 'auto' : '0' }} />
-                <p className="text-xl md:text-3xl leading-relaxed italic mb-12" style={{ color: `${primaryColor}99` }}>
+                <p className="text-base md:text-2xl lg:text-3xl leading-relaxed italic mb-12" style={{ color: `${primaryColor}99` }}>
                     {chapter.content}
                 </p>
 

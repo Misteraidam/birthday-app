@@ -56,7 +56,7 @@ export default function CosmicReveal({ formData, templateConfig }) {
                                 <motion.h1
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
-                                    className="text-7xl md:text-[10rem] font-extrabold tracking-tighter mb-8 leading-[0.85] uppercase"
+                                    className="text-4xl md:text-7xl lg:text-[10rem] font-extrabold tracking-tighter mb-8 leading-[0.85] uppercase"
                                 >
                                     {recipientName}
                                 </motion.h1>
@@ -214,11 +214,11 @@ function RevealChapter({ chapter, index }) {
         >
             {/* Narrative Content */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
-                <h2 className="text-5xl md:text-8xl font-extrabold mb-10 leading-[0.85] tracking-tighter uppercase text-gray-900">
+                <h2 className="text-2xl md:text-4xl lg:text-8xl font-extrabold mb-10 leading-[0.85] tracking-tighter uppercase text-gray-900">
                     {chapter.title}
                 </h2>
                 <div className={`h-px w-20 bg-gray-200 mb-10 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'}`} />
-                <p className="text-xl md:text-3xl font-light text-gray-500 leading-relaxed mb-12">
+                <p className="text-base md:text-xl lg:text-3xl font-light text-gray-500 leading-relaxed mb-12">
                     {chapter.content || chapter.chat || chapter.val}
                 </p>
 

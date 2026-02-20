@@ -75,7 +75,7 @@ export default function MidnightLuxe({ formData, templateConfig }) {
                                 <motion.h1
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
-                                    className="text-8xl md:text-[15rem] font-serif italic font-light tracking-tighter mb-8 leading-[0.8]"
+                                    className="text-4xl md:text-8xl lg:text-[15rem] font-serif italic font-light tracking-tighter mb-8 leading-[0.8]"
                                     style={{
                                         background: `linear-gradient(to bottom, ${primaryColor}, ${accentColor})`,
                                         WebkitBackgroundClip: 'text',
@@ -210,10 +210,10 @@ function LuxeChapter({ chapter, index, primaryColor }) {
         >
             {/* Narrative Context */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
-                <h2 className="text-5xl md:text-8xl font-black italic tracking-tighter text-white mb-10 leading-[0.85]">
+                <h2 className="text-3xl md:text-5xl lg:text-8xl font-black italic tracking-tighter text-white mb-10 leading-[0.85]">
                     {chapter.title}
                 </h2>
-                <p className="text-xl md:text-3xl text-white/40 font-serif leading-relaxed italic mb-12">
+                <p className="text-base md:text-2xl lg:text-3xl text-white/40 font-serif leading-relaxed italic mb-12">
                     {chapter.content}
                 </p>
 

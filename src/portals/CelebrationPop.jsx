@@ -101,7 +101,7 @@ export default function CelebrationPop({ formData, templateConfig }) {
                     )}
                     <div className="relative z-20">
                         <PartyPopper size={48} className="mx-auto mb-10" style={{ color: accentColor }} />
-                        <p className="text-2xl md:text-7xl font-black tracking-tight text-white leading-tight max-w-5xl mx-auto">
+                        <p className="text-xl md:text-4xl lg:text-7xl font-black tracking-tight text-white leading-tight max-w-5xl mx-auto">
                             "{formData.secretMessage}"
                         </p>
                         <div className="mt-20 text-[10px] uppercase tracking-[1em] text-white/20">
@@ -139,10 +139,10 @@ function PopChapter({ chapter, index, primaryColor, accentColor }) {
                 <div className={`inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 rounded-full text-[10px] font-black tracking-widest text-purple-300 mb-8`}>
                     MOMENT_{index + 1}
                 </div>
-                <h2 className="text-2xl md:text-4xl lg:text-7xl font-black mb-6 md:mb-8 leading-none tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+                <h2 className="text-xl md:text-4xl lg:text-7xl font-black mb-6 md:mb-8 leading-none tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
                     {chapter.title}
                 </h2>
-                <p className="text-base md:text-xl lg:text-3xl font-medium text-white/70 leading-relaxed mb-8 md:mb-10">
+                <p className="text-sm md:text-xl lg:text-3xl font-medium text-white/70 leading-relaxed mb-8 md:mb-10">
                     {chapter.content}
                 </p>
 
