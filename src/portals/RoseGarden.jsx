@@ -56,7 +56,7 @@ export default function RoseGarden({ formData, templateConfig }) {
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-6xl md:text-[8rem] font-light italic leading-none tracking-tighter mb-6"
+                        className="text-5xl md:text-[8rem] font-light italic leading-none tracking-tighter mb-6"
                     >
                         {recipientName}
                     </motion.h1>
@@ -69,6 +69,15 @@ export default function RoseGarden({ formData, templateConfig }) {
                         className="text-xs uppercase tracking-[0.8em] font-bold"
                     >
                         {(formData.customOccasion || celebrationType).toUpperCase()}
+                    </motion.p>
+                )}
+                {formData.eventVenue && (
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-6 text-sm text-pink-400/60 tracking-wide"
+                    >
+                        📍 {formData.eventVenue}
                     </motion.p>
                 )}
 
@@ -84,7 +93,7 @@ export default function RoseGarden({ formData, templateConfig }) {
             </header>
 
             {/* Chapters Feed */}
-            <main className="max-w-6xl mx-auto px-6 space-y-32 pb-60 relative z-10">
+            <main className="max-w-6xl mx-auto px-6 space-y-20 md:space-y-32 pb-32 md:pb-60 relative z-10">
                 {chapters.map((chapter, index) => (
                     <ChapterEntry
                         key={chapter.id || index}
@@ -98,13 +107,21 @@ export default function RoseGarden({ formData, templateConfig }) {
 
             {/* Secret Message Footer */}
             {formData.secretMessage && (
-                <footer className="relative z-10 py-60 px-6 text-center border-t border-pink-200/50">
-                    <Quote size={40} className="mx-auto mb-10" style={{ color: accentColor }} />
-                    <p className="text-3xl md:text-5xl font-light italic leading-relaxed text-pink-900/70 max-w-3xl mx-auto">
-                        "{formData.secretMessage}"
-                    </p>
-                    <div className="mt-20 text-[10px] uppercase tracking-[0.5em] font-bold" style={{ color: accentColor }}>
-                        Forever Yours, {formData.senderName || 'Anonymous'}
+                <footer className="relative z-10 py-24 md:py-60 px-6 text-center border-t border-pink-200/50 overflow-hidden">
+                    {formData.portalBg && (
+                        <div className="absolute inset-0 z-0">
+                            <div className="absolute inset-0 bg-pink-100/80 backdrop-blur-sm z-10" />
+                            <img src={formData.portalBg} className="w-full h-full object-cover opacity-30" alt="" />
+                        </div>
+                    )}
+                    <div className="relative z-20">
+                        <Quote size={40} className="mx-auto mb-10" style={{ color: accentColor }} />
+                        <p className="text-2xl md:text-5xl font-light italic leading-relaxed text-pink-900/70 max-w-3xl mx-auto">
+                            "{formData.secretMessage}"
+                        </p>
+                        <div className="mt-20 text-[10px] uppercase tracking-[0.5em] font-bold" style={{ color: accentColor }}>
+                            Forever Yours, {formData.senderName || 'Anonymous'}
+                        </div>
                     </div>
                 </footer>
             )}
@@ -193,18 +210,18 @@ function ChapterEntry({ chapter, index, primaryColor, accentColor }) {
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-10%" }}
-            className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-16 md:gap-24 items-center`}
+            className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-12 md:gap-24 items-center`}
         >
             {/* Narrative Module */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
-                <span className="text-[10px] uppercase tracking-[0.5em] text-pink-400 font-bold block mb-8">
+                <span className="text-[10px] uppercase tracking-[0.5em] text-pink-400 font-bold block mb-6 md:mb-8">
                     Fragment_{String(index + 1).padStart(2, '0')}
                 </span>
-                <h2 className="text-4xl md:text-6xl font-light italic text-pink-900 mb-8 leading-tight tracking-tight">
+                <h2 className="text-3xl md:text-6xl font-light italic text-pink-900 mb-6 md:mb-8 leading-tight tracking-tight">
                     {chapter.title}
                 </h2>
-                <div className={`w-12 h-px bg-pink-200 mb-10 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'}`} />
-                <p className="text-xl md:text-2xl font-light italic leading-relaxed text-pink-900/60">
+                <div className={`w-12 h-px bg-pink-200 mb-8 md:mb-10 ${isEven ? 'mr-auto' : 'ml-auto md:mr-auto'}`} />
+                <p className="text-lg md:text-2xl font-light italic leading-relaxed text-pink-900/60">
                     {chapter.content}
                 </p>
 

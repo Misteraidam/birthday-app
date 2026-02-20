@@ -4,7 +4,7 @@ import {
     ChevronRight, ChevronLeft, Plus, Image, X, Mic, StopCircle,
     Edit2, Play, Download, Upload, Video, Music, Lock, Eye, EyeOff,
     Calendar, GripVertical, Trash2, MessageSquare, ArrowLeft, Check,
-    Clock, Key, Scroll, Volume2, VolumeX, Camera, Pause, ExternalLink, Sparkles
+    Clock, Key, Scroll, Volume2, VolumeX, Camera, Pause, ExternalLink, Sparkles, MapPin
 } from 'lucide-react';
 import { CELEBRATION_TYPES, TEMPLATES, STORY_TEMPLATES, getCelebrationType, getTemplatesForCelebration, getMusicInLibrary } from './config/celebrationConfig';
 import CelebrationSelector from './components/CelebrationSelector';
@@ -38,7 +38,8 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
         chapters: [],
         template: null,
         opener: 'none',
-        customOccasion: ""
+        customOccasion: "",
+        eventVenue: ""
     });
 
     // Current chapter being edited
@@ -354,6 +355,10 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
     };
 
     const editChapter = (chapter) => {
+        // If we were editing another chapter, sync it immediately first to prevent data loss on switch
+        if (editingChapterId && editingChapterId !== chapter.id) {
+            saveChapter();
+        }
         setCurrentChapter(chapter);
         setEditingChapterId(chapter.id);
     };
@@ -782,6 +787,21 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                     </div>
                                 </div>
 
+                                {/* Event Location */}
+                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6">
+                                    <label className="text-xs uppercase tracking-wider text-white/40 block mb-3 flex items-center gap-2">
+                                        <MapPin size={14} /> Event Location
+                                    </label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. The Grand Hall, Lagos..."
+                                        className="w-full bg-transparent text-xl font-bold outline-none placeholder:text-white/20 text-white"
+                                        value={formData.eventVenue}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, eventVenue: e.target.value }))}
+                                    />
+                                    <p className="text-[10px] text-white/30 mt-2 font-medium tracking-wide">WHERE IS THE EVENT HAPPENING? (OPTIONAL)</p>
+                                </div>
+
                                 {/* Background Music */}
                                 <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6">
                                     <label className="text-xs uppercase tracking-wider text-white/40 block mb-4 flex items-center justify-between">
@@ -957,7 +977,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                 </div>
 
                                 {/* Chapters List */}
-                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6">
+                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-4 md:p-6">
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="text-sm font-bold uppercase tracking-wider text-white/60">
                                             Chapters ({formData.chapters.length})
@@ -985,7 +1005,7 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                                             layout: { duration: 0.4, type: "spring", bounce: 0, velocity: 5 },
                                                             opacity: { duration: 0.2 }
                                                         }}
-                                                        className={`bg-white/5 border rounded-[2rem] overflow-hidden cursor-move transition-colors duration-500 ${editingChapterId === chapter.id
+                                                        className={`bg-white/5 border rounded-2xl md:rounded-[2rem] overflow-hidden cursor-move transition-colors duration-500 ${editingChapterId === chapter.id
                                                             ? 'border-purple-500 bg-purple-500/10 shadow-[0_0_50px_-12px_rgba(168,85,247,0.2)]'
                                                             : 'border-white/10 hover:border-white/20'
                                                             }`}
@@ -1146,8 +1166,11 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             <ChevronLeft size={20} /> Back
                                         </button>
                                         <button
-                                            onClick={() => canAccessStep(3) && setStep(3)}
-                                            disabled={!canAccessStep(3)}
+                                            onClick={() => {
+                                                if (currentChapter.title) saveChapter();
+                                                if (canAccessStep(3)) setStep(3);
+                                            }}
+                                            disabled={!canAccessStep(3) && !currentChapter.title}
                                             className="flex-[2] py-4 md:py-5 bg-white text-black font-bold text-sm md:text-lg rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-white/90 transition disabled:opacity-30 disabled:cursor-not-allowed"
                                         >
                                             Continue <ChevronRight size={20} />
@@ -1208,6 +1231,10 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
 
 
 
+
+
+
+
                                 {/* Final Message */}
                                 <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
                                     <label className="text-xs uppercase tracking-wider text-white/40 block mb-4 flex items-center gap-2">
@@ -1231,8 +1258,11 @@ export default function WishForm({ onGenerate, onBack, initialCelebrationType })
                                             <ChevronLeft size={20} /> Back
                                         </button>
                                         <button
-                                            onClick={() => canAccessStep(4) && setStep(4)}
-                                            disabled={!canAccessStep(4)}
+                                            onClick={() => {
+                                                if (currentChapter.title) saveChapter();
+                                                if (canAccessStep(4)) setStep(4);
+                                            }}
+                                            disabled={!canAccessStep(4) && !currentChapter.title}
                                             className="flex-[2] py-4 md:py-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-black text-sm md:text-lg rounded-xl md:rounded-2xl hover:opacity-90 transition flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed"
                                         >
                                             <Eye size={20} /> Preview Story

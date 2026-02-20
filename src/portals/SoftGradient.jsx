@@ -84,6 +84,15 @@ export default function SoftGradient({ formData, templateConfig }) {
                                     <div className="h-px w-20 bg-rose-200" />
                                 </motion.div>
                             )}
+                            {formData.eventVenue && (
+                                <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="mt-6 text-sm text-rose-400/50 tracking-wide"
+                                >
+                                    📍 {formData.eventVenue}
+                                </motion.p>
+                            )}
                         </header>
 
                         {/* Main Feed */}

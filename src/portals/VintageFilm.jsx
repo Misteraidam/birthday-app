@@ -76,6 +76,15 @@ export default function VintageFilm({ formData, templateConfig }) {
                         <div className="h-px w-20 bg-amber-800/20" />
                     </motion.div>
                 )}
+                {formData.eventVenue && (
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-6 text-sm text-[#78350F]/40 tracking-wide font-sans"
+                    >
+                        📍 {formData.eventVenue}
+                    </motion.p>
+                )}
             </header>
 
             {/* Main Feed */}

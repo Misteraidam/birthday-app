@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Plus, Mic, StopCircle, Camera, Check, Video } from 'lucide-react';
+import { X, Plus, Mic, StopCircle, Camera, Check, Video, Sparkles } from 'lucide-react';
 
 export default function ChapterEditor({
     chapter,
@@ -190,8 +190,8 @@ export default function ChapterEditor({
                     <Plus size={18} /> Add Chapter
                 </button>
             ) : (
-                <div className="flex items-center justify-center gap-2 py-4 text-green-400 text-xs font-bold uppercase tracking-widest bg-green-500/5 rounded-xl border border-green-500/20">
-                    <Check size={14} /> Changes saved automatically
+                <div className="flex items-center justify-center gap-2 py-4 text-purple-400 text-xs font-bold uppercase tracking-widest bg-purple-500/5 rounded-xl border border-purple-500/20">
+                    <Sparkles size={14} className="animate-pulse" /> Syncing with Story...
                 </div>
             )}
         </div>

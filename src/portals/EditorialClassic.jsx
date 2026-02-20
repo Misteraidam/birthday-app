@@ -64,6 +64,15 @@ export default function EditorialClassic({ formData, templateConfig }) {
                         <div className="h-px w-20 bg-black/10" />
                     </motion.div>
                 )}
+                {formData.eventVenue && (
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-6 text-sm font-sans opacity-40 tracking-wide"
+                    >
+                        📍 {formData.eventVenue}
+                    </motion.p>
+                )}
             </header>
 
             {/* Main Feed */}

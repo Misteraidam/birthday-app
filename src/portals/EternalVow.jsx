@@ -54,7 +54,7 @@ export default function EternalVow({ formData, templateConfig }) {
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-6xl md:text-9xl font-light italic leading-tight tracking-tight mb-4"
+                        className="text-5xl md:text-9xl font-light italic leading-tight tracking-tight mb-4"
                     >
                         {recipientName}
                     </motion.h1>
@@ -77,10 +77,19 @@ export default function EternalVow({ formData, templateConfig }) {
                         <div className="h-px w-12 bg-amber-500/30" />
                     </div>
                 )}
+                {formData.eventVenue && (
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-6 text-sm text-[#78350F]/40 tracking-wide font-sans"
+                    >
+                        📍 {formData.eventVenue}
+                    </motion.p>
+                )}
             </header>
 
             {/* Chapters Feed */}
-            <main className="max-w-6xl mx-auto px-6 space-y-32 pb-60 relative z-10">
+            <main className="max-w-6xl mx-auto px-6 space-y-20 md:space-y-32 pb-32 md:pb-60 relative z-10">
                 {chapters.map((chapter, index) => (
                     <VowChapter
                         key={chapter.id || index}
@@ -93,13 +102,21 @@ export default function EternalVow({ formData, templateConfig }) {
 
             {/* Final Appreciation */}
             {formData.secretMessage && (
-                <footer className="relative z-10 py-60 px-6 text-center bg-gradient-to-t from-amber-100 to-transparent">
-                    <Quote size={40} className="mx-auto mb-12 text-amber-500/30" />
-                    <p className="text-4xl md:text-6xl font-light italic leading-relaxed text-[#78350F] max-w-4xl mx-auto">
-                        "{formData.secretMessage}"
-                    </p>
-                    <div className="mt-20 text-[10px] uppercase tracking-[0.6em] text-amber-600 font-bold">
-                        Forever & Always
+                <footer className="relative z-10 py-24 md:py-60 px-6 text-center border-t border-amber-200/50 overflow-hidden">
+                    {formData.portalBg && (
+                        <div className="absolute inset-0 z-0">
+                            <div className="absolute inset-0 bg-amber-50/80 backdrop-blur-sm z-10" />
+                            <img src={formData.portalBg} className="w-full h-full object-cover opacity-30" alt="" />
+                        </div>
+                    )}
+                    <div className="relative z-20">
+                        <Quote size={40} className="mx-auto mb-10 text-amber-600/50" />
+                        <p className="text-2xl md:text-5xl font-light italic leading-relaxed text-[#78350F]/70 max-w-3xl mx-auto">
+                            "{formData.secretMessage}"
+                        </p>
+                        <div className="mt-20 text-[10px] uppercase tracking-[0.6em] text-amber-600 font-bold">
+                            Forever & Always
+                        </div>
                     </div>
                 </footer>
             )}
@@ -133,10 +150,10 @@ function VowChapter({ chapter, index, accentColor }) {
                     <span className="text-[10px] uppercase tracking-[0.6em] text-amber-600/40 font-bold">Volume_{String(index + 1).padStart(2, '0')}</span>
                     <div className="flex-grow h-px bg-amber-200/50" />
                 </div>
-                <h2 className="text-5xl md:text-7xl font-light italic text-[#78350F] mb-10 leading-tight">
+                <h2 className="text-3xl md:text-7xl font-light italic text-[#78350F] mb-8 md:mb-10 leading-tight">
                     {chapter.title}
                 </h2>
-                <p className="text-xl md:text-2xl font-light italic leading-relaxed text-[#78350F]/70">
+                <p className="text-lg md:text-2xl font-light italic leading-relaxed text-[#78350F]/70">
                     {chapter.content}
                 </p>
 

@@ -53,7 +53,7 @@ export default function GoldenJubilee({ formData, templateConfig }) {
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-7xl md:text-[10rem] font-black tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 leading-[0.85]"
+                        className="text-5xl md:text-[10rem] font-black tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 leading-[0.85]"
                     >
                         {recipientName.toUpperCase()}
                     </motion.h1>
@@ -72,10 +72,19 @@ export default function GoldenJubilee({ formData, templateConfig }) {
                         <div className="h-px w-20" style={{ background: `${primaryColor}80` }} />
                     </motion.div>
                 )}
+                {formData.eventVenue && (
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-6 text-sm text-white/40 tracking-wide"
+                    >
+                        📍 {formData.eventVenue}
+                    </motion.p>
+                )}
             </header>
 
             {/* Main Feed */}
-            <main className="max-w-6xl mx-auto px-6 space-y-32 pb-60 relative z-10 pt-20">
+            <main className="max-w-6xl mx-auto px-6 space-y-20 md:space-y-32 pb-32 md:pb-60 relative z-10 pt-12 md:pt-20">
                 {chapters.map((chapter, index) => (
                     <GoldenChapter
                         key={chapter.id || index}
@@ -89,13 +98,21 @@ export default function GoldenJubilee({ formData, templateConfig }) {
 
             {/* Prestige Footer */}
             {formData.secretMessage && (
-                <footer className="relative z-10 py-60 px-6 text-center bg-gradient-to-t from-amber-950/20 to-transparent">
-                    <Quote size={40} className="mx-auto mb-12" style={{ color: `${primaryColor}80` }} />
-                    <p className="text-4xl md:text-7xl font-bold italic text-white/90 leading-tight max-w-5xl mx-auto">
-                        "{formData.secretMessage}"
-                    </p>
-                    <div className="mt-20 text-[10px] uppercase tracking-[1em] text-white/20">
-                        EST. 2026
+                <footer className="relative z-10 py-24 md:py-60 px-6 text-center bg-gradient-to-t from-amber-950/20 to-transparent overflow-hidden">
+                    {formData.portalBg && (
+                        <div className="absolute inset-0 z-0">
+                            <div className="absolute inset-0 bg-[#0A0A0A]/80 backdrop-blur-sm z-10" />
+                            <img src={formData.portalBg} className="w-full h-full object-cover opacity-40 grayscale hover:grayscale-0 transition-all duration-1000" alt="" />
+                        </div>
+                    )}
+                    <div className="relative z-20">
+                        <Quote size={40} className="mx-auto mb-12" style={{ color: `${primaryColor}80` }} />
+                        <p className="text-3xl md:text-7xl font-bold italic text-white/90 leading-tight max-w-5xl mx-auto">
+                            "{formData.secretMessage}"
+                        </p>
+                        <div className="mt-20 text-[10px] uppercase tracking-[1em] text-white/20">
+                            EST. 2026
+                        </div>
                     </div>
                 </footer>
             )}
@@ -129,10 +146,10 @@ function GoldenChapter({ chapter, index, primaryColor, accentColor }) {
                     <div className="w-12 h-0.5 bg-amber-500" />
                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">The Legacy</span>
                 </div>
-                <h2 className="text-5xl md:text-8xl font-black mb-10 tracking-tighter leading-none">
+                <h2 className="text-4xl md:text-8xl font-black mb-8 md:mb-10 tracking-tighter leading-none">
                     {chapter.title}
                 </h2>
-                <p className="text-xl md:text-3xl font-light text-white/50 leading-relaxed italic mb-12">
+                <p className="text-lg md:text-3xl font-light text-white/50 leading-relaxed italic mb-8 md:mb-12">
                     {chapter.content}
                 </p>
 

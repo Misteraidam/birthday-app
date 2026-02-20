@@ -78,6 +78,15 @@ export default function LuxuryGold({ formData, templateConfig }) {
                                     <div className="h-px w-20 bg-[#FDB931]/20" />
                                 </motion.div>
                             )}
+                            {formData.eventVenue && (
+                                <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="mt-6 text-sm text-[#FDB931]/30 tracking-wide"
+                                >
+                                    📍 {formData.eventVenue}
+                                </motion.p>
+                            )}
                         </header>
 
                         {/* Main Feed */}

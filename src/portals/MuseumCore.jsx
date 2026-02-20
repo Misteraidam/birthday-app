@@ -66,6 +66,11 @@ export default function MuseumCore({ formData, templateConfig }) {
                                     {(formData.customOccasion || celebrationType).toUpperCase()}
                                 </p>
                             )}
+                            {formData.eventVenue && (
+                                <p className="mt-6 text-sm tracking-wide" style={{ color: `${primaryColor}80` }}>
+                                    📍 {formData.eventVenue}
+                                </p>
+                            )}
                         </motion.div>
 
                         {/* Exhibition Chapters */}

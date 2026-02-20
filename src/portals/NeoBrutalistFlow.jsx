@@ -55,6 +55,11 @@ export default function NeoBrutalistFlow({ formData, templateConfig }) {
                                     </div>
                                 )}
                             </div>
+                            {formData.eventVenue && (
+                                <p className="mt-4 text-lg font-bold uppercase tracking-wide opacity-50">
+                                    📍 {formData.eventVenue}
+                                </p>
+                            )}
 
                             {/* Decorative Grid Line */}
                             <div className="mt-12 h-4 bg-black w-full" />

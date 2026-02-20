@@ -100,6 +100,15 @@ export default function MidnightLuxe({ formData, templateConfig }) {
                                     <div className="h-px w-20 bg-amber-500/20" />
                                 </motion.div>
                             )}
+                            {formData.eventVenue && (
+                                <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="mt-6 text-sm text-amber-500/30 tracking-wide"
+                                >
+                                    📍 {formData.eventVenue}
+                                </motion.p>
+                            )}
                         </header>
 
                         {/* Main Feed */}

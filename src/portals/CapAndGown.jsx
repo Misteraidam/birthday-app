@@ -45,7 +45,7 @@ export default function CapAndGown({ formData, templateConfig }) {
                     <motion.h1
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="text-7xl md:text-[10rem] font-black tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 leading-none"
+                        className="text-5xl md:text-[10rem] font-black tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 leading-none"
                     >
                         {recipientName.toUpperCase()}
                     </motion.h1>
@@ -63,10 +63,19 @@ export default function CapAndGown({ formData, templateConfig }) {
                         <div className="h-px w-12 bg-white/10" />
                     </motion.div>
                 )}
+                {formData.eventVenue && (
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-6 text-sm text-white/40 tracking-wide"
+                    >
+                        📍 {formData.eventVenue}
+                    </motion.p>
+                )}
             </header>
 
             {/* Main Feed */}
-            <main className="max-w-6xl mx-auto px-6 space-y-32 pb-60 relative z-10 pt-20">
+            <main className="max-w-6xl mx-auto px-6 space-y-20 md:space-y-32 pb-32 md:pb-60 relative z-10 pt-12 md:pt-20">
                 {chapters.map((chapter, index) => (
                     <TriumphChapter
                         key={chapter.id || index}
@@ -80,13 +89,21 @@ export default function CapAndGown({ formData, templateConfig }) {
 
             {/* Final Tribute */}
             {formData.secretMessage && (
-                <footer className="relative z-10 py-60 px-6 text-center bg-gradient-to-t from-yellow-500/5 to-transparent border-t border-white/5">
-                    <Trophy size={40} className="mx-auto mb-10 text-yellow-500/50" />
-                    <p className="text-3xl md:text-6xl font-black tracking-tight text-white/90 leading-tight max-w-4xl mx-auto">
-                        "{formData.secretMessage}"
-                    </p>
-                    <div className="mt-20 text-[10px] uppercase tracking-[1em] text-white/20">
-                        The Adventure Begins
+                <footer className="relative z-10 py-24 md:py-60 px-6 text-center bg-gradient-to-t from-yellow-500/5 to-transparent border-t border-white/5 overflow-hidden">
+                    {formData.portalBg && (
+                        <div className="absolute inset-0 z-0">
+                            <div className="absolute inset-0 bg-black/60 backdrop-blur-md z-10" />
+                            <img src={formData.portalBg} className="w-full h-full object-cover opacity-30" alt="" />
+                        </div>
+                    )}
+                    <div className="relative z-20">
+                        <Trophy size={40} className="mx-auto mb-10 text-yellow-500/50" />
+                        <p className="text-2xl md:text-6xl font-black tracking-tight text-white/90 leading-tight max-w-4xl mx-auto">
+                            "{formData.secretMessage}"
+                        </p>
+                        <div className="mt-20 text-[10px] uppercase tracking-[1em] text-white/20">
+                            The Adventure Begins
+                        </div>
                     </div>
                 </footer>
             )}
@@ -120,10 +137,10 @@ function TriumphChapter({ chapter, index, primaryColor, accentColor }) {
                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-yellow-400">ACHIEVEMENT_{String(index + 1).padStart(2, '0')}</span>
                     <div className="flex-grow h-px bg-white/10" />
                 </div>
-                <h2 className="text-4xl md:text-7xl font-black mb-8 leading-none tracking-tighter">
+                <h2 className="text-3xl md:text-7xl font-black mb-8 leading-none tracking-tighter">
                     {chapter.title}
                 </h2>
-                <p className="text-xl md:text-2xl font-light text-white/50 leading-relaxed max-w-xl">
+                <p className="text-lg md:text-2xl font-light text-white/50 leading-relaxed max-w-xl">
                     {chapter.content}
                 </p>
 

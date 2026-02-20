@@ -68,7 +68,7 @@ export default function SoftMemorial({ formData, templateConfig }) {
                                 <motion.h1
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="text-6xl md:text-9xl font-light tracking-tight mb-8 text-slate-800"
+                                    className="text-5xl md:text-9xl font-light tracking-tight mb-8 text-slate-800"
                                 >
                                     {recipientName}
                                 </motion.h1>
@@ -87,10 +87,19 @@ export default function SoftMemorial({ formData, templateConfig }) {
                                     <div className="h-px w-12 bg-black/10" />
                                 </motion.div>
                             )}
+                            {formData.eventVenue && (
+                                <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="mt-6 text-sm text-slate-400 tracking-wide"
+                                >
+                                    📍 {formData.eventVenue}
+                                </motion.p>
+                            )}
                         </header>
 
                         {/* Feed */}
-                        <main className="max-w-6xl mx-auto px-6 space-y-32 pb-60 relative z-10">
+                        <main className="max-w-6xl mx-auto px-6 space-y-20 md:space-y-32 pb-32 md:pb-60 relative z-10">
                             {chapters.map((chapter, index) => (
                                 <MemorialChapter
                                     key={chapter.id || index}
@@ -103,13 +112,21 @@ export default function SoftMemorial({ formData, templateConfig }) {
 
                         {/* Peace Footer */}
                         {formData.secretMessage && (
-                            <footer className="relative z-10 py-60 px-6 text-center border-t border-slate-200 bg-gradient-to-t from-slate-100 to-transparent">
-                                <Feather size={40} className="mx-auto mb-10 text-slate-300" />
-                                <p className="text-3xl md:text-5xl font-light italic leading-relaxed text-slate-600 max-w-3xl mx-auto">
-                                    "{formData.secretMessage}"
-                                </p>
-                                <div className="mt-20 text-[10px] uppercase tracking-[0.5em] text-slate-400 font-bold">
-                                    With Eternal Love
+                            <footer className="relative z-10 py-24 md:py-60 px-6 text-center border-t border-[#E2E8F0] overflow-hidden">
+                                {formData.portalBg && (
+                                    <div className="absolute inset-0 z-0">
+                                        <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10" />
+                                        <img src={formData.portalBg} className="w-full h-full object-cover opacity-40 grayscale-[0.5]" alt="" />
+                                    </div>
+                                )}
+                                <div className="relative z-20">
+                                    <Quote size={40} className="mx-auto mb-10 text-slate-300" />
+                                    <p className="text-2xl md:text-5xl font-light italic leading-relaxed text-[#1E293B] max-w-3xl mx-auto">
+                                        "{formData.secretMessage}"
+                                    </p>
+                                    <div className="mt-20 text-[10px] uppercase tracking-[0.5em] text-slate-400 font-bold">
+                                        With Eternal Love
+                                    </div>
                                 </div>
                             </footer>
                         )}
@@ -246,7 +263,8 @@ function MistOverlay() {
     );
 }
 
-function MemorialChapter({ chapter, index }) {
+function MemorialChapter({ chapter, index, accentColor }) {
+    const isEven = index % 2 === 0;
     const [photoIndex, setPhotoIndex] = useState(0);
 
     useEffect(() => {
@@ -263,17 +281,17 @@ function MemorialChapter({ chapter, index }) {
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-16 md:gap-24 items-center`}
+            className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-12 md:gap-24 items-center`}
         >
             {/* Narrative */}
             <div className={`flex-1 ${isEven ? 'text-left' : 'text-right md:text-left'}`}>
                 <span className="text-[10px] uppercase tracking-[0.4em] text-slate-400 block mb-6">
                     Memory_{String(index + 1).padStart(2, '0')}
                 </span>
-                <h2 className="text-4xl md:text-5xl font-light italic text-slate-800 mb-6 leading-tight">
+                <h2 className="text-3xl md:text-5xl font-light italic text-slate-800 mb-6 leading-tight">
                     {chapter.title}
                 </h2>
-                <p className="text-xl md:text-2xl font-light italic leading-relaxed text-slate-600/80">
+                <p className="text-lg md:text-2xl font-light italic leading-relaxed text-slate-600/80">
                     {chapter.content}
                 </p>
 

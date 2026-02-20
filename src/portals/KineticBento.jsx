@@ -59,6 +59,11 @@ export default function KineticBento({ formData, templateConfig }) {
                                     {(formData.customOccasion || celebrationType).toUpperCase()}
                                 </p>
                             )}
+                            {formData.eventVenue && (
+                                <p className="mt-4 text-sm text-white/30 tracking-wide">
+                                    📍 {formData.eventVenue}
+                                </p>
+                            )}
                         </motion.header>
 
                         {/* Bento Grid */}

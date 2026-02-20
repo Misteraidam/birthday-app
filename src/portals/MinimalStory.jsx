@@ -70,6 +70,15 @@ export default function MinimalStory({ formData, templateConfig }) {
                                     <div className="h-px w-12 bg-gray-100" />
                                 </motion.div>
                             )}
+                            {formData.eventVenue && (
+                                <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="mt-6 text-sm text-gray-400 tracking-wide"
+                                >
+                                    📍 {formData.eventVenue}
+                                </motion.p>
+                            )}
                         </header>
 
                         {/* Chapters Feed */}

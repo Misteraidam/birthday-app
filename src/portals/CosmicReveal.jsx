@@ -74,6 +74,15 @@ export default function CosmicReveal({ formData, templateConfig }) {
                                     <div className="h-px w-20 bg-gray-200" />
                                 </motion.div>
                             )}
+                            {formData.eventVenue && (
+                                <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="mt-6 text-sm text-gray-400 tracking-wide"
+                                >
+                                    📍 {formData.eventVenue}
+                                </motion.p>
+                            )}
                         </header>
 
                         {/* Main Feed */}

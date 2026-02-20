@@ -99,6 +99,15 @@ export default function DopamineDream({ formData, templateConfig }) {
                                     </span>
                                 ))}
                             </div>
+                            {formData.eventVenue && (
+                                <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="mt-8 text-sm text-[#2D2D2D]/50 tracking-wide"
+                                >
+                                    📍 {formData.eventVenue}
+                                </motion.p>
+                            )}
                         </motion.header>
 
                         {/* Bouncy Chapters */}

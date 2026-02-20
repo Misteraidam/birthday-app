@@ -51,7 +51,7 @@ export default function CelebrationPop({ formData, templateConfig }) {
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl md:text-7xl lg:text-[10rem] font-black tracking-tighter mb-4 bg-clip-text text-transparent leading-none break-words"
+                        className="text-4xl md:text-7xl lg:text-[10rem] font-black tracking-tighter mb-4 bg-clip-text text-transparent leading-none break-words"
                         style={{ backgroundImage: `linear-gradient(to r, ${primaryColor}, ${accentColor}, #F97316)` }}
                     >
                         {recipientName.toUpperCase()}
@@ -66,10 +66,19 @@ export default function CelebrationPop({ formData, templateConfig }) {
                         {(formData.customOccasion || celebrationType).toUpperCase()}
                     </motion.p>
                 )}
+                {formData.eventVenue && (
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-6 text-sm text-white/40 tracking-wide"
+                    >
+                        📍 {formData.eventVenue}
+                    </motion.p>
+                )}
             </header>
 
             {/* Main Feed */}
-            <main className="max-w-6xl mx-auto px-6 space-y-32 pb-60 relative z-10 pt-20">
+            <main className="max-w-6xl mx-auto px-6 space-y-20 md:space-y-32 pb-32 md:pb-60 relative z-10 pt-12 md:pt-20">
                 {chapters.map((chapter, index) => (
                     <PopChapter
                         key={chapter.id || index}
@@ -83,13 +92,21 @@ export default function CelebrationPop({ formData, templateConfig }) {
 
             {/* Final Message */}
             {formData.secretMessage && (
-                <footer className="relative z-10 py-60 px-6 text-center bg-gradient-to-t from-purple-500/20 to-transparent">
-                    <PartyPopper size={48} className="mx-auto mb-10" style={{ color: accentColor }} />
-                    <p className="text-4xl md:text-7xl font-black tracking-tight text-white leading-tight max-w-5xl mx-auto">
-                        "{formData.secretMessage}"
-                    </p>
-                    <div className="mt-20 text-[10px] uppercase tracking-[1em] text-white/20">
-                        Stay Electric
+                <footer className="relative z-10 py-24 md:py-60 px-6 text-center bg-gradient-to-t from-purple-500/20 to-transparent overflow-hidden">
+                    {formData.portalBg && (
+                        <div className="absolute inset-0 z-0">
+                            <div className="absolute inset-0 bg-[#0F0F0F]/60 backdrop-blur-md z-10" />
+                            <img src={formData.portalBg} className="w-full h-full object-cover opacity-30" alt="" />
+                        </div>
+                    )}
+                    <div className="relative z-20">
+                        <PartyPopper size={48} className="mx-auto mb-10" style={{ color: accentColor }} />
+                        <p className="text-2xl md:text-7xl font-black tracking-tight text-white leading-tight max-w-5xl mx-auto">
+                            "{formData.secretMessage}"
+                        </p>
+                        <div className="mt-20 text-[10px] uppercase tracking-[1em] text-white/20">
+                            Stay Electric
+                        </div>
                     </div>
                 </footer>
             )}
@@ -122,10 +139,10 @@ function PopChapter({ chapter, index, primaryColor, accentColor }) {
                 <div className={`inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 rounded-full text-[10px] font-black tracking-widest text-purple-300 mb-8`}>
                     MOMENT_{index + 1}
                 </div>
-                <h2 className="text-3xl md:text-4xl lg:text-7xl font-black mb-6 md:mb-8 leading-none tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+                <h2 className="text-2xl md:text-4xl lg:text-7xl font-black mb-6 md:mb-8 leading-none tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
                     {chapter.title}
                 </h2>
-                <p className="text-lg md:text-xl lg:text-3xl font-medium text-white/70 leading-relaxed mb-8 md:mb-10">
+                <p className="text-base md:text-xl lg:text-3xl font-medium text-white/70 leading-relaxed mb-8 md:mb-10">
                     {chapter.content}
                 </p>
 

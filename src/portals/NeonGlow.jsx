@@ -87,6 +87,15 @@ export default function NeonGlow({ formData, templateConfig }) {
                                     <div className="h-px w-20 bg-cyan-500/30" />
                                 </motion.div>
                             )}
+                            {formData.eventVenue && (
+                                <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="mt-6 text-sm tracking-wide" style={{ color: `${primaryColor}66` }}
+                                >
+                                    📍 {formData.eventVenue}
+                                </motion.p>
+                            )}
                         </header>
 
                         {/* Main Feed */}

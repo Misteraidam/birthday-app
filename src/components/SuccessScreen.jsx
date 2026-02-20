@@ -36,6 +36,25 @@ export default function SuccessScreen({ portalId, formData, onBackToHome, create
         if (shareUrl) window.open(shareUrl, '_blank');
     };
 
+    // Determine if a hex color is "dark" (for choosing text contrast)
+    const isColorDark = (hex) => {
+        const c = hex.replace('#', '');
+        const r = parseInt(c.substring(0, 2), 16);
+        const g = parseInt(c.substring(2, 4), 16);
+        const b = parseInt(c.substring(4, 6), 16);
+        // Perceived luminance formula
+        return (r * 0.299 + g * 0.587 + b * 0.114) < 140;
+    };
+
+    // Slightly lighten or darken a hex color
+    const adjustColor = (hex, amount) => {
+        const c = hex.replace('#', '');
+        const r = Math.min(255, Math.max(0, parseInt(c.substring(0, 2), 16) + amount));
+        const g = Math.min(255, Math.max(0, parseInt(c.substring(2, 4), 16) + amount));
+        const b = Math.min(255, Math.max(0, parseInt(c.substring(4, 6), 16) + amount));
+        return `rgb(${r},${g},${b})`;
+    };
+
     const handleDownload = (id, data) => {
         try {
             const svgElement = document.getElementById(`qr-${id}`);
@@ -48,75 +67,126 @@ export default function SuccessScreen({ portalId, formData, onBackToHome, create
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             const img = new Image();
-            const portalTemplate = getTemplate(data.template);
+            const t = getTemplate(data.template);
 
             canvas.width = 1200;
             canvas.height = 1600;
+
+            const bgColor = t.secondaryColor || '#050505';
+            const darkBg = isColorDark(bgColor);
+            const textColor = darkBg ? '#FFFFFF' : '#111111';
+            const subtleText = darkBg ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)';
+            const frameColor = darkBg ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+            const bgShift = adjustColor(bgColor, darkBg ? 15 : -10);
 
             img.onerror = () => {
                 alert("Failed to generate digital card image.");
             };
 
             img.onload = () => {
-                // Background
+                // ── Background gradient using the theme's secondary color ──
                 const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                gradient.addColorStop(0, '#050505');
-                gradient.addColorStop(1, '#111111');
+                gradient.addColorStop(0, bgColor);
+                gradient.addColorStop(1, bgShift);
                 ctx.fillStyle = gradient;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Artistic Glow
-                ctx.globalAlpha = 0.3;
-                const glow = ctx.createRadialGradient(canvas.width, 0, 0, canvas.width, 0, 600);
-                glow.addColorStop(0, portalTemplate.primaryColor);
-                glow.addColorStop(1, 'transparent');
-                ctx.fillStyle = glow;
+                // ── Top-right glow using primary color ──
+                ctx.globalAlpha = 0.25;
+                const glow1 = ctx.createRadialGradient(canvas.width, 0, 0, canvas.width, 0, 700);
+                glow1.addColorStop(0, t.primaryColor);
+                glow1.addColorStop(1, 'transparent');
+                ctx.fillStyle = glow1;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Frame
+                // ── Bottom-left glow using accent color ──
+                ctx.globalAlpha = 0.15;
+                const glow2 = ctx.createRadialGradient(0, canvas.height, 0, 0, canvas.height, 600);
+                glow2.addColorStop(0, t.accentColor || t.primaryColor);
+                glow2.addColorStop(1, 'transparent');
+                ctx.fillStyle = glow2;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // ── Elegant frame ──
                 ctx.globalAlpha = 1.0;
-                ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                ctx.strokeStyle = frameColor;
                 ctx.lineWidth = 2;
                 ctx.strokeRect(60, 60, canvas.width - 120, canvas.height - 120);
 
-                // Title
-                ctx.fillStyle = '#FFFFFF';
-                ctx.textAlign = 'center';
-                ctx.font = 'bold 30px sans-serif';
-                ctx.globalAlpha = 0.5;
-                ctx.fillText('A DIGITAL STORY FOR', canvas.width / 2, 250);
+                // ── Small accent line at top center ──
+                ctx.fillStyle = t.primaryColor;
+                ctx.globalAlpha = 0.6;
+                ctx.fillRect(canvas.width / 2 - 40, 120, 80, 3);
 
-                // Recipient
+                // ── "FROM" sender label ──
+                ctx.textAlign = 'center';
+                ctx.fillStyle = subtleText;
+                ctx.globalAlpha = 1.0;
+                ctx.font = 'bold 28px sans-serif';
+                ctx.fillText(`FROM ${(data.senderName || 'Someone Special').toUpperCase()}`, canvas.width / 2, 220);
+
+                // ── Recipient name (big, bold) ──
+                ctx.fillStyle = textColor;
                 ctx.globalAlpha = 1.0;
                 const recipient = data.recipientName.toUpperCase();
-                let fontSize = 100;
+                let fontSize = 110;
                 ctx.font = `900 ${fontSize}px sans-serif`;
-                while (ctx.measureText(recipient).width > canvas.width - 160 && fontSize > 40) {
+                while (ctx.measureText(recipient).width > canvas.width - 200 && fontSize > 40) {
                     fontSize -= 4;
                     ctx.font = `900 ${fontSize}px sans-serif`;
                 }
-                ctx.fillText(recipient, canvas.width / 2, 400);
+                ctx.fillText(recipient, canvas.width / 2, 380);
 
-                // Sender
-                if (data.senderName) {
-                    ctx.font = 'italic 40px sans-serif';
-                    ctx.fillStyle = portalTemplate.primaryColor;
-                    ctx.fillText(`From ${data.senderName}`, canvas.width / 2, 500);
+                // ── "To" line in theme primary color ──
+                ctx.font = 'italic 38px sans-serif';
+                ctx.fillStyle = t.primaryColor;
+                ctx.globalAlpha = 0.85;
+                ctx.fillText(`To ${data.recipientName}`, canvas.width / 2, 470);
+
+                // ── Decorative divider ──
+                ctx.globalAlpha = 0.2;
+                ctx.fillStyle = t.primaryColor;
+                ctx.fillRect(canvas.width / 2 - 60, 520, 120, 2);
+
+                // ── Event venue if provided ──
+                let qrY = 600;
+                if (data.eventVenue) {
+                    ctx.globalAlpha = 0.6;
+                    ctx.fillStyle = subtleText;
+                    ctx.font = '24px sans-serif';
+                    ctx.fillText(`📍 ${data.eventVenue}`, canvas.width / 2, 575);
+                    qrY = 640;
                 }
 
-                // QR Code
-                const qrSize = 500;
+                // ── QR Code ──
+                ctx.globalAlpha = 1.0;
+                const qrSize = 480;
                 const qrX = (canvas.width - qrSize) / 2;
-                ctx.drawImage(img, qrX, 650, qrSize, qrSize);
+                ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
 
-                // Footer
-                ctx.fillStyle = '#FFFFFF';
+                // ── "SCAN TO ENTER" ──
+                const scanY = qrY + qrSize + 60;
+                ctx.fillStyle = textColor;
+                ctx.globalAlpha = 0.9;
                 ctx.font = 'bold 30px sans-serif';
-                ctx.fillText('SCAN TO ENTER', canvas.width / 2, 1250);
+                ctx.fillText('SCAN TO ENTER', canvas.width / 2, scanY);
 
-                ctx.font = '20px sans-serif';
-                ctx.globalAlpha = 0.3;
-                ctx.fillText('Interactive Celebration Portal', canvas.width / 2, 1450);
+                // ── Theme name branding ──
+                ctx.fillStyle = t.primaryColor;
+                ctx.globalAlpha = 0.4;
+                ctx.font = 'bold 18px sans-serif';
+                ctx.fillText(`${t.name} Theme`, canvas.width / 2, scanY + 50);
+
+                // ── Bottom accent line ──
+                ctx.fillStyle = t.primaryColor;
+                ctx.globalAlpha = 0.6;
+                ctx.fillRect(canvas.width / 2 - 40, canvas.height - 120, 80, 3);
+
+                // ── Footer ──
+                ctx.fillStyle = subtleText;
+                ctx.globalAlpha = 1.0;
+                ctx.font = '18px sans-serif';
+                ctx.fillText('Interactive Celebration Portal', canvas.width / 2, canvas.height - 80);
 
                 const link = document.createElement('a');
                 link.download = `Invite-${data.recipientName}.png`;
@@ -178,7 +248,7 @@ export default function SuccessScreen({ portalId, formData, onBackToHome, create
                                         {pData.recipientName}
                                     </h2>
                                     <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold">
-                                        {pData.celebrationType} Portal
+                                        From {pData.senderName || 'Someone'} &bull; To {pData.recipientName}
                                     </p>
                                 </div>
 

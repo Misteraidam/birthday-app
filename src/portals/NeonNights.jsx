@@ -80,6 +80,15 @@ export default function NeonNights({ formData, templateConfig }) {
                         <div className="h-1 w-8" style={{ background: primaryColor, boxShadow: `0 0 10px ${primaryColor}` }} />
                     </motion.div>
                 )}
+                {formData.eventVenue && (
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-6 text-sm text-white/30 tracking-wide"
+                    >
+                        📍 {formData.eventVenue}
+                    </motion.p>
+                )}
             </header>
 
             {/* Main Feed */}

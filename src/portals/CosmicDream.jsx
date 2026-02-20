@@ -88,6 +88,15 @@ export default function CosmicDream({ formData, templateConfig }) {
                         <div className="h-px w-20 bg-purple-500/30" />
                     </motion.div>
                 )}
+                {formData.eventVenue && (
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-6 text-sm text-purple-200/50 tracking-wide"
+                    >
+                        📍 {formData.eventVenue}
+                    </motion.p>
+                )}
             </header>
 
             {/* Feed */}
