@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zion Annotation Guidelines</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #6c63ff;
+    --accent2: #4ecca3;
+    --danger: #ff5c6c;
+    --success: #4ecca3;
+    --text: #e8eaf6;
+    --text-muted: #8b90b8;
+    --pill-bg: #2e3250;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 15px; line-height: 1.7; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(15,17,23,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 56px; }
+  .nav-logo { font-weight: 700; font-size: 16px; letter-spacing: 0.5px; color: var(--text); }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 6px; }
+  .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 13px; padding: 5px 10px; border-radius: 6px; transition: all 0.15s; }
+  .nav-links a:hover { color: var(--text); background: var(--surface2); }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 88px 24px 80px; }
+
+  .hero { text-align: center; padding: 64px 24px 48px; border-bottom: 1px solid var(--border); margin-bottom: 64px; }
+  .hero .badge { display: inline-block; background: var(--pill-bg); color: var(--accent2); border: 1px solid var(--accent2); font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px; }
+  .hero h1 { font-size: 42px; font-weight: 800; line-height: 1.2; margin-bottom: 16px; }
+  .hero h1 span { color: var(--accent); }
+  .hero p { font-size: 17px; color: var(--text-muted); max-width: 580px; margin: 0 auto; }
+
+  .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+  .pillar { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 20px; text-align: center; }
+  .pillar-num { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .pillar h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .pillar p { font-size: 13px; color: var(--text-muted); }
+
+  .central-q { background: linear-gradient(135deg, rgba(108,99,255,0.15), rgba(78,204,163,0.1)); border: 1px solid var(--accent); border-radius: 12px; padding: 24px 28px; margin-bottom: 40px; text-align: center; }
+  .central-q .label { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .central-q p { font-size: 19px; font-weight: 600; }
+
+  .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 48px; }
+  .toc h3 { font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+  .toc-links { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .toc-links a { color: var(--text-muted); text-decoration: none; font-size: 14px; padding: 4px 0; transition: color 0.15s; }
+  .toc-links a:hover { color: var(--accent2); }
+  .toc-links a span { color: var(--accent); font-size: 12px; margin-right: 6px; }
+
+  .section { margin-bottom: 72px; }
+  .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .section-num { background: var(--accent); color: white; font-size: 13px; font-weight: 800; min-width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .section-header h2 { font-size: 22px; font-weight: 700; }
+  .section-header .sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+  .subsection-title { font-size: 17px; font-weight: 700; margin: 36px 0 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .subsection-title .stag { font-size: 12px; font-family: monospace; background: var(--pill-bg); color: var(--accent2); padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+  th { background: var(--surface2); color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .tag { display: inline-block; background: var(--pill-bg); color: var(--accent2); font-size: 12px; font-family: monospace; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; margin-bottom: 16px; }
+  .card-num { font-size: 11px; font-weight: 700; color: var(--accent2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .card h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .card .check-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 12px; margin-bottom: 4px; }
+  .card p { font-size: 14px; color: var(--text-muted); }
+
+  .decision-tree { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin: 20px 0; }
+  .dt-step { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+  .dt-step:last-child { margin-bottom: 0; }
+  .dt-step-num { background: var(--accent); color: white; font-size: 13px; font-weight: 800; min-width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .dt-step-q { font-weight: 600; margin-bottom: 8px; }
+  .dt-outcomes { display: flex; gap: 12px; flex-wrap: wrap; }
+  .dt-yes { background: rgba(78,204,163,0.15); border: 1px solid var(--success); color: var(--success); padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; }
+  .dt-no { background: rgba(255,92,108,0.12); border: 1px solid var(--danger); color: var(--danger); padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; }
+
+  .rule-of-thumb { background: var(--surface2); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 20px 0; }
+  .rule-of-thumb .label { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .rule-of-thumb .item { font-size: 14px; margin-bottom: 4px; }
+  .rule-of-thumb .item strong { color: var(--text-muted); }
+
+  /* EXAMPLE PAIRS */
+  .example-block { margin: 24px 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .example-block .eb-header { background: var(--surface2); padding: 12px 18px; font-size: 13px; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; gap: 10px; }
+  .example-block .eb-header .ex-num { color: var(--text); }
+  .example-block .eb-body { padding: 18px; }
+  .video-wrap { margin-bottom: 16px; border-radius: 8px; overflow: hidden; background: #000; border: 1px solid var(--border); }
+  .video-wrap video { width: 100%; max-height: 320px; display: block; }
+  .video-wrap .video-label { background: var(--surface2); padding: 7px 12px; font-size: 12px; color: var(--text-muted); }
+  .ex-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+  .ex-wrong { background: rgba(255,92,108,0.08); border: 1px solid rgba(255,92,108,0.3); border-radius: 10px; padding: 14px 16px; }
+  .ex-right { background: rgba(78,204,163,0.08); border: 1px solid rgba(78,204,163,0.3); border-radius: 10px; padding: 14px 16px; }
+  .ex-wrong .ex-head { color: var(--danger); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .ex-right .ex-head { color: var(--success); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .ex-wrong p, .ex-right p { font-size: 13px; line-height: 1.6; }
+  .ex-error { background: var(--surface2); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .ex-error strong { color: var(--text); }
+
+  .error-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin: 20px 0; }
+  .error-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .error-card .etag { display: inline-block; margin-bottom: 8px; }
+  .error-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .error-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .error-card .eg { font-size: 12px; color: var(--text-muted); margin-top: 8px; font-style: italic; border-top: 1px solid var(--border); padding-top: 8px; }
+
+  .priority-list { list-style: none; margin: 16px 0; }
+  .priority-list li { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; font-size: 14px; }
+  .priority-list li .rank { font-size: 12px; font-weight: 700; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .priority-list li strong { flex: 1; }
+  .priority-badge { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 10px; }
+  .badge-veryhigh { background: rgba(255,92,108,0.2); color: var(--danger); }
+  .badge-high { background: rgba(255,152,0,0.2); color: #ff9800; }
+  .badge-med { background: rgba(255,193,7,0.15); color: #ffc107; }
+  .badge-low { background: var(--surface2); color: var(--text-muted); }
+  .rank-veryhigh { background: rgba(255,92,108,0.2); color: var(--danger); }
+  .rank-high { background: rgba(255,152,0,0.2); color: #ff9800; }
+  .rank-med { background: rgba(255,193,7,0.15); color: #ffc107; }
+  .rank-low { background: var(--surface2); color: var(--text-muted); }
+
+  .workflow { display: grid; gap: 16px; margin: 20px 0; }
+  .workflow-step { display: flex; gap: 16px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .wf-num { background: var(--accent); color: white; font-size: 15px; font-weight: 800; min-width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .wf-content h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .wf-content p { font-size: 14px; color: var(--text-muted); }
+  .wf-sub { margin-top: 10px; padding-left: 14px; border-left: 2px solid var(--border); }
+  .wf-sub p { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+  .wf-sub p strong { color: var(--text); }
+
+  .guidelines-grid { display: grid; gap: 16px; }
+  .guideline-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+  .guideline-item .gl-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .gl-num { background: var(--surface2); color: var(--text-muted); font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 5px; }
+  .gl-yes { color: var(--success); font-weight: 700; font-size: 13px; }
+  .gl-no { color: var(--danger); font-weight: 700; font-size: 13px; }
+  .guideline-item h4 { font-size: 15px; font-weight: 700; }
+  .guideline-item p { font-size: 14px; color: var(--text-muted); margin-top: 6px; }
+  .guideline-item .example-note { font-size: 13px; color: var(--text-muted); margin-top: 8px; background: var(--surface2); padding: 10px 12px; border-radius: 7px; }
+
+  .refinement { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 20px 0; }
+  .refinement-header { background: var(--surface2); padding: 14px 20px; font-size: 13px; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; gap: 10px; }
+  .refinement-header .rid { color: var(--text); }
+  .refinement-body { padding: 20px; }
+  .changes { background: var(--surface2); border-radius: 8px; padding: 14px 16px; margin-top: 14px; }
+  .changes .ch-label { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .changes p { font-size: 13px; color: var(--text-muted); }
+  .changes .ch-highlight { font-size: 13px; color: var(--accent2); font-family: monospace; margin-top: 6px; }
+
+  .common-error { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; margin-bottom: 20px; }
+  .common-error .ce-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .common-error h4 { font-size: 16px; font-weight: 700; }
+  .atomic-verbs { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+  .verb-step { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .verb-step::after { content: '→'; color: var(--text-muted); font-weight: 400; }
+  .verb-step:last-child::after { content: ''; }
+
+  .fields-table th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+  .fields-table td { padding: 12px 14px; font-size: 14px; vertical-align: top; border-bottom: 1px solid var(--border); }
+  .fields-table tr:last-child td { border-bottom: none; }
+
+  .caption-box { background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; padding: 22px; margin: 16px 0; }
+  .cb-field { display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+  .cb-field:last-child { margin-bottom: 0; }
+  .cb-key { font-size: 12px; font-weight: 700; color: var(--text-muted); min-width: 80px; text-transform: uppercase; letter-spacing: 0.5px; padding-top: 2px; }
+
+  .warning-box { background: rgba(255,193,7,0.08); border: 1px solid rgba(255,193,7,0.3); border-radius: 8px; padding: 14px 16px; margin-top: 16px; font-size: 14px; color: #ffc107; }
+  .warning-box strong { display: block; margin-bottom: 4px; }
+
+  @media (max-width: 640px) {
+    .pillars { grid-template-columns: 1fr; }
+    .ex-row { grid-template-columns: 1fr; }
+    .toc-links { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .hero h1 { font-size: 28px; }
+    .error-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><span>Zion</span> Annotation Guidelines</div>
+  <div class="nav-links">
+    <a href="#section1">Handling Time</a>
+    <a href="#section2">Validation</a>
+    <a href="#section3">Error Tags</a>
+    <a href="#section4">Anatomy</a>
+    <a href="#section5">Workflow</a>
+    <a href="#section7">Common Errors</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="badge">Annotator Reference Guide</div>
+    <h1>Zion <span>Annotation</span> Guidelines</h1>
+    <p>A semantic annotation pipeline for auditing and refining AI-generated captions for short-form video content. Experts review seed captions, verify against video, and edit or approve.</p>
+  </div>
+
+  <div class="pillars">
+    <div class="pillar"><div class="pillar-num">Pillar 01</div><h3>Correctness</h3><p>Each annotation must accurately reflect the visual data — no hallucinations, no inferred details.</p></div>
+    <div class="pillar"><div class="pillar-num">Pillar 02</div><h3>Completeness</h3><p>All relevant hand actions and segments are captured, with no gaps in the sequence.</p></div>
+    <div class="pillar"><div class="pillar-num">Pillar 03</div><h3>Consistency</h3><p>Object descriptions and action labels remain uniform across the entire annotation.</p></div>
+  </div>
+
+  <div class="central-q">
+    <div class="label">The Central Question Zion Evaluates</div>
+    <p>Is this annotation reliable enough to be used as training data?</p>
+  </div>
+
+  <div class="toc">
+    <h3>Contents</h3>
+    <div class="toc-links">
+      <a href="#section1"><span>1</span>Handling Time</a>
+      <a href="#section2-1"><span>2.1</span>Caption Validation</a>
+      <a href="#section2-2"><span>2.2</span>Decision Framework</a>
+      <a href="#section2-3"><span>2.3</span>Captioning Conventions</a>
+      <a href="#section3"><span>3</span>Error Categories &amp; Examples</a>
+      <a href="#section4"><span>4</span>Anatomy of a Task</a>
+      <a href="#section5"><span>5</span>End-to-End Workflow</a>
+      <a href="#section5-examples"><span>5+</span>Refinement Examples</a>
+      <a href="#section7"><span>7</span>Common Errors</a>
+    </div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="section" id="section1">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div><h2>Handling Time</h2><div class="sub">1:5 ratio — 5 seconds of work per 1 second of video</div></div>
+    </div>
+    <p style="color:var(--text-muted);margin-bottom:20px;">Zion annotations set a benchmark for model performance. Consistent Handling Time (HT) ensures the model learns from realistic, repeatable task execution.</p>
+    <table style="max-width:400px">
+      <thead><tr><th>Video Duration</th><th>Max Handling Time</th></tr></thead>
+      <tbody>
+        <tr><td>1 second</td><td>5 seconds</td></tr>
+        <tr><td>2 seconds</td><td>10 seconds</td></tr>
+        <tr><td>3 seconds</td><td>15 seconds</td></tr>
+        <tr><td>4 seconds</td><td>20 seconds</td></tr>
+      </tbody>
+    </table>
+    <div class="warning-box"><strong>⚠ Note</strong>These targets include time to watch the video, verify the AI caption, and perform any necessary edits. Consistent adherence is critical for this pilot and future work volume.</div>
+  </div>
+
+  <!-- SECTION 2.1 -->
+  <div class="section" id="section2-1">
+    <div class="section-header">
+      <div class="section-num">2.1</div>
+      <div><h2>Caption Validation</h2><div class="sub">Seven pillars — each defines what to check and how to fix it</div></div>
+    </div>
+    <div class="card"><div class="card-num">Pillar 01 · Accuracy</div><h4>Action Verification</h4><div class="check-label">Check</div><p>Did the described actions actually occur?</p><div class="check-label">Fix</div><p>Remove any descriptions of actions not visible in the video. If a major action is missing, add a concise description.</p></div>
+    <div class="card"><div class="card-num">Pillar 02 · Identity</div><h4>Object &amp; Attribute Precision</h4><div class="check-label">Check</div><p>Are all entities identified correctly?</p><div class="check-label">Fix</div><p>Verify the color, type, and shape of objects. If the model identifies a red truck but the video shows a maroon van, update immediately.</p></div>
+    <div class="card"><div class="card-num">Pillar 03 · Order</div><h4>Chronological Sequencing</h4><div class="check-label">Check</div><p>Does the caption follow the video's timeline?</p><div class="check-label">Fix</div><p>Ensure the narrative follows the visual sequence. If events are described out of order, restructure to match chronology.</p></div>
+    <div class="card"><div class="card-num">Pillar 04 · Flow</div><h4>Annotation Logic &amp; Action Flow</h4><div class="check-label">Check</div><p>Is there a beginning, middle, and end for the object?</p><div class="check-label">Fix</div><p>Maintain a coherent action sequence: <strong>Pick → Use → Place</strong>. Avoid broken continuity. Consolidate fragmented actions to preserve flow.</p></div>
+    <div class="card"><div class="card-num">Pillar 05</div><h4>Pauses</h4><div class="check-label">Check</div><p>Should indecision, hesitation, or frustration be annotated?</p><div class="check-label">Fix</div><p>No. Only annotate observable, task-relevant actions.</p></div>
+    <div class="card"><div class="card-num">Pillar 06</div><h4>No-Action Segments</h4><div class="check-label">Check</div><p>How should periods with no actions be handled?</p><div class="check-label">Fix</div><p>Label as <strong>"No relevant actions."</strong></p></div>
+    <div class="card"><div class="card-num">Pillar 07</div><h4>Independent Object Descriptions</h4><div class="check-label">Check</div><p>Should descriptions rely on previous steps to identify an object?</p><div class="check-label">Fix</div><p>No. Use standalone descriptions: e.g. <em>"a blue plastic cup"</em> — not <em>"the cup currently placed on the table."</em></p></div>
+  </div>
+
+  <!-- SECTION 2.2 -->
+  <div class="section" id="section2-2">
+    <div class="section-header">
+      <div class="section-num">2.2</div>
+      <div><h2>Decision Framework</h2><div class="sub">Yes = pass · No = apply the fix</div></div>
+    </div>
+    <div class="decision-tree">
+      <div class="dt-step"><div class="dt-step-num">1</div><div><div class="dt-step-q">Did all actions described happen in the video?</div><div class="dt-outcomes"><span class="dt-yes">✓ Yes — Pass</span><span class="dt-no">✗ No — Remove actions that did not occur</span></div></div></div>
+      <div class="dt-step"><div class="dt-step-num">2</div><div><div class="dt-step-q">Did all actions occur in the right order?</div><div class="dt-outcomes"><span class="dt-yes">✓ Yes — Pass</span><span class="dt-no">✗ No — Switch to correct order</span></div></div></div>
+      <div class="dt-step"><div class="dt-step-num">3</div><div><div class="dt-step-q">Are all the colors / objects described correctly?</div><div class="dt-outcomes"><span class="dt-yes">✓ Yes — Pass</span><span class="dt-no">✗ No — Change the description</span></div></div></div>
+    </div>
+    <div class="rule-of-thumb">
+      <div class="label">💡 Rule of Thumb</div>
+      <div class="item">If it <strong>didn't happen</strong> → delete it</div>
+      <div class="item">If it's the <strong>wrong color / type</strong> → change it</div>
+      <div class="item">If the <strong>timing is off</strong> → move it</div>
+    </div>
+  </div>
+
+  <!-- SECTION 2.3 -->
+  <div class="section" id="section2-3">
+    <div class="section-header">
+      <div class="section-num">2.3</div>
+      <div><h2>Captioning Conventions</h2><div class="sub">Six rules governing how captions are written</div></div>
+    </div>
+    <div class="guidelines-grid">
+      <div class="guideline-item"><div class="gl-header"><span class="gl-num">01</span><h4>Movement</h4><span class="gl-no">NO</span></div><p>Hands only — no body movements. Avoid "walks", "steps", "moves the legs", "torso".</p><div class="example-note">✕ "moves four steps forward and picks up a box"<br>✓ "moves forward, reaches for, and picks up a box"</div></div>
+      <div class="guideline-item"><div class="gl-header"><span class="gl-num">02</span><h4>Viewpoint Changes</h4><span class="gl-no">NO</span></div><p>Only label left and right hand actions. Exclude head movement and camera perspective changes.</p></div>
+      <div class="guideline-item"><div class="gl-header"><span class="gl-num">03</span><h4>Object Identification</h4><span class="gl-no">Reference only</span></div><p>Use objects as reference points for hand actions — not as standalone mentions.</p></div>
+      <div class="guideline-item"><div class="gl-header"><span class="gl-num">04</span><h4>Action Outcomes</h4><span class="gl-yes">YES</span></div><p>If an action results in a secondary event, include it.</p><div class="example-note">✓ "The right hand places a cup on the counter and a finger knocks it over."</div></div>
+      <div class="guideline-item"><div class="gl-header"><span class="gl-num">05</span><h4>Object Generalization</h4><span class="gl-yes">YES</span></div><p>If the material is hard to identify, use a general term rather than guessing.</p><div class="example-note">✓ Use "cup" instead of "plastic / glass cup" when material isn't clear.</div></div>
+      <div class="guideline-item"><div class="gl-header"><span class="gl-num">06</span><h4>Hand Rest Positioning</h4><span class="gl-yes">YES</span></div><p>Always describe the hand's resting position at end of each segment. <strong>High default</strong> = above waist. <strong>Low default</strong> = below waist.</p><div class="example-note">✓ "The right hand places the cup, then returns to a high default position."</div></div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section" id="section3">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div><h2>Error Categories</h2><div class="sub">Tag every category that applies — a single fix often needs multiple tags</div></div>
+    </div>
+
+    <div class="error-grid">
+      <div class="error-card"><div class="etag"><span class="tag">action_fix</span></div><h4>Action Fix</h4><p>Wrong verb — doesn't match what's happening.</p><div class="eg">e.g. "shakes the bottle" but hand actually rotates it.</div></div>
+      <div class="error-card"><div class="etag"><span class="tag">timestamp_fix</span></div><h4>Timestamp Fix</h4><p>Caption correct but window timing is off.</p><div class="eg">e.g. Window 0:03→0:09 when action ends at 0:07.</div></div>
+      <div class="error-card"><div class="etag"><span class="tag">hand_fix</span></div><h4>Hand Fix</h4><p>Wrong hand label — left/right swapped, or active/idle mislabeled.</p><div class="eg">e.g. "Left hand reaches" when it's the right.</div></div>
+      <div class="error-card"><div class="etag"><span class="tag">object_fix</span></div><h4>Object Fix</h4><p>Wrong object label, color, or descriptor.</p><div class="eg">e.g. "maroon cup" instead of "red cup".</div></div>
+      <div class="error-card"><div class="etag"><span class="tag">hallucination</span></div><h4>Hallucination</h4><p>Invented object, action, or detail not in the video.</p><div class="eg">e.g. Caption mentions a brand not visible in the video.</div></div>
+      <div class="error-card"><div class="etag"><span class="tag">missing_phase</span></div><h4>Missing Phase</h4><p>Gap in the timeline where an action occurs but isn't annotated.</p><div class="eg">e.g. A reach between two captions has no phase of its own.</div></div>
+      <div class="error-card"><div class="etag"><span class="tag">merge_segments</span></div><h4>Merge Segments</h4><p>One continuous action split into multiple short captions.</p><div class="eg">e.g. A single reach broken into three 1-second captions.</div></div>
+      <div class="error-card"><div class="etag"><span class="tag">split_segments</span></div><h4>Split Segments</h4><p>One caption covers more time than the action it describes.</p><div class="eg">e.g. "Picking up cup" 0:03→0:07 but pickup ends at 0:05.</div></div>
+      <div class="error-card"><div class="etag"><span class="tag">structural_cleanup</span></div><h4>Structural Cleanup</h4><p>Phrasing off but facts correct.</p><div class="eg">e.g. Awkward word order; subject at end of sentence.</div></div>
+    </div>
+
+    <h3 style="margin:32px 0 16px;font-size:16px;">Priority Order</h3>
+    <ul class="priority-list">
+      <li><div class="rank rank-veryhigh">1</div><strong>hallucination</strong><span class="priority-badge badge-veryhigh">Very High</span></li>
+      <li><div class="rank rank-veryhigh">2</div><strong>missing_phase</strong><span class="priority-badge badge-veryhigh">Very High</span></li>
+      <li><div class="rank rank-high">3</div><strong>action_fix</strong><span class="priority-badge badge-high">High</span></li>
+      <li><div class="rank rank-med">4</div><strong>timestamp_fix</strong><span class="priority-badge badge-med">Medium / Low</span></li>
+      <li><div class="rank rank-low">5</div><strong>merge / split segments</strong><span class="priority-badge badge-low">Lower</span></li>
+    </ul>
+
+    <!-- HALLUCINATION EXAMPLES -->
+    <div class="subsection-title"><span class="stag">hallucination</span> Examples</div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 1</span> · Unverifiable object brand</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e6db78bea9c69e1d86aa55.mov" type="video/quicktime"></video>
+          <div class="video-label">Hallucination — invented brand name</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>Both hands carry an upside-down Olavson copper pan, gripping opposite edges of the pan to transport it steadily.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>Both hands carry an upside-down copper pan, gripping opposite edges.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> "Olavson" is an invented brand name not verifiable from the video. Describe only what is visibly verifiable.</div>
+      </div>
+    </div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 2</span> · Hallucinated product type</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e6dbb7bea9c69e1d86b0ab.mov" type="video/quicktime"></video>
+          <div class="video-label">Hallucination — guessed product flavor</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>The right hand sets a green lime soda can into a wooden counter while the left hand remains idle.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>The right hand sets a green can onto a wooden counter while the left hand remains idle.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> Unable to verify if the can is Lime Soda. Use the visible attribute ("green can") only.</div>
+      </div>
+    </div>
+
+    <!-- HAND_FIX EXAMPLES -->
+    <div class="subsection-title"><span class="stag">hand_fix</span> Examples</div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 1</span> · Left hand incorrectly labeled as active</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e6db20bea9c69e1d869e4c.mov" type="video/quicktime"></video>
+          <div class="video-label">hand_fix — left hand is idle, not active</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>The right hand places a white cup in the sink, while the left hand reaches for the pan handle but fails to grasp it.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>The right hand places a white cup in the sink, while the left hand remains still.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> Left hand is idle.</div>
+      </div>
+    </div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 2</span> · Left hand incorrectly labeled as grabbing</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e6db40bea9c69e1d86a2eb.mov" type="video/quicktime"></video>
+          <div class="video-label">hand_fix — left hand is idle</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>The left hand grabs the wooden counter while the right hand lifts a small metal pot over the sink basin.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>The left hand remains idle while the right hand lifts a small metal pot over the sink basin.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> Left hand is idle.</div>
+      </div>
+    </div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 3</span> · Wrong hand — left, not right</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e8206d197a5ad4447bd122.mp4" type="video/mp4"></video>
+          <div class="video-label">hand_fix — hands swapped</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>The right hand reaches out to grasp and lift a blue-capped water bottle from the counter while the left hand remains resting on the edge.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>The left hand rests open on the right side of the table, then lifts, moves backward to the left, and reaches for the blue-capped water bottle to grasp it, while the right hand remains idle.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> The left hand grabs the bottle; the right hand is idle.</div>
+      </div>
+    </div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 4</span> · Wrong hand — left hand is active, not right</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e788c9c75a2a206d2bb11c.mov" type="video/quicktime"></video>
+          <div class="video-label">hand_fix — active hand swapped</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>The right hand reaches into a white bowl, briefly touches a green snack bar, and then picks up and removes the blue snack bar while the left hand remains out of view.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>The left hand reaches into a white bowl and picks up a blue snack bar, while the right hand remains out of view.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> The left hand is active; the right is off-screen.</div>
+      </div>
+    </div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 5</span> · Wrong hand — right hand receives, not left</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e788dec75a2a206d2bb4b7.mov" type="video/quicktime"></video>
+          <div class="video-label">hand_fix — receiving hand swapped</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>The left hand reaches out and takes a green bottle offered by a person, while the right hand remains out of view.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>The right hand reaches out and takes the green bottle, while the left hand remains out of view.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> The robot reaches with its right hand, not the left.</div>
+      </div>
+    </div>
+
+    <!-- ACTION_FIX EXAMPLES -->
+    <div class="subsection-title"><span class="stag">action_fix</span> Examples</div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 1</span> · Wrong verb — pick up &amp; rotate, not shake</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e6daf2bea9c69e1d8698ce.mov" type="video/quicktime"></video>
+          <div class="video-label">action_fix — shake vs. rotate</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>The right hand shakes the silver travel mug from the desk while the left hand remains idle.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>The right hand picks up the silver travel mug from the desk and rotates it horizontally, while the left hand remains idle.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> The correct action is pick up and rotate, not shake.</div>
+      </div>
+    </div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 2</span> · Wrong verb — reach for, not grasp</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e78c857f705cdd33b95f9c.mov" type="video/quicktime"></video>
+          <div class="video-label">action_fix — grasp vs. reach for</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>The left hand grasps and lifts a water bottle from the table, rotating it horizontally, while the right hand remains stationary holding a clear plastic cup.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>The left hand reaches for and lifts a water bottle from the table, rotating it horizontally, while the right hand remains stationary, holding a clear plastic cup.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> Since the hand must travel a significant distance, "reaches for" is more accurate than "grasps."</div>
+      </div>
+    </div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 3</span> · Wrong verb — grab &amp; lift, not rotate</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e80f0c197a5ad4447969a3.mp4" type="video/mp4"></video>
+          <div class="video-label">action_fix — rotate vs. grab and lift</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>The right hand rotates a clear, blue-capped water bottle on a counter while the left hand hovers nearby without interacting.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>The right hand grabs and lifts a clear, blue-capped water bottle from the counter while the left hand remains idle.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> The hand never rotates the bottle — the correct action is grabbing and lifting.</div>
+      </div>
+    </div>
+
+    <!-- MISSING_PHASE EXAMPLES -->
+    <div class="subsection-title"><span class="stag">missing_phase</span> Examples</div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 1</span> · Multi-step reach collapsed into "pick up"</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e78c997f705cdd33b962ab.mov" type="video/quicktime"></video>
+          <div class="video-label">missing_phase — collapsed sequence</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>pick up Fiji water bottle with right hand</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>The right hand rests below the table. The right hand reaches for the bottle and picks it up, while the left hand remains idle.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> The right hand performs multiple actions before picking up the bottle; the left hand is visible and idle — not absent.</div>
+      </div>
+    </div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 2</span> · Five-step pickup reduced to a single reach</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e78cae7f705cdd33b96732.mov" type="video/quicktime"></video>
+          <div class="video-label">missing_phase — five distinct motions collapsed</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>The right hand reaches forward and grasps a blue bottle on a wooden table while the left hand remains idle.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>The right hand rests closed on the table to the right of the water bottle, then moves backward, opens, and moves forward to pick up the bottle while the left hand is out of frame.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> The hand performs five distinct actions, and the left hand is out of frame — not idle.</div>
+      </div>
+    </div>
+
+    <!-- OBJECT_FIX EXAMPLES -->
+    <div class="subsection-title"><span class="stag">object_fix</span> Examples</div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 1</span> · Wrong object — lime, not ball</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e78818c75a2a206d2b917b.mov" type="video/quicktime"></video>
+          <div class="video-label">object_fix — green ball vs. lime</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>The right hand grasps and lifts a green ball from the container while the left hand remains idle.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>The right hand grasps and lifts a lime from the container while the left hand remains idle.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> The video clearly shows a lime, not a green ball. Fix obvious object misidentifications.</div>
+      </div>
+    </div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 2</span> · Unverifiable fruit — generalize to "object"</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e787adc75a2a206d2b7b91.mov" type="video/quicktime"></video>
+          <div class="video-label">object_fix — unverifiable category</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>The left hand holds a Rubik's cube while the right hand places a yellow-orange fruit into a cardboard box and then picks up a yellow lemon.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>The left hand holds a Rubik's cube while the right hand grabs a yellow-orange object from a cardboard box.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> The object can't be confidently identified as a fruit — use "object" rather than guessing a category.</div>
+      </div>
+    </div>
+
+    <div class="example-block">
+      <div class="eb-header"><span class="ex-num">Ex 3</span> · Wrong scope — whole bottle, not just the cap</div>
+      <div class="eb-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/69e82427197a5ad4447c37a7.mp4" type="video/mp4"></video>
+          <div class="video-label">object_fix — wrong object scope</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Incorrect</div><p>The right hand reaches for and picks up a blue cap from the counter while the left hand remains idle.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Correct</div><p>The right hand moves backward, grasps a blue-capped water bottle, and lifts it from the counter while the left hand remains idle.</p></div>
+        </div>
+        <div class="ex-error"><strong>Error:</strong> The hand picks up the whole bottle, not just the cap.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section" id="section4">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div><h2>Anatomy of a Task</h2><div class="sub">A task = one video broken into multiple captioned time windows</div></div>
+    </div>
+    <p style="color:var(--text-muted);margin-bottom:20px;">Each task is a single video pre-segmented into multiple captions. Each caption is the atomic reviewable unit: a numbered [start, end] time window, paired with a hand-action description and object list.</p>
+    <table class="fields-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ID</strong></td><td>integer</td><td>Sequential number identifying the caption within the video.</td></tr>
+        <tr><td><strong>Track</strong></td><td>scope</td><td>Which hand(s) the annotation covers — left, right, or both.</td></tr>
+        <tr><td><strong>Time Window</strong></td><td>[start, end]</td><td>The bounded video slice defining the caption's footprint on the timeline.</td></tr>
+        <tr><td><strong>Description</strong></td><td>text</td><td>Natural-language caption of the hand actions. Must account for both hands, even if one is idle or out of frame.</td></tr>
+        <tr><td><strong>Objects</strong></td><td>tag list</td><td>Objects relevant to the caption, as standalone descriptors used as reference points for hand actions.</td></tr>
+      </tbody>
+    </table>
+    <div class="caption-box">
+      <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Example Caption</div>
+      <div class="cb-field"><span class="cb-key">ID</span><span class="cb-val">#3</span></div>
+      <div class="cb-field"><span class="cb-key">Track</span><span class="cb-val">Both Hands</span></div>
+      <div class="cb-field"><span class="cb-key">Window</span><span class="cb-val">0:07 → 0:12 (5 seconds)</span></div>
+      <div class="cb-field"><span class="cb-key">Objects</span><span class="cb-val">brown and blue plush dog · clear plastic storage box · yellow plush duck · green and yellow plush toy · small blue and white plush toy · orange plush monkey</span></div>
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="section" id="section5">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div><h2>End-to-End Workflow</h2><div class="sub">Three stages: claim → review → submit</div></div>
+    </div>
+    <div class="workflow">
+      <div class="workflow-step"><div class="wf-num">1</div><div class="wf-content"><h4>Claim a task</h4><p>Pick up an available task from the queue. Each task is a single video. Once claimed, complete it in full.</p></div></div>
+      <div class="workflow-step"><div class="wf-num">2</div><div class="wf-content"><h4>Review caption by caption</h4><p>For each caption, run the same micro-loop before advancing:</p><div class="wf-sub"><p><strong>a.</strong> Read the model-generated description carefully.</p><p><strong>b.</strong> Watch the clip — confirm both hands and all objects match.</p><p><strong>c.</strong> Confirm start and end times tightly bound the action.</p><p><strong>d.</strong> Apply corrections, then move to the next caption.</p></div></div></div>
+      <div class="workflow-step"><div class="wf-num">3</div><div class="wf-content"><h4>Save &amp; submit</h4><p>Once every caption has been reviewed, save and submit. Partial reviews aren't submitted.</p></div></div>
+    </div>
+    <div class="warning-box"><strong>⏱ Remember</strong>The HT budget covers the entire workflow — claiming, full review loop, and submission. Keep the per-caption loop tight to stay within the 1:5 ratio.</div>
+  </div>
+
+  <!-- SECTION 5 REFINEMENT EXAMPLES -->
+  <div class="section" id="section5-examples">
+    <div class="section-header">
+      <div class="section-num">5+</div>
+      <div><h2>Annotation Refinement Examples</h2><div class="sub">Seed captions vs. expert-refined versions</div></div>
+    </div>
+
+    <div class="refinement">
+      <div class="refinement-header"><span class="rid">Example 1</span> · Caption #0 · 0:00→0:05 · Adding physical locomotion</div>
+      <div class="refinement-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/3d16cc1b7e5442355c1c96bdcc5508e0 (1).mp4" type="video/mp4"></video>
+          <div class="video-label">Refinement example — squeegee grab</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Original</div><p>The right hand pulls the green and white squeegee from the wall hook; the left hand takes the squeegee from the right hand and lowers the blade onto the spilled yellow liquid on the white counter while the right hand becomes idle.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Refined</div><p>The right hand reaches for the green and white squeegee and grabs it from the wall hook behind the sink, then both hands move to the right, and the left hand takes the squeegee from the right hand and lowers the blade onto the top-right corner of the counter, while the right hand becomes idle.</p></div>
+        </div>
+        <div class="changes"><div class="ch-label">Changes made</div><p>Added physical locomotion — the hand movement to grab the squeegee and move to the right must be included to complete the sequence.</p><div class="ch-highlight">"reaches for" · "both hands move to the right"</div></div>
+      </div>
+    </div>
+
+    <div class="refinement">
+      <div class="refinement-header"><span class="rid">Example 2</span> · Caption #4 · 0:18→0:25 · Specifying exact placement destinations</div>
+      <div class="refinement-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/c6447c19eb3a9a52d2252575cdcd95f4 (3).mp4" type="video/mp4"></video>
+          <div class="video-label">Refinement example — scissors and paintbrush</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Original</div><p>The right hand picks up a black scissors and wooden paintbrush from the desk and places them into the clear plastic tray of the blue and clear toolbox while the left hand stays idle.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Refined</div><p>The right hand picks up the black scissors from the desk and places them on top of the paint pots inside the blue compartment, then picks up the wooden paintbrush and places it into the transparent compartment on the upper section of the toolbox, while the left hand remains idle throughout.</p></div>
+        </div>
+        <div class="changes"><div class="ch-label">Changes made</div><p>Added precise placement destinations for each object and separated the two placement actions into sequential steps.</p><div class="ch-highlight">"on top of the paint pots inside the blue compartment" · "into the transparent compartment on the upper section"</div></div>
+      </div>
+    </div>
+
+    <div class="refinement">
+      <div class="refinement-header"><span class="rid">Example 3</span> · Caption #7 · 0:00→0:10 · Correcting hand state and final action accuracy</div>
+      <div class="refinement-body">
+        <div class="video-wrap">
+          <video controls><source src="video for guidelines/421f84a6f2165ffcde85402428b27563 (1).mp4" type="video/mp4"></video>
+          <div class="video-label">Refinement example — whiteboard eraser</div>
+        </div>
+        <div class="ex-row">
+          <div class="ex-wrong"><div class="ex-head">✕ Original</div><p>The right hand scrubs the whiteboard with the pink eraser, lifts it away from the surface, and places it on the top frame of the whiteboard while the left hand stays idle.</p></div>
+          <div class="ex-right"><div class="ex-head">✓ Refined</div><p>The right hand scrubs the whiteboard with the pink eraser while the left hand rests on the upper frame. The right hand releases the eraser onto the whiteboard and moves toward the upper frame as the left hand lifts away, leaving both hands suspended at that height without touching it.</p></div>
+        </div>
+        <div class="changes"><div class="ch-label">Changes made</div><p>Two corrections: (1) the left hand was not idle — it rested on the upper frame. (2) The eraser is released back onto the whiteboard surface magnetically, not placed on the frame.</p><div class="ch-highlight">"left hand rests on the upper frame" · "releases the eraser onto the whiteboard" · "both hands suspended without touching it"</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="section" id="section7">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <div><h2>Common Errors</h2><div class="sub">Patterns spotted in recent reviews</div></div>
+    </div>
+
+    <div class="common-error">
+      <div class="ce-header"><h4>Inconsistent Action Granularity</h4><span class="tag">missing_phase</span><span class="tag">structural_cleanup</span></div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">Every distinct hand motion gets its own verb — not a compressed summary.</p>
+      <div class="atomic-verbs"><div class="verb-step">grasp</div><div class="verb-step">lift</div><div class="verb-step">approach</div><div class="verb-step">place</div></div>
+      <div class="ex-row" style="margin-top:16px;">
+        <div class="ex-wrong"><div class="ex-head">✕ Too high-level</div><p>The right hand picks up and throws an item in A.</p></div>
+        <div class="ex-right"><div class="ex-head">✓ Atomic verbs</div><p>The right hand grasps the item, lifts it from the surface, approaches A, and places it inside.</p></div>
+      </div>
+      <div class="ex-error" style="margin-top:8px;"><strong>Why it matters:</strong> Each atomic verb corresponds to a discrete motion the model can reproduce. Compressed verbs confuse training.</div>
+    </div>
+
+    <div class="common-error">
+      <div class="ce-header"><h4>Positional Numbering of Objects</h4><span class="tag">object_fix</span></div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">Never label objects by sequence position. Always describe by visible physical attributes: color, shape, size, location.</p>
+      <div class="ex-row">
+        <div class="ex-wrong"><div class="ex-head">✕ Avoid</div><p>The right hand picks up the second cup from the counter.<br><br>The left hand places the first bottle into the box.<br><br>The right hand grasps the third snack bar from the bowl.</p></div>
+        <div class="ex-right"><div class="ex-head">✓ Use instead</div><p>The right hand picks up the red cup from the counter.<br><br>The left hand places the tall blue bottle into the box.<br><br>The right hand grasps the green snack bar from the bowl.</p></div>
+      </div>
+      <div class="ex-error" style="margin-top:8px;"><strong>Why it matters:</strong> "Second cup" tells the model nothing about which object to grasp. "Red cup" grounds the action in a visual attribute the model can learn from.</div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:40px 0;border-top:1px solid var(--border);color:var(--text-muted);font-size:13px;">
+    Zion Annotation Guidelines · For internal annotator use
+  </div>
+
+</div>
+</body>
+</html>
