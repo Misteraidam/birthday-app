@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Video QA Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F6F9; --surface:#FFFFFF; --surface-2:#FAFBFD;
+    --ink:#171A1F; --muted:#5B6573; --faint:#8A93A2;
+    --line:#E3E7ED; --line-strong:#CDD3DC;
+    --accent:#3457D5; --accent-ink:#2941A8;
+    --yes:#1F7A42; --yes-bg:#E9F6EE; --yes-line:#BFE4CC;
+    --no:#C23A2E;  --no-bg:#FCEDEB;  --no-line:#F2CBC5;
+    --maybe:#8E6200;--maybe-bg:#FBF3DE;--maybe-line:#EEDBAE;
+    --radius:14px;
+    --mono:"IBM Plex Sans",system-ui,sans-serif;
+    color-scheme:light;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0F1216; --surface:#171B21; --surface-2:#1C2128;
+      --ink:#EDEFF3; --muted:#A7B0BD; --faint:#7B8593;
+      --line:#2A313A; --line-strong:#3A434E;
+      --accent:#6E86F0; --accent-ink:#9DAEF7;
+      --yes:#5FD08A; --yes-bg:#132A1C; --yes-line:#235638;
+      --no:#F08478;  --no-bg:#2B1613;  --no-line:#5A2A23;
+      --maybe:#E7BC5B;--maybe-bg:#2A2110;--maybe-line:#5A4720;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0F1216; --surface:#171B21; --surface-2:#1C2128;
+    --ink:#EDEFF3; --muted:#A7B0BD; --faint:#7B8593;
+    --line:#2A313A; --line-strong:#3A434E;
+    --accent:#6E86F0; --accent-ink:#9DAEF7;
+    --yes:#5FD08A; --yes-bg:#132A1C; --yes-line:#235638;
+    --no:#F08478;  --no-bg:#2B1613;  --no-line:#5A2A23;
+    --maybe:#E7BC5B;--maybe-bg:#2A2110;--maybe-line:#5A4720;
+    color-scheme:dark;
+  }
+  *{box-sizing:inherit}
+  html{scroll-padding-top:calc(72px + env(safe-area-inset-top,0px));}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--mono); font-size:16px; line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent)}
+
+  /* ---- sticky bar ---- */
+  .bar{
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:20;
+    background:color-mix(in srgb,var(--surface) 88%, transparent);
+    backdrop-filter:saturate(1.2) blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .bar-in{
+    max-width:760px; margin:0 auto; padding:10px 20px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .bar-title{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+  .track{flex:1;height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+  .track>i{display:block;height:100%;width:0;background:var(--accent);transition:width .35s ease}
+  .count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  .wrap{max-width:760px;margin:0 auto;padding:28px 20px 56px}
+
+  /* ---- hero ---- */
+  .hero{padding:18px 0 8px}
+  .kicker{font-size:13px;color:var(--accent);font-weight:600;letter-spacing:.02em}
+  h1{font-family:"Space Grotesk",sans-serif;font-weight:700;letter-spacing:-.02em;
+     font-size:clamp(28px,6vw,40px);line-height:1.05;margin:.3em 0 .35em}
+  .lede{color:var(--muted);max-width:60ch;margin:0}
+  .legend{
+    margin:20px 0 6px;padding:14px 16px;border:1px solid var(--line);
+    border-radius:var(--radius);background:var(--surface-2);font-size:14px;color:var(--muted)
+  }
+  .legend b{color:var(--ink);font-weight:600}
+  .legend ol{margin:8px 0 0;padding-left:20px}
+  .legend li{margin:2px 0}
+
+  /* ---- identity ---- */
+  .field{margin:22px 0}
+  .field label{display:block;font-weight:600;font-size:14px;margin-bottom:6px}
+  .field .hint{color:var(--faint);font-weight:400}
+  input[type=text], textarea{
+    width:100%;font:inherit;color:var(--ink);background:var(--surface);
+    border:1px solid var(--line-strong);border-radius:10px;padding:11px 13px;
+  }
+  input[type=text]:focus-visible, textarea:focus-visible{
+    outline:2px solid var(--accent);outline-offset:1px;border-color:transparent
+  }
+  textarea{resize:vertical;min-height:78px}
+
+  /* ---- task card ---- */
+  .task{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 22px 20px;margin:16px 0;scroll-margin-top:84px;
+  }
+  .task.flash{box-shadow:0 0 0 2px var(--no)}
+  .tasknum{
+    font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:13px;
+    color:var(--faint);letter-spacing:.04em
+  }
+  .q{font-size:18px;font-weight:600;line-height:1.4;margin:4px 0 0;letter-spacing:-.01em}
+  .scenario{
+    margin:14px 0 18px;padding:12px 14px;border-left:3px solid var(--line-strong);
+    background:var(--surface-2);border-radius:0 10px 10px 0;color:var(--muted);font-size:14.5px
+  }
+  .scenario span{color:var(--faint);font-weight:600;display:block;margin-bottom:3px;font-size:12.5px}
+
+  /* ---- verdict segmented control ---- */
+  .verdict{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .verdict label{
+    position:relative;display:flex;align-items:center;justify-content:center;gap:7px;
+    padding:11px 8px;border:1px solid var(--line-strong);border-radius:11px;
+    font-weight:600;font-size:15px;cursor:pointer;color:var(--muted);
+    background:var(--surface);user-select:none;transition:background .12s,border-color .12s,color .12s
+  }
+  .verdict input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+  .verdict label:hover{border-color:var(--faint)}
+  .dot{width:9px;height:9px;border-radius:99px;background:currentColor;opacity:.5}
+  .v-yes.on{color:var(--yes);background:var(--yes-bg);border-color:var(--yes-line)}
+  .v-no.on{color:var(--no);background:var(--no-bg);border-color:var(--no-line)}
+  .v-maybe.on{color:var(--maybe);background:var(--maybe-bg);border-color:var(--maybe-line)}
+  .verdict label.on .dot{opacity:1}
+  .verdict input:focus-visible + .ghost{outline:2px solid var(--accent);outline-offset:2px;border-radius:11px}
+  .ghost{position:absolute;inset:0;border-radius:11px;pointer-events:none}
+
+  /* ---- conditional tag chooser ---- */
+  .followup{margin-top:14px;display:none}
+  .followup.show{display:block;animation:drop .22s ease}
+  @keyframes drop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.followup.show{animation:none}.track>i{transition:none}}
+  .fu-label{font-size:13px;color:var(--muted);margin:0 0 8px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{position:relative;display:inline-flex;align-items:center;cursor:pointer}
+  .chip input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+  .chip code{
+    font-family:var(--mono);font-size:13.5px;padding:7px 12px;border-radius:99px;
+    border:1px dashed var(--line-strong);color:var(--muted);background:var(--surface);transition:all .12s
+  }
+  .chip:hover code{border-color:var(--faint)}
+  .chip.on code{border-style:solid;color:#fff;background:var(--accent);border-color:var(--accent)}
+  .chip input:focus-visible + code{outline:2px solid var(--accent);outline-offset:2px}
+
+  .rat{margin-top:16px}
+
+  /* ---- submit / results ---- */
+  .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;align-items:center}
+  .btn{
+    font:inherit;font-weight:600;border-radius:11px;padding:12px 20px;cursor:pointer;border:1px solid transparent
+  }
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--accent-ink)}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+  .btn-ghost:hover{border-color:var(--faint)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .note{color:var(--faint);font-size:13.5px}
+
+  .result{
+    margin-top:22px;display:none;border:1px solid var(--line);border-radius:var(--radius);
+    background:var(--surface);overflow:hidden
+  }
+  .result.show{display:block}
+  .result-head{
+    padding:14px 18px;border-bottom:1px solid var(--line);background:var(--surface-2);
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap
+  }
+  .result-head b{font-family:"Space Grotesk",sans-serif}
+  .result pre{
+    margin:0;padding:18px;font-family:var(--mono);font-size:13.5px;line-height:1.6;
+    white-space:pre-wrap;word-break:break-word;color:var(--ink);max-height:360px;overflow:auto
+  }
+  .result-foot{padding:14px 18px;border-top:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap}
+
+  footer{margin-top:40px;text-align:center;color:var(--faint);font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="bar-in">
+    <div class="bar-title">Video QA Assessment</div>
+    <div class="track"><i id="prog"></i></div>
+    <div class="count"><span id="done">0</span>/5</div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="kicker">Reviewer assessment</div>
+    <h1>Judge the clip against its description</h1>
+    <p class="lede">For each task, decide whether the statement matches what actually happens in the clip. Pick one verdict, tag the specific issue when something is off, and explain your call in a sentence.</p>
+
+    <div class="legend">
+      <b>How to answer</b>
+      <ol>
+        <li><b>Yes</b> — the clip matches the statement exactly.</li>
+        <li><b>No</b> — it doesn't match; choose the error that best fits.</li>
+        <li><b>Not sure</b> — you can't decide from the clip; choose why.</li>
+      </ol>
+      A short rationale is required for every task.
+    </div>
+  </section>
+
+  <div class="field">
+    <label for="who">Your name <span class="hint">— so your answers can be matched to you</span></label>
+    <input type="text" id="who" autocomplete="name" placeholder="e.g. Ama Mensah">
+  </div>
+
+  <form id="form"><!-- tasks injected here --></form>
+
+  <div class="actions">
+    <button type="button" class="btn btn-primary" id="submit">Review my answers</button>
+    <span class="note" id="status">5 tasks to complete</span>
+  </div>
+
+  <section class="result" id="result" aria-live="polite">
+    <div class="result-head">
+      <b>Your submission</b>
+      <span class="note">Copy or download this and send it back to the reviewer.</span>
+    </div>
+    <pre id="out"></pre>
+    <div class="result-foot">
+      <button type="button" class="btn btn-primary" id="copy">Copy answers</button>
+      <button type="button" class="btn btn-ghost" id="download">Download .txt</button>
+    </div>
+  </section>
+
+  <footer>Your progress is saved in this browser automatically.</footer>
+</main>
+
+<script>
+const ERROR_TAGS = ["didnt-happen","wrong-direction","description-off"];
+const REASON_TAGS = ["cant-see","truncated-media","ambiguous/occluded"];
+
+const TASKS = [
+  { q:"Does the camera continuously follow directly behind the snowboarder as they travel down the snow-covered slope?",
+    s:"A 3-second clip shows a snowboarder riding down a snowy mountain slope while a handheld camera tracks closely behind them." },
+  { q:"Does the speaker lean toward the camera, widen his eyes, and shout loudly at the viewer?",
+    s:'A speaker in a red shirt leans toward the lens with wide eyes and an open mouth, saying "Now it\'s time..." in a clear, energetic, but standard speaking volume.' },
+  { q:'Does the man finish saying the phrase: "Welcome back to the channel, today we are going to review..."?',
+    s:'The video cuts off abruptly after 1.8 seconds while the speaker says, "Welcome back to the chan—"' },
+  { q:"Does the picture cut to a different shot at any point in this clip?",
+    s:"A continuous 6-second selfie video where the host walks through a hallway. The camera pans left to show a companion and tilts up, but the recording never stops or cuts." },
+  { q:"Are there exactly three people visible in the frame?",
+    s:"A shot inside a shop showing a clear shopkeeper behind the counter, a person's shoulder on the left foreground, and a heavily blurred silhouette in the right foreground that cannot be definitively confirmed as a human figure versus a display rack." },
+];
+
+const form = document.getElementById('form');
+
+TASKS.forEach((t, i) => {
+  const n = i + 1;
+  const el = document.createElement('section');
+  el.className = 'task';
+  el.id = 'task' + n;
+  el.innerHTML = `
+    <div class="tasknum">TASK ${n} OF 5</div>
+    <p class="q">${t.q}</p>
+    <div class="scenario"><span>Clip</span>${t.s}</div>
+
+    <div class="verdict" role="radiogroup" aria-label="Verdict for task ${n}">
+      <label class="v-yes" data-v="Yes">
+        <input type="radio" name="v${n}" value="Yes"><span class="ghost"></span>
+        <span class="dot"></span>Yes
+      </label>
+      <label class="v-no" data-v="No">
+        <input type="radio" name="v${n}" value="No"><span class="ghost"></span>
+        <span class="dot"></span>No
+      </label>
+      <label class="v-maybe" data-v="Not sure">
+        <input type="radio" name="v${n}" value="Not sure"><span class="ghost"></span>
+        <span class="dot"></span>Not sure
+      </label>
+    </div>
+
+    <div class="followup" data-for="No">
+      <p class="fu-label">Which error applies?</p>
+      <div class="chips">
+        ${ERROR_TAGS.map(tag => `
+          <label class="chip">
+            <input type="radio" name="e${n}" value="${tag}">
+            <code>${tag}</code>
+          </label>`).join('')}
+      </div>
+    </div>
+
+    <div class="followup" data-for="Not sure">
+      <p class="fu-label">Why are you unsure?</p>
+      <div class="chips">
+        ${REASON_TAGS.map(tag => `
+          <label class="chip">
+            <input type="radio" name="r${n}" value="${tag}">
+            <code>${tag}</code>
+          </label>`).join('')}
+      </div>
+    </div>
+
+    <div class="field rat">
+      <label for="rat${n}">Rationale</label>
+      <textarea id="rat${n}" name="rat${n}" placeholder="Briefly, why did you choose that?"></textarea>
+    </div>`;
+  form.appendChild(el);
+});
+
+/* ---- interaction ---- */
+function refreshTask(n){
+  const task = document.getElementById('task'+n);
+  const picked = form.querySelector(`input[name="v${n}"]:checked`);
+  task.querySelectorAll('.verdict label').forEach(l=>{
+    l.classList.toggle('on', picked && l.dataset.v === picked.value);
+  });
+  task.querySelectorAll('.followup').forEach(f=>{
+    const show = picked && f.dataset.for === picked.value;
+    f.classList.toggle('show', !!show);
+  });
+  task.querySelectorAll('.chip').forEach(c=>{
+    const inp = c.querySelector('input');
+    c.classList.toggle('on', inp.checked);
+  });
+}
+
+function refreshProgress(){
+  let done = 0;
+  for(let n=1;n<=5;n++){
+    if(form.querySelector(`input[name="v${n}"]:checked`)) done++;
+  }
+  document.getElementById('done').textContent = done;
+  document.getElementById('prog').style.width = (done/5*100)+'%';
+}
+
+form.addEventListener('change', e=>{
+  const m = e.target.name && e.target.name.match(/^v(\d)$/);
+  if(m) refreshTask(+m[1]);
+  const c = e.target.name && e.target.name.match(/^[er](\d)$/);
+  if(c) refreshTask(+c[1]);
+  refreshProgress();
+  save();
+});
+form.addEventListener('input', save);
+document.getElementById('who').addEventListener('input', save);
+
+/* ---- autosave (per-viewer convenience) ---- */
+const KEY = 'video-qa-assessment-v1';
+function snapshot(){
+  const d = {who: document.getElementById('who').value, t:{}};
+  for(let n=1;n<=5;n++){
+    const v = form.querySelector(`input[name="v${n}"]:checked`);
+    const e = form.querySelector(`input[name="e${n}"]:checked`);
+    const r = form.querySelector(`input[name="r${n}"]:checked`);
+    d.t[n] = { v:v?v.value:'', e:e?e.value:'', r:r?r.value:'',
+               rat: document.getElementById('rat'+n).value };
+  }
+  return d;
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(snapshot())); }catch(_){} }
+function restore(){
+  let d; try{ d = JSON.parse(localStorage.getItem(KEY)||'null'); }catch(_){ d=null; }
+  if(!d) return;
+  if(d.who) document.getElementById('who').value = d.who;
+  for(let n=1;n<=5;n++){
+    const s = d.t && d.t[n]; if(!s) continue;
+    if(s.v){ const i=form.querySelector(`input[name="v${n}"][value="${CSS.escape(s.v)}"]`); if(i)i.checked=true; }
+    if(s.e){ const i=form.querySelector(`input[name="e${n}"][value="${CSS.escape(s.e)}"]`); if(i)i.checked=true; }
+    if(s.r){ const i=form.querySelector(`input[name="r${n}"][value="${CSS.escape(s.r)}"]`); if(i)i.checked=true; }
+    if(s.rat) document.getElementById('rat'+n).value = s.rat;
+    refreshTask(n);
+  }
+  refreshProgress();
+}
+restore();
+
+/* ---- submit ---- */
+function buildText(){
+  const who = document.getElementById('who').value.trim() || '(name not given)';
+  const lines = [];
+  lines.push('VIDEO QA ASSESSMENT — RESPONSES');
+  lines.push('Reviewer: ' + who);
+  lines.push('Submitted: ' + new Date().toLocaleString());
+  lines.push('');
+  for(let n=1;n<=5;n++){
+    const v = (form.querySelector(`input[name="v${n}"]:checked`)||{}).value || '—';
+    const e = (form.querySelector(`input[name="e${n}"]:checked`)||{}).value;
+    const r = (form.querySelector(`input[name="r${n}"]:checked`)||{}).value;
+    const rat = document.getElementById('rat'+n).value.trim() || '—';
+    lines.push(`Task ${n}`);
+    lines.push('  Answer: ' + v);
+    if(v==='No') lines.push('  Error tag: ' + (e||'—'));
+    if(v==='Not sure') lines.push('  Reason tag: ' + (r||'—'));
+    lines.push('  Rationale: ' + rat);
+    lines.push('');
+  }
+  return lines.join('\n');
+}
+
+function validate(){
+  for(let n=1;n<=5;n++){
+    const v = form.querySelector(`input[name="v${n}"]:checked`);
+    if(!v) return {n, msg:`Task ${n}: pick a verdict.`};
+    if(v.value==='No' && !form.querySelector(`input[name="e${n}"]:checked`))
+      return {n, msg:`Task ${n}: choose the error tag.`};
+    if(v.value==='Not sure' && !form.querySelector(`input[name="r${n}"]:checked`))
+      return {n, msg:`Task ${n}: choose the reason tag.`};
+    if(!document.getElementById('rat'+n).value.trim())
+      return {n, msg:`Task ${n}: add a short rationale.`};
+  }
+  return null;
+}
+
+document.getElementById('submit').addEventListener('click', ()=>{
+  const status = document.getElementById('status');
+  const bad = validate();
+  if(bad){
+    status.textContent = bad.msg;
+    status.style.color = 'var(--no)';
+    const t = document.getElementById('task'+bad.n);
+    t.classList.add('flash'); setTimeout(()=>t.classList.remove('flash'),1400);
+    t.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  status.textContent = 'All 5 answered.';
+  status.style.color = 'var(--yes)';
+  document.getElementById('out').textContent = buildText();
+  const res = document.getElementById('result');
+  res.classList.add('show');
+  res.scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+document.getElementById('copy').addEventListener('click', async e=>{
+  try{
+    await navigator.clipboard.writeText(buildText());
+    e.target.textContent = 'Copied ✓';
+    setTimeout(()=>e.target.textContent='Copy answers',1600);
+  }catch(_){
+    const r=document.createRange(); r.selectNode(document.getElementById('out'));
+    getSelection().removeAllRanges(); getSelection().addRange(r);
+    e.target.textContent='Press Ctrl/Cmd+C';
+    setTimeout(()=>e.target.textContent='Copy answers',2200);
+  }
+});
+
+document.getElementById('download').addEventListener('click', ()=>{
+  const who = (document.getElementById('who').value.trim()||'reviewer').replace(/[^\w.-]+/g,'-').toLowerCase();
+  const blob = new Blob([buildText()], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `video-qa-${who}.txt`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+});
+</script>
+</body>
+</html>
