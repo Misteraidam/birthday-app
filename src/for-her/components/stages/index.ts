@@ -12,7 +12,7 @@ type StageComponent = ComponentType & { preload?: () => Promise<unknown> };
  */
 export const stageComponents: Record<StageId, StageComponent> = {
   envelope: EnvelopeStage,
-  quiz: lazyWithPreload(() => import("./QuizStage")),
+  quiz: lazyWithPreload(() => import("./quiz/QuizStage")),
   timeline: lazyWithPreload(() => import("./TimelineStage")),
   // @react-three/* may only be imported inside the cake stage, so three.js stays out of the main bundle
   cake: lazyWithPreload(() => import("./CakeStage")),

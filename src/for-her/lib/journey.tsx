@@ -8,6 +8,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
+import { config } from "../content/config";
 import { requestMotionPermission, type MotionPermission } from "./motionPermission";
 import { setMusicMuted, startMusic } from "./music";
 import { STAGES, isStageId, stageIndex, type StageId } from "./stages";
@@ -24,6 +25,8 @@ interface JourneyState {
   /** True once the first tap has started music and asked for motion access */
   started: boolean;
   motionPermission: MotionPermission;
+  /** Per question: did she get it right first try? null until the quiz is finished */
+  quizFirstTry: boolean[] | null;
 }
 
 type Action =
@@ -31,7 +34,8 @@ type Action =
   | { type: "goTo"; stage: StageId }
   | { type: "toggleMuted" }
   | { type: "started" }
-  | { type: "motionPermission"; value: MotionPermission };
+  | { type: "motionPermission"; value: MotionPermission }
+  | { type: "quizFinished"; firstTry: boolean[] };
 
 function reducer(state: JourneyState, action: Action): JourneyState {
   switch (action.type) {
@@ -50,6 +54,8 @@ function reducer(state: JourneyState, action: Action): JourneyState {
       return { ...state, started: true };
     case "motionPermission":
       return { ...state, motionPermission: action.value };
+    case "quizFinished":
+      return { ...state, quizFirstTry: action.firstTry };
   }
 }
 
@@ -61,6 +67,7 @@ function loadInitialState(): JourneyState {
     muted: false,
     started: false,
     motionPermission: "unknown",
+    quizFirstTry: null,
   };
   try {
     const url = new URL(window.location.href);
@@ -77,7 +84,14 @@ function loadInitialState(): JourneyState {
       : 0;
     const current =
       isStageId(saved.current) && stageIndex(saved.current) <= unlocked ? saved.current : STAGES[unlocked];
-    return { ...fresh, current, unlocked, muted: saved.muted === true };
+    // Discard a saved score if the questions in config.ts have changed since
+    const quizFirstTry =
+      Array.isArray(saved.quizFirstTry) &&
+      saved.quizFirstTry.length === config.quiz.length &&
+      saved.quizFirstTry.every((v: unknown) => typeof v === "boolean")
+        ? saved.quizFirstTry
+        : null;
+    return { ...fresh, current, unlocked, muted: saved.muted === true, quizFirstTry };
   } catch {
     return fresh;
   }
@@ -89,6 +103,7 @@ interface JourneyValue extends JourneyState {
   goTo: (stage: StageId) => void;
   back: () => void;
   toggleMuted: () => void;
+  finishQuiz: (firstTry: boolean[]) => void;
   /** Call synchronously from her first tap: starts music and asks for gyroscope access */
   startExperience: () => void;
 }
@@ -132,12 +147,17 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ current: state.current, unlocked: state.unlocked, muted: state.muted }),
+        JSON.stringify({
+          current: state.current,
+          unlocked: state.unlocked,
+          muted: state.muted,
+          quizFirstTry: state.quizFirstTry,
+        }),
       );
     } catch {
       // Private browsing: progress just won't survive a refresh
     }
-  }, [state.current, state.unlocked, state.muted]);
+  }, [state.current, state.unlocked, state.muted, state.quizFirstTry]);
 
   // Each stage gets a history entry, so the phone's back gesture steps back a stage
   // instead of leaving the site.
@@ -163,10 +183,11 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
     if (previous) dispatch({ type: "goTo", stage: previous });
   }, [state.current]);
   const toggleMuted = useCallback(() => dispatch({ type: "toggleMuted" }), []);
+  const finishQuiz = useCallback((firstTry: boolean[]) => dispatch({ type: "quizFinished", firstTry }), []);
 
   const value = useMemo<JourneyValue>(
-    () => ({ ...state, complete, goTo, back, toggleMuted, startExperience }),
-    [state, complete, goTo, back, toggleMuted, startExperience],
+    () => ({ ...state, complete, goTo, back, toggleMuted, finishQuiz, startExperience }),
+    [state, complete, goTo, back, toggleMuted, finishQuiz, startExperience],
   );
 
   return <JourneyContext.Provider value={value}>{children}</JourneyContext.Provider>;

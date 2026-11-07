@@ -20,6 +20,16 @@ export interface QuizItem {
   unlockCaption: string;
 }
 
+/** Results-card verdicts, picked by how many she got right on the first try */
+export interface QuizVerdicts {
+  /** Every question right first try */
+  perfect: string;
+  /** At least half right first try */
+  great: string;
+  /** Fewer than half */
+  needMoreDates: string;
+}
+
 export interface Memory {
   /** Free text, shown as-is: "June 2023", "Our first Christmas", ... */
   date: string;
@@ -36,6 +46,7 @@ export interface BirthdayConfig {
   /** Typed out on the opening letter. Blank lines start new paragraphs. */
   welcomeLetter: string;
   quiz: QuizItem[];
+  quizVerdicts: QuizVerdicts;
   memories: Memory[];
   cakeMessage: string;
   finaleLetter: string;
@@ -81,7 +92,29 @@ export const config: BirthdayConfig = {
       unlockPhoto: "https://picsum.photos/seed/quiz-3/800/1000",
       unlockCaption: "[Caption for the photo this unlocks]",
     },
+    {
+      question: "[QUESTION 4] Who said 'I love you' first?",
+      options: ["[Right answer]", "[Wrong answer]"],
+      correctIndex: 0,
+      wrongReaction: "[Playful reaction] Rewriting history, are we? 👀",
+      unlockPhoto: "https://picsum.photos/seed/quiz-4/800/1000",
+      unlockCaption: "[Caption for the photo this unlocks]",
+    },
+    {
+      question: "[QUESTION 5] What's my favourite thing about you?",
+      options: ["[Wrong answer]", "[Wrong answer]", "[Wrong answer]", "[Right answer]"],
+      correctIndex: 3,
+      wrongReaction: "[Playful reaction] Close… but there's something I love even more.",
+      unlockPhoto: "https://picsum.photos/seed/quiz-5/800/1000",
+      unlockCaption: "[Caption for the photo this unlocks]",
+    },
   ],
+
+  quizVerdicts: {
+    perfect: "[PERFECT SCORE] Flawless. You clearly pay attention. 😌",
+    great: "[GREAT SCORE] Pretty impressive. I'll let the misses slide… this time.",
+    needMoreDates: "[LOW SCORE] Okay. We clearly need more dates. Lots more. 💌",
+  },
 
   memories: [
     {
