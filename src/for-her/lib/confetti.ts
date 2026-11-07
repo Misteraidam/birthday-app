@@ -19,6 +19,17 @@ function getShapes() {
 
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+/** The big one: a centre burst, then two side cannons. */
+export function celebrate() {
+  if (prefersReducedMotion()) return;
+  const base = { colors: COLORS, shapes: getShapes(), zIndex: 60, ticks: 280, disableForReducedMotion: true };
+  confetti({ ...base, particleCount: 140, spread: 110, startVelocity: 48, scalar: 1.25, origin: { x: 0.5, y: 0.5 } });
+  setTimeout(() => {
+    confetti({ ...base, particleCount: 70, angle: 60, spread: 65, startVelocity: 55, origin: { x: 0, y: 0.75 } });
+    confetti({ ...base, particleCount: 70, angle: 120, spread: 65, startVelocity: 55, origin: { x: 1, y: 0.75 } });
+  }, 280);
+}
+
 /** A small pink-and-gold burst of hearts from the centre of an element. */
 export function burstFrom(element: Element) {
   if (prefersReducedMotion()) return;

@@ -4,6 +4,7 @@ import { stageComponents } from "./components/stages";
 import { Backdrop } from "./components/ui/Backdrop";
 import { JourneyNav } from "./components/ui/JourneyNav";
 import { MuteToggle } from "./components/ui/MuteToggle";
+import { StageLoading } from "./components/ui/StageLoading";
 import { JourneyProvider, useJourney } from "./lib/journey";
 import { EASE_SOFT } from "./lib/motion";
 import { STAGES, stageIndex } from "./lib/stages";
@@ -42,7 +43,7 @@ function StageView() {
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.55, ease: EASE_SOFT }}
       >
-        <Suspense fallback={null}>
+        <Suspense fallback={<StageLoading dark={current === "cake"} />}>
           <Stage />
         </Suspense>
       </motion.main>

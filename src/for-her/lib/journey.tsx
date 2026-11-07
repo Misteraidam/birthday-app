@@ -27,6 +27,8 @@ interface JourneyState {
   motionPermission: MotionPermission;
   /** Per question: did she get it right first try? null until the quiz is finished */
   quizFirstTry: boolean[] | null;
+  /** All candles blown out */
+  cakeDone: boolean;
 }
 
 type Action =
@@ -35,7 +37,8 @@ type Action =
   | { type: "toggleMuted" }
   | { type: "started" }
   | { type: "motionPermission"; value: MotionPermission }
-  | { type: "quizFinished"; firstTry: boolean[] };
+  | { type: "quizFinished"; firstTry: boolean[] }
+  | { type: "cakeFinished" };
 
 function reducer(state: JourneyState, action: Action): JourneyState {
   switch (action.type) {
@@ -56,6 +59,8 @@ function reducer(state: JourneyState, action: Action): JourneyState {
       return { ...state, motionPermission: action.value };
     case "quizFinished":
       return { ...state, quizFirstTry: action.firstTry };
+    case "cakeFinished":
+      return { ...state, cakeDone: true };
   }
 }
 
@@ -68,6 +73,7 @@ function loadInitialState(): JourneyState {
     started: false,
     motionPermission: "unknown",
     quizFirstTry: null,
+    cakeDone: false,
   };
   try {
     const url = new URL(window.location.href);
@@ -96,7 +102,7 @@ function loadInitialState(): JourneyState {
       saved.quizFirstTry.every((v: unknown) => typeof v === "boolean")
         ? saved.quizFirstTry
         : null;
-    return { ...fresh, current, unlocked, muted: saved.muted === true, quizFirstTry };
+    return { ...fresh, current, unlocked, muted: saved.muted === true, quizFirstTry, cakeDone: saved.cakeDone === true };
   } catch {
     return fresh;
   }
@@ -109,6 +115,7 @@ interface JourneyValue extends JourneyState {
   back: () => void;
   toggleMuted: () => void;
   finishQuiz: (firstTry: boolean[]) => void;
+  finishCake: () => void;
   /** Call synchronously from her first tap: starts music and asks for gyroscope access */
   startExperience: () => void;
 }
@@ -157,12 +164,13 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
           unlocked: state.unlocked,
           muted: state.muted,
           quizFirstTry: state.quizFirstTry,
+          cakeDone: state.cakeDone,
         }),
       );
     } catch {
       // Private browsing: progress just won't survive a refresh
     }
-  }, [state.current, state.unlocked, state.muted, state.quizFirstTry]);
+  }, [state.current, state.unlocked, state.muted, state.quizFirstTry, state.cakeDone]);
 
   // Each stage gets a history entry, so the phone's back gesture steps back a stage
   // instead of leaving the site.
@@ -189,10 +197,11 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
   }, [state.current]);
   const toggleMuted = useCallback(() => dispatch({ type: "toggleMuted" }), []);
   const finishQuiz = useCallback((firstTry: boolean[]) => dispatch({ type: "quizFinished", firstTry }), []);
+  const finishCake = useCallback(() => dispatch({ type: "cakeFinished" }), []);
 
   const value = useMemo<JourneyValue>(
-    () => ({ ...state, complete, goTo, back, toggleMuted, finishQuiz, startExperience }),
-    [state, complete, goTo, back, toggleMuted, finishQuiz, startExperience],
+    () => ({ ...state, complete, goTo, back, toggleMuted, finishQuiz, finishCake, startExperience }),
+    [state, complete, goTo, back, toggleMuted, finishQuiz, finishCake, startExperience],
   );
 
   return <JourneyContext.Provider value={value}>{children}</JourneyContext.Provider>;

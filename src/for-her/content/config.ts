@@ -50,6 +50,9 @@ export interface BirthdayConfig {
   memories: Memory[];
   /** Closing line after the last memory */
   timelineOutro: string;
+  /** Candles on the cake (1–24) */
+  candleCount: number;
+  /** Appears under the cake once the candles are out */
   cakeMessage: string;
   finaleLetter: string;
   /** An .mp4 in public/for-her/ works best on phones */
@@ -160,6 +163,7 @@ export const config: BirthdayConfig = {
 
   timelineOutro: "...and this is only the beginning 💛",
 
+  candleCount: 5,
   cakeMessage: "[CAKE MESSAGE] Make a wish, then blow out the candles.",
 
   finaleLetter:
