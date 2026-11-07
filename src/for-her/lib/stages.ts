@@ -10,6 +10,9 @@ export const STAGE_LABELS: Record<StageId, string> = {
   finale: "Finale",
 };
 
+/** Stages set in a dark, warm room; the nav and loaders switch to match */
+export const DARK_STAGES: ReadonlySet<StageId> = new Set(["cake", "finale"]);
+
 export const stageIndex = (id: StageId) => STAGES.indexOf(id);
 
 export const isStageId = (value: unknown): value is StageId =>

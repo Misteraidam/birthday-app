@@ -8,16 +8,25 @@ const FLAP_SHAPE = "polygon(0 0, 100% 0, 50% 100%)";
 /** The front pocket: everything except the V where the flap tucks in */
 const POCKET_SHAPE = "polygon(0 0, 50% 56%, 100% 0, 100% 100%, 0 100%)";
 
+interface EnvelopeProps {
+  phase: EnvelopePhase;
+  /** Letter on the wax seal */
+  initial: string;
+  /** Words peeking from the letter inside */
+  peek?: string;
+  className?: string;
+}
+
 /**
  * A CSS-3D envelope. The flap swings open on its top hinge (rotateX inside a perspective
  * container) and the letter lifts out towards the viewer (translateZ).
  */
-export function Envelope({ phase, initial }: { phase: EnvelopePhase; initial: string }) {
+export function Envelope({ phase, initial, peek = "Happy Birthday", className = "w-[min(84vw,340px)]" }: EnvelopeProps) {
   const flapOpen = phase === "opening" || phase === "rising" || phase === "reading";
   const letterOut = phase === "rising" || phase === "reading";
 
   return (
-    <div className="relative aspect-[3/2] w-[min(84vw,340px)]" style={{ perspective: 1100 }}>
+    <div className={`relative aspect-[3/2] ${className}`} style={{ perspective: 1100 }}>
       {/* Back of the envelope */}
       <div
         className="absolute inset-0 rounded-[10px]"
@@ -34,7 +43,7 @@ export function Envelope({ phase, initial }: { phase: EnvelopePhase; initial: st
         animate={letterOut ? { y: "-60%", z: 50, rotateX: -4 } : { y: 0, z: 0, rotateX: 0 }}
         transition={{ duration: 1, ease: EASE_SOFT }}
       >
-        <p className="text-center font-display text-lg italic text-gold-ink">Happy Birthday</p>
+        <p className="text-center font-display text-lg italic text-gold-ink">{peek}</p>
         <div className="mx-auto mt-3 space-y-2 opacity-40" aria-hidden>
           {[92, 100, 84, 96, 60].map((w, i) => (
             <div key={i} className="h-px bg-ink-soft" style={{ width: `${w}%` }} />

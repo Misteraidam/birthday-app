@@ -32,10 +32,10 @@ export function QuizResults({ firstTry, onContinue }: { firstTry: boolean[]; onC
           return (
             <motion.div
               key={i}
-              className="absolute bottom-0 left-1/2 w-[92px]"
-              style={{ marginLeft: -46, transformOrigin: "50% 120%" }}
+              className="absolute bottom-0 left-1/2 w-[80px]"
+              style={{ marginLeft: -40, transformOrigin: "50% 120%" }}
               initial={{ x: 0, y: 30, rotate: 0, opacity: 0 }}
-              animate={{ x: t * 105, y: Math.abs(t) * 18, rotate: t * 16, opacity: 1 }}
+              animate={{ x: t * 92, y: Math.abs(t) * 16, rotate: t * 14, opacity: 1 }}
               transition={{ delay: 0.15 + i * 0.08, type: "spring", stiffness: 120, damping: 16 }}
             >
               <Polaroid src={item.unlockPhoto} caption="" captionClassName="min-h-[1.6em] text-xs" />

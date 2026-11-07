@@ -4,7 +4,7 @@ import { config } from "../../../content/config";
 import { celebrate } from "../../../lib/confetti";
 import { useJourney } from "../../../lib/journey";
 import { EASE_SOFT } from "../../../lib/motion";
-import { duckMusic } from "../../../lib/music";
+import { setMusicLevel } from "../../../lib/music";
 import { useBlowDetector } from "../../../lib/useBlowDetector";
 import { PrimaryButton } from "../../ui/PrimaryButton";
 import { StageLoading } from "../../ui/StageLoading";
@@ -54,8 +54,8 @@ export default function CakeStage() {
   const micActive = mic.status === "calibrating" || mic.status === "listening";
   useEffect(() => {
     if (!micActive) return;
-    duckMusic(true);
-    return () => duckMusic(false);
+    setMusicLevel("low", 500);
+    return () => setMusicLevel("full", 1500);
   }, [micActive]);
 
   // The moment the last candle goes out

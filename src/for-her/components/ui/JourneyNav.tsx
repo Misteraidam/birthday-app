@@ -1,16 +1,16 @@
 import { ChevronLeft } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useJourney } from "../../lib/journey";
-import { STAGES, STAGE_LABELS, stageIndex } from "../../lib/stages";
+import { DARK_STAGES, STAGES, STAGE_LABELS, stageIndex } from "../../lib/stages";
 
 /** Back button + progress dots. Hidden on the envelope so the opening stays uncluttered. */
 export function JourneyNav() {
-  const { current, unlocked, back, goTo } = useJourney();
+  const { current, unlocked, back, goTo, welcomeBack } = useJourney();
   const currentIndex = stageIndex(current);
 
   return (
     <AnimatePresence>
-      {currentIndex > 0 && (
+      {currentIndex > 0 && !welcomeBack && (
         <motion.nav
           aria-label="Journey progress"
           initial={{ opacity: 0, y: -8 }}
@@ -27,8 +27,8 @@ export function JourneyNav() {
           <div
             aria-hidden
             className={`pointer-events-none absolute inset-x-0 -z-10 bg-gradient-to-b to-transparent ${
-              // The cake stage is a dark room, so the fade goes dark too
-              current === "cake" ? "from-[#170B0D]/70 via-[#170B0D]/40" : "from-blush-100 via-blush-100/85"
+              // Dark stages get a dark fade
+              DARK_STAGES.has(current) ? "from-[#170B0D]/70 via-[#170B0D]/40" : "from-blush-100 via-blush-100/85"
             }`}
             style={{
               top: "calc(-1 * max(12px, env(safe-area-inset-top)))",

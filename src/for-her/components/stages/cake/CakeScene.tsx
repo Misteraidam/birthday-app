@@ -80,15 +80,15 @@ function Lights({ litFraction, celebrating, reduceMotion }: { litFraction: numbe
     level.current = MathUtils.damp(level.current, litFraction, 3, dt);
     const flicker = reduceMotion ? 1 : 1 + 0.08 * Math.sin(t * 11) + 0.05 * Math.sin(t * 17.3);
     if (candle.current) candle.current.intensity = 14 * level.current * flicker;
-    if (ambient.current) ambient.current.intensity = MathUtils.damp(ambient.current.intensity, celebrating ? 1.1 : 0.35, 1.2, dt);
-    if (warm.current) warm.current.intensity = MathUtils.damp(warm.current.intensity, celebrating ? 2.2 : 0.6, 1.2, dt);
+    if (ambient.current) ambient.current.intensity = MathUtils.damp(ambient.current.intensity, celebrating ? 1.1 : 0.6, 1.2, dt);
+    if (warm.current) warm.current.intensity = MathUtils.damp(warm.current.intensity, celebrating ? 2.2 : 1.0, 1.2, dt);
   });
 
   return (
     <>
-      <ambientLight ref={ambient} color="#FFE3D6" intensity={celebrating ? 1.1 : 0.35} />
+      <ambientLight ref={ambient} color="#FFE3D6" intensity={celebrating ? 1.1 : 0.6} />
       <hemisphereLight args={["#FFE9DA", "#3A1C22", 0.45]} />
-      <directionalLight ref={warm} position={[3, 5, 4]} color="#FFD3A8" intensity={celebrating ? 2.2 : 0.6} />
+      <directionalLight ref={warm} position={[3, 5, 4]} color="#FFD3A8" intensity={celebrating ? 2.2 : 1.0} />
       <directionalLight position={[-4, 3, -3]} color="#E8A4B0" intensity={0.5} />
       <pointLight ref={candle} position={[0, CAKE.surface + 0.9, 0.2]} color="#FFAE5C" distance={9} decay={2} />
     </>

@@ -1,11 +1,14 @@
 import { config } from "../content/config";
 
-const TARGET_VOLUME = 0.6;
 const FADE_IN_MS = 2500;
-const DUCKED_VOLUME = 0.12;
+
+export type MusicLevel = "full" | "low" | "off";
+const VOLUME: Record<MusicLevel, number> = { full: 0.6, low: 0.12, off: 0 };
 
 let audio: HTMLAudioElement | null = null;
 let playing = false;
+/** Where the music should be right now; "off" means paused (e.g. while her video plays) */
+let level: MusicLevel = "full";
 /** Bumped on every fade so a newer fade cancels an older one */
 let fadeToken = 0;
 
@@ -15,11 +18,11 @@ function getAudio() {
     audio = new Audio(config.musicUrl);
     audio.loop = true;
     audio.preload = "auto";
-    // Pause when she switches apps, pick up again when she comes back
+    // Pause when she switches apps, pick up again when she comes back (unless it's meant to be off)
     document.addEventListener("visibilitychange", () => {
       if (!audio) return;
       if (document.hidden) audio.pause();
-      else audio.play().catch(() => {});
+      else if (playing && level !== "off") audio.play().catch(() => {});
     });
   }
   return audio;
@@ -37,7 +40,7 @@ export function startMusic(muted: boolean) {
   a.play()
     .then(() => {
       playing = true;
-      fadeVolume(a, TARGET_VOLUME, FADE_IN_MS);
+      fade(a, level, FADE_IN_MS);
     })
     // Missing file or blocked playback: the journey simply carries on in silence
     .catch(() => {});
@@ -48,25 +51,32 @@ export function setMusicMuted(muted: boolean) {
 }
 
 /**
- * Lowers the music while she blows into the mic, and brings it back for the celebration.
- * Also resumes playback, since iOS can pause audio while the microphone is in use.
+ * Fades the music to a level. "low" sits under the mic and the finale intro, "off" pauses
+ * it for her video, "full" brings it back. Also resumes playback, since iOS can pause audio
+ * while the microphone is in use.
  */
-export function duckMusic(ducked: boolean) {
+export function setMusicLevel(next: MusicLevel, ms = 1200) {
+  level = next;
   if (!audio || !playing) return;
-  fadeVolume(audio, ducked ? DUCKED_VOLUME : TARGET_VOLUME, ducked ? 500 : 1500);
-  if (!ducked && audio.paused && !document.hidden) audio.play().catch(() => {});
+  if (next !== "off" && audio.paused && !document.hidden) audio.play().catch(() => {});
+  fade(audio, next, ms);
 }
 
-/** No-op on iOS, where volume is read-only; the music then just starts at full volume. */
-function fadeVolume(a: HTMLAudioElement, target: number, ms: number) {
+/**
+ * Volume is read-only on iOS, so there the fades are instant: "low" stays at full volume,
+ * and "off" still pauses.
+ */
+function fade(a: HTMLAudioElement, target: MusicLevel, ms: number) {
   const token = ++fadeToken;
   const from = a.volume;
+  const to = VOLUME[target];
   const start = performance.now();
   const step = (now: number) => {
     if (token !== fadeToken) return;
     const t = Math.min(1, (now - start) / ms);
-    a.volume = from + (target - from) * t;
+    a.volume = from + (to - from) * t;
     if (t < 1) requestAnimationFrame(step);
+    else if (target === "off") a.pause();
   };
   requestAnimationFrame(step);
 }

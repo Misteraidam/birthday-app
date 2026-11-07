@@ -29,7 +29,17 @@ interface JourneyState {
   quizFirstTry: boolean[] | null;
   /** All candles blown out */
   cakeDone: boolean;
+  /** She has read the final letter to the end */
+  finaleSeen: boolean;
+  /** Indexes of the "open when" letters she has opened */
+  openedLetters: number[];
+  /** Returning after finishing: show the welcome-back screen instead of a stage */
+  welcomeBack: boolean;
+  /** Where the finale should start; set by the welcome-back screen */
+  finaleEntry: FinaleEntry;
 }
+
+export type FinaleEntry = "auto" | "video" | "letters";
 
 type Action =
   | { type: "complete"; stage: StageId }
@@ -38,7 +48,11 @@ type Action =
   | { type: "started" }
   | { type: "motionPermission"; value: MotionPermission }
   | { type: "quizFinished"; firstTry: boolean[] }
-  | { type: "cakeFinished" };
+  | { type: "cakeFinished" }
+  | { type: "finaleSeen" }
+  | { type: "letterOpened"; index: number }
+  | { type: "relive" }
+  | { type: "revisitFinale"; entry: FinaleEntry };
 
 function reducer(state: JourneyState, action: Action): JourneyState {
   switch (action.type) {
@@ -50,7 +64,9 @@ function reducer(state: JourneyState, action: Action): JourneyState {
     }
     case "goTo":
       // Linear progress: anything already reached, nothing beyond it
-      return stageIndex(action.stage) <= state.unlocked ? { ...state, current: action.stage } : state;
+      return stageIndex(action.stage) <= state.unlocked
+        ? { ...state, current: action.stage, finaleEntry: "auto" }
+        : state;
     case "toggleMuted":
       return { ...state, muted: !state.muted };
     case "started":
@@ -61,6 +77,25 @@ function reducer(state: JourneyState, action: Action): JourneyState {
       return { ...state, quizFirstTry: action.firstTry };
     case "cakeFinished":
       return { ...state, cakeDone: true };
+    case "finaleSeen":
+      return { ...state, finaleSeen: true };
+    case "letterOpened":
+      return state.openedLetters.includes(action.index)
+        ? state
+        : { ...state, openedLetters: [...state.openedLetters, action.index] };
+    case "relive":
+      // The whole journey again from the sealed envelope. The finale and her opened letters stay unlocked.
+      return {
+        ...state,
+        current: "envelope",
+        unlocked: 0,
+        quizFirstTry: null,
+        cakeDone: false,
+        welcomeBack: false,
+        finaleEntry: "auto",
+      };
+    case "revisitFinale":
+      return { ...state, current: "finale", unlocked: STAGES.length - 1, welcomeBack: false, finaleEntry: action.entry };
   }
 }
 
@@ -74,6 +109,10 @@ function loadInitialState(): JourneyState {
     motionPermission: "unknown",
     quizFirstTry: null,
     cakeDone: false,
+    finaleSeen: false,
+    openedLetters: [],
+    welcomeBack: false,
+    finaleEntry: "auto",
   };
   try {
     const url = new URL(window.location.href);
@@ -102,7 +141,22 @@ function loadInitialState(): JourneyState {
       saved.quizFirstTry.every((v: unknown) => typeof v === "boolean")
         ? saved.quizFirstTry
         : null;
-    return { ...fresh, current, unlocked, muted: saved.muted === true, quizFirstTry, cakeDone: saved.cakeDone === true };
+    const openedLetters = Array.isArray(saved.openedLetters)
+      ? saved.openedLetters.filter((i: unknown) => Number.isInteger(i) && (i as number) < config.openWhen.length)
+      : [];
+    const finaleSeen = saved.finaleSeen === true;
+    return {
+      ...fresh,
+      current,
+      unlocked,
+      muted: saved.muted === true,
+      quizFirstTry,
+      cakeDone: saved.cakeDone === true,
+      finaleSeen,
+      openedLetters,
+      // She finished it on an earlier visit: greet her instead of dropping her mid-stage
+      welcomeBack: finaleSeen,
+    };
   } catch {
     return fresh;
   }
@@ -116,6 +170,12 @@ interface JourneyValue extends JourneyState {
   toggleMuted: () => void;
   finishQuiz: (firstTry: boolean[]) => void;
   finishCake: () => void;
+  markFinaleSeen: () => void;
+  markLetterOpened: (index: number) => void;
+  /** Welcome-back: the whole journey again from the start */
+  relive: () => void;
+  /** Welcome-back: straight to the video or the letters */
+  revisitFinale: (entry: FinaleEntry) => void;
   /** Call synchronously from her first tap: starts music and asks for gyroscope access */
   startExperience: () => void;
 }
@@ -165,12 +225,14 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
           muted: state.muted,
           quizFirstTry: state.quizFirstTry,
           cakeDone: state.cakeDone,
+          finaleSeen: state.finaleSeen,
+          openedLetters: state.openedLetters,
         }),
       );
     } catch {
       // Private browsing: progress just won't survive a refresh
     }
-  }, [state.current, state.unlocked, state.muted, state.quizFirstTry, state.cakeDone]);
+  }, [state.current, state.unlocked, state.muted, state.quizFirstTry, state.cakeDone, state.finaleSeen, state.openedLetters]);
 
   // Each stage gets a history entry, so the phone's back gesture steps back a stage
   // instead of leaving the site.
@@ -198,10 +260,27 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
   const toggleMuted = useCallback(() => dispatch({ type: "toggleMuted" }), []);
   const finishQuiz = useCallback((firstTry: boolean[]) => dispatch({ type: "quizFinished", firstTry }), []);
   const finishCake = useCallback(() => dispatch({ type: "cakeFinished" }), []);
+  const markFinaleSeen = useCallback(() => dispatch({ type: "finaleSeen" }), []);
+  const markLetterOpened = useCallback((index: number) => dispatch({ type: "letterOpened", index }), []);
+  const relive = useCallback(() => dispatch({ type: "relive" }), []);
+  const revisitFinale = useCallback((entry: FinaleEntry) => dispatch({ type: "revisitFinale", entry }), []);
 
   const value = useMemo<JourneyValue>(
-    () => ({ ...state, complete, goTo, back, toggleMuted, finishQuiz, finishCake, startExperience }),
-    [state, complete, goTo, back, toggleMuted, finishQuiz, finishCake, startExperience],
+    () => ({
+      ...state,
+      complete,
+      goTo,
+      back,
+      toggleMuted,
+      finishQuiz,
+      finishCake,
+      markFinaleSeen,
+      markLetterOpened,
+      relive,
+      revisitFinale,
+      startExperience,
+    }),
+    [state, complete, goTo, back, toggleMuted, finishQuiz, finishCake, markFinaleSeen, markLetterOpened, relive, revisitFinale, startExperience],
   );
 
   return <JourneyContext.Provider value={value}>{children}</JourneyContext.Provider>;

@@ -30,6 +30,32 @@ export function celebrate() {
   }, 280);
 }
 
+/**
+ * A slow, gentle fall of hearts and confetti, more snowfall than burst.
+ * Returns a function that stops it early.
+ */
+export function snowfall(durationMs = 10_000) {
+  if (prefersReducedMotion()) return () => {};
+  const end = Date.now() + durationMs;
+  const timer = setInterval(() => {
+    if (Date.now() > end) return clearInterval(timer);
+    confetti({
+      particleCount: 1,
+      startVelocity: 0,
+      gravity: 0.28,
+      ticks: 650,
+      drift: Math.random() - 0.5,
+      origin: { x: Math.random(), y: -0.05 },
+      colors: COLORS,
+      shapes: getShapes(),
+      scalar: 0.9 + Math.random() * 0.6,
+      zIndex: 60,
+      disableForReducedMotion: true,
+    });
+  }, 110);
+  return () => clearInterval(timer);
+}
+
 /** A small pink-and-gold burst of hearts from the centre of an element. */
 export function burstFrom(element: Element) {
   if (prefersReducedMotion()) return;

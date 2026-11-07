@@ -38,6 +38,12 @@ export interface Memory {
   photo: string;
 }
 
+export interface OpenWhenLetter {
+  /** Shown on the sealed envelope, e.g. "Open when you miss me" */
+  label: string;
+  letter: string;
+}
+
 export interface BirthdayConfig {
   herName: string;
   myName: string;
@@ -54,11 +60,23 @@ export interface BirthdayConfig {
   candleCount: number;
   /** Appears under the cake once the candles are out */
   cakeMessage: string;
-  finaleLetter: string;
-  /** An .mp4 in public/for-her/ works best on phones */
+  /** Fades in before the video */
+  finaleIntro: string;
+  /** Video message. An .mp4 in public/for-her/video/ works best on phones. "" = no video step. */
   finaleVideoUrl: string;
+  /** Still image shown on the video before it plays */
+  finaleVideoPoster: string;
+  /** Revealed line by line. Each line break is a new line; a blank line adds a pause/gap. */
+  finaleLetter: string;
+  /** Sealed letters she can open any time after the finale */
+  openWhen: OpenWhenLetter[];
   /** Looping background music. Leave as "" for no music. */
   musicUrl: string;
+  /**
+   * The live site's address, no trailing slash. Link previews (WhatsApp, iMessage) need the
+   * full URL of the preview image. Change it if you move to a custom domain.
+   */
+  siteUrl: string;
 }
 
 export const config: BirthdayConfig = {
@@ -166,10 +184,27 @@ export const config: BirthdayConfig = {
   candleCount: 5,
   cakeMessage: "[CAKE MESSAGE] Make a wish, then blow out the candles.",
 
+  finaleIntro: "I have something to tell you...",
+  // Placeholder: a short public-domain sample clip so you can see the video step. Replace with yours.
+  finaleVideoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+  finaleVideoPoster: "/for-her/video/poster.jpg",
+
   finaleLetter:
-    "[YOUR FINAL LOVE LETTER — replace this]\n\n" +
+    "[YOUR FINAL LOVE LETTER — replace this]\n" +
+    "Each line appears one at a time,\n" +
+    "so write it the way you'd say it out loud.\n" +
+    "\n" +
+    "A blank line makes a small pause.\n" +
+    "\n" +
     "Write the thing you most want her to read last.",
 
-  finaleVideoUrl: "/for-her/video/message.mp4",
+  openWhen: [
+    { label: "Open when you miss me", letter: "[LETTER] What to read when I'm not there." },
+    { label: "Open when you can't sleep", letter: "[LETTER] Something soft for 2am." },
+    { label: "Open when you need a laugh", letter: "[LETTER] That story you always make me retell." },
+    { label: "Open when you're having a bad day", letter: "[LETTER] Reminders of how amazing you are." },
+  ],
+
   musicUrl: "/for-her/music.mp3",
+  siteUrl: "https://birthday-app-alpha-seven.vercel.app",
 };

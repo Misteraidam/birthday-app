@@ -71,6 +71,23 @@
   100% { transform: translate3d(0, -115vh, 0) rotate(-6deg); opacity: 0; }
 }
 
+/* ---- gold dust (finale) ---- */
+.fh-dust {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #F6E3B4 0%, rgba(232, 211, 162, 0.5) 35%, rgba(232, 211, 162, 0) 70%);
+  opacity: 0;
+  animation: fh-drift var(--dur) ease-in-out var(--delay) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes fh-drift {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  20% { opacity: var(--op); }
+  80% { opacity: var(--op); }
+  100% { transform: translate3d(var(--drift), -28vh, 0); opacity: 0; }
+}
+
 /* ---- paper ---- */
 .fh-paper {
   background:
@@ -101,4 +118,8 @@
     opacity: calc(var(--op) * 0.7);
   }
   .fh-caret { animation: none; }
+  .fh-dust {
+    animation: none;
+    opacity: calc(var(--op) * 0.6);
+  }
 }

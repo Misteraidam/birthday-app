@@ -23,7 +23,7 @@ const COLORS = {
   blush: "#F0BDB6",
   cream: "#FFF3E2",
   frosting: "#FFF8EE",
-  gold: "#D9B36A",
+  gold: "#E2BE76",
   plate: "#FBF4EA",
 };
 
@@ -79,7 +79,7 @@ function Ring({ count, radius, y, size, color, metal = false }: { count: number;
   return (
     <instancedMesh ref={ref} args={[undefined, undefined, count]}>
       <sphereGeometry args={[size, 10, 8]} />
-      <meshStandardMaterial color={color} metalness={metal ? 0.9 : 0} roughness={metal ? 0.28 : 0.45} />
+      <meshStandardMaterial color={color} metalness={metal ? 0.6 : 0} roughness={metal ? 0.3 : 0.45} />
     </instancedMesh>
   );
 }
@@ -97,7 +97,7 @@ export function Cake() {
       </mesh>
       <mesh position-y={plateTop} rotation-x={Math.PI / 2}>
         <torusGeometry args={[2.0, 0.035, 8, 64]} />
-        <meshStandardMaterial color={COLORS.gold} metalness={0.9} roughness={0.25} />
+        <meshStandardMaterial color={COLORS.gold} metalness={0.6} roughness={0.28} />
       </mesh>
 
       {/* Bottom tier: blush with cream frosting */}

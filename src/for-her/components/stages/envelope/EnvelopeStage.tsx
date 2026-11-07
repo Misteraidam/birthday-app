@@ -1,38 +1,22 @@
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { config } from "../../../content/config";
 import { useJourney } from "../../../lib/journey";
 import { EASE_SOFT } from "../../../lib/motion";
 import { stageIndex } from "../../../lib/stages";
 import { initialOf } from "../../../lib/text";
-import { Envelope, type EnvelopePhase } from "./Envelope";
+import { Envelope } from "./Envelope";
 import { Letter } from "./Letter";
-
-/** How long each phase lasts before moving to the next one */
-const SEQUENCE: Partial<Record<EnvelopePhase, [next: EnvelopePhase, ms: number]>> = {
-  breaking: ["opening", 550],
-  opening: ["rising", 800],
-  rising: ["reading", 1050],
-};
+import { useEnvelopeSequence } from "./useEnvelopeSequence";
 
 export default function EnvelopeStage() {
   const { complete, startExperience, unlocked } = useJourney();
-  const reduceMotion = useReducedMotion();
   const revisiting = unlocked > stageIndex("envelope");
-  const [phase, setPhase] = useState<EnvelopePhase>(revisiting ? "reading" : "sealed");
-
-  useEffect(() => {
-    const step = SEQUENCE[phase];
-    if (!step) return;
-    const [next, ms] = step;
-    const timer = setTimeout(() => setPhase(next), reduceMotion ? 120 : ms);
-    return () => clearTimeout(timer);
-  }, [phase, reduceMotion]);
+  const [phase, openEnvelope] = useEnvelopeSequence(revisiting ? "reading" : "sealed");
 
   const open = () => {
     if (phase !== "sealed") return;
     startExperience(); // first tap: music + motion permission, inside the gesture
-    setPhase("breaking");
+    openEnvelope();
   };
 
   const sealed = phase === "sealed";

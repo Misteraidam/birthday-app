@@ -16,5 +16,5 @@ export const stageComponents: Record<StageId, StageComponent> = {
   timeline: lazyWithPreload(() => import("./timeline/TimelineStage")),
   // @react-three/* may only be imported inside the cake stage, so three.js stays out of the main bundle
   cake: lazyWithPreload(() => import("./cake/CakeStage")),
-  finale: lazyWithPreload(() => import("./FinaleStage")),
+  finale: lazyWithPreload(() => import("./finale/FinaleStage")),
 };
