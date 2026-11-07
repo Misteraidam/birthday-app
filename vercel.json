@@ -6,6 +6,14 @@
         {
             "source": "/api/(.*)",
             "destination": "/api/$1"
+        },
+        {
+            "source": "/for-her",
+            "destination": "/for-her/index.html"
+        },
+        {
+            "source": "/for-her/(.*)",
+            "destination": "/for-her/index.html"
         }
     ]
 }

@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+  --color-blush-50: #FDF6F4;
+  --color-blush-100: #FBEAE6;
+  --color-blush-200: #F6D3CC;
+  --color-blush-300: #EFB6AC;
+  --color-blush-400: #E4928A;
+  --color-wine: #8E2F42;
+  --color-cream: #FFF9F0;
+  --color-paper: #FFFCF6;
+  --color-gold: #C9A25F;
+  --color-gold-light: #E8D3A2;
+  /* Darker gold for text on light backgrounds: decorative gold fails contrast */
+  --color-gold-ink: #7A5A22;
+  --color-ink: #46282F;
+  --color-ink-soft: #74545B;
+
+  --font-display: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --font-body: "Lora", Georgia, serif;
+}
+
+@layer base {
+  /* Colour on <html> only: a body background would paint over the -z-10 backdrop */
+  html {
+    background-color: var(--color-blush-100);
+  }
+
+  body {
+    margin: 0;
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+
+  button {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold-ink);
+    outline-offset: 3px;
+  }
+}
+
+/* ---- backdrop ---- */
+.fh-backdrop {
+  background:
+    radial-gradient(120% 70% at 50% 0%, #FFF9F0 0%, rgba(255, 249, 240, 0) 60%),
+    radial-gradient(90% 60% at 100% 100%, #F2C9C1 0%, rgba(242, 201, 193, 0) 70%),
+    linear-gradient(180deg, #FCEFEB 0%, #F8DDD6 100%);
+}
+
+.fh-heart {
+  position: absolute;
+  bottom: -48px;
+  opacity: 0;
+  animation: fh-float var(--dur) linear var(--delay) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes fh-float {
+  0% { transform: translate3d(0, 0, 0) rotate(-10deg); opacity: 0; }
+  12% { opacity: var(--op); }
+  50% { transform: translate3d(var(--drift), -55vh, 0) rotate(8deg); }
+  88% { opacity: var(--op); }
+  100% { transform: translate3d(0, -115vh, 0) rotate(-6deg); opacity: 0; }
+}
+
+/* ---- paper ---- */
+.fh-paper {
+  background:
+    radial-gradient(130% 80% at 50% 0%, #FFFEFA 0%, rgba(255, 254, 250, 0) 70%),
+    linear-gradient(180deg, #FFFAF1 0%, #F9EEDD 100%);
+}
+
+/* ---- typewriter caret ---- */
+.fh-caret {
+  display: inline-block;
+  width: 0;
+  height: 1.05em;
+  margin-right: -2px;
+  border-left: 2px solid var(--color-gold);
+  vertical-align: -0.18em;
+  animation: fh-blink 1s steps(1) infinite;
+}
+
+@keyframes fh-blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fh-heart {
+    bottom: auto;
+    top: var(--top);
+    animation: none;
+    opacity: calc(var(--op) * 0.7);
+  }
+  .fh-caret { animation: none; }
+}

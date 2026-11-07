@@ -9,9 +9,13 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "start:server": "node server/index.js",
-    "dev:full": "concurrently \"npm run dev\" \"npm run start:server\""
+    "dev:full": "concurrently \"npm run dev\" \"npm run start:server\"",
+    "dev:host": "vite --host",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
     "@supabase/supabase-js": "^2.94.0",
     "@tailwindcss/postcss": "^4.1.18",
     "canvas-confetti": "^1.9.4",
@@ -23,12 +27,14 @@
     "react-dom": "^19.2.0",
     "react-paystack": "^6.0.0",
     "react-player": "^3.4.0",
+    "three": "^0.187.0",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.187.0",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.23",
     "concurrently": "^9.2.1",
@@ -38,6 +44,7 @@
     "globals": "^16.5.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
+    "typescript": "^7.0.2",
     "vite": "^7.2.4"
   }
 }
