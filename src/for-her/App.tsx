@@ -32,7 +32,8 @@ function StageView() {
   }, [current]);
 
   return (
-    <AnimatePresence mode="wait">
+    // Each stage starts at the top, once the previous one has faded out
+    <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
       <motion.main
         key={current}
         className="relative min-h-dvh"

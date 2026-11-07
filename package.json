@@ -11,6 +11,7 @@
     "start:server": "node server/index.js",
     "dev:full": "concurrently \"npm run dev\" \"npm run start:server\"",
     "dev:host": "vite --host",
+    "dev:https": "vite --host --mode https",
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
@@ -36,6 +37,7 @@
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.187.0",
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.23",
     "concurrently": "^9.2.1",

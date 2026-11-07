@@ -48,6 +48,8 @@ export interface BirthdayConfig {
   quiz: QuizItem[];
   quizVerdicts: QuizVerdicts;
   memories: Memory[];
+  /** Closing line after the last memory */
+  timelineOutro: string;
   cakeMessage: string;
   finaleLetter: string;
   /** An .mp4 in public/for-her/ works best on phones */
@@ -116,32 +118,47 @@ export const config: BirthdayConfig = {
     needMoreDates: "[LOW SCORE] Okay. We clearly need more dates. Lots more. 💌",
   },
 
+  // Oldest first: the timeline reads top to bottom
   memories: [
     {
-      date: "[DATE]",
+      date: "[DATE e.g. June 2023]",
       title: "[MEMORY TITLE] The day we met",
-      caption: "[One or two sentences about this moment.]",
+      caption: "[One or two sentences about this moment: what you remember, how it felt.]",
       photo: "https://picsum.photos/seed/memory-1/800/1000",
     },
     {
-      date: "[DATE]",
-      title: "[MEMORY TITLE] Our first trip",
-      caption: "[One or two sentences about this moment.]",
+      date: "[DATE e.g. June 2023]",
+      title: "[MEMORY TITLE] Our first date",
+      caption: "[One or two sentences about this moment: what you remember, how it felt.]",
       photo: "https://picsum.photos/seed/memory-2/800/1000",
     },
     {
-      date: "[DATE]",
-      title: "[MEMORY TITLE] A small moment I loved",
-      caption: "[One or two sentences about this moment.]",
+      date: "[DATE e.g. June 2023]",
+      title: "[MEMORY TITLE] Our first trip together",
+      caption: "[One or two sentences about this moment: what you remember, how it felt.]",
       photo: "https://picsum.photos/seed/memory-3/800/1000",
     },
     {
-      date: "[DATE]",
-      title: "[MEMORY TITLE] Today",
-      caption: "[One or two sentences about this moment.]",
+      date: "[DATE e.g. June 2023]",
+      title: "[MEMORY TITLE] A small moment I loved",
+      caption: "[One or two sentences about this moment: what you remember, how it felt.]",
       photo: "https://picsum.photos/seed/memory-4/800/1000",
     },
+    {
+      date: "[DATE e.g. June 2023]",
+      title: "[MEMORY TITLE] A hard season, and how we got through it",
+      caption: "[One or two sentences about this moment: what you remember, how it felt.]",
+      photo: "https://picsum.photos/seed/memory-5/800/1000",
+    },
+    {
+      date: "[DATE e.g. June 2023]",
+      title: "[MEMORY TITLE] Today",
+      caption: "[One or two sentences about this moment: what you remember, how it felt.]",
+      photo: "https://picsum.photos/seed/memory-6/800/1000",
+    },
   ],
+
+  timelineOutro: "...and this is only the beginning 💛",
 
   cakeMessage: "[CAKE MESSAGE] Make a wish, then blow out the candles.",
 

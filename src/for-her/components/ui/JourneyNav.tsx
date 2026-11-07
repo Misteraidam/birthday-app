@@ -23,6 +23,15 @@ export function JourneyNav() {
             paddingRight: "max(12px, env(safe-area-inset-right))",
           }}
         >
+          {/* Soft fade so scrolling content doesn't clash with the controls */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 -z-10 bg-gradient-to-b from-blush-100 via-blush-100/85 to-transparent"
+            style={{
+              top: "calc(-1 * max(12px, env(safe-area-inset-top)))",
+              height: "calc(max(12px, env(safe-area-inset-top)) + 64px)",
+            }}
+          />
           <button
             type="button"
             onClick={back}

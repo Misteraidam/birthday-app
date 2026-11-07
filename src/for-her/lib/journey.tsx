@@ -77,6 +77,11 @@ function loadInitialState(): JourneyState {
       history.replaceState(history.state, "", url);
       return fresh;
     }
+    // Dev-only shortcut for testing: ?stage=timeline jumps straight there
+    const jumpTo = url.searchParams.get("stage");
+    if (import.meta.env.DEV && isStageId(jumpTo)) {
+      return { ...fresh, current: jumpTo, unlocked: stageIndex(jumpTo) };
+    }
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null");
     if (!saved) return fresh;
     const unlocked = Number.isInteger(saved.unlocked)
