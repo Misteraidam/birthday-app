@@ -4,7 +4,7 @@
  *
  * Your own files (photos, music, video) go in /public/for-her/ and are referenced
  * from the site root, e.g. a file at public/for-her/photos/first-date.jpg becomes
- * "/for-her/photos/first-date.jpg".
+ * "/for-her/photos/first-date.jpg". Until a photo exists, a soft placeholder shows instead.
  */
 
 export interface QuizItem {
@@ -31,8 +31,8 @@ export interface QuizVerdicts {
 }
 
 export interface Memory {
-  /** Free text, shown as-is: "June 2023", "Our first Christmas", ... */
-  date: string;
+  /** Optional free text shown above the title ("June 2023"). Leave out to show no date. */
+  date?: string;
   title: string;
   caption: string;
   photo: string;
@@ -47,8 +47,6 @@ export interface OpenWhenLetter {
 export interface BirthdayConfig {
   herName: string;
   myName: string;
-  /** YYYY-MM-DD */
-  birthdayDate: string;
   /** Typed out on the opening letter. Blank lines start new paragraphs. */
   welcomeLetter: string;
   quiz: QuizItem[];
@@ -56,21 +54,24 @@ export interface BirthdayConfig {
   memories: Memory[];
   /** Closing line after the last memory */
   timelineOutro: string;
-  /** Candles on the cake (1–24) */
-  candleCount: number;
+  /**
+   * The candles on the cake, one per character, blown out left to right.
+   * "3" and "0" are sculpted gold number candles; any other character gets a classic candle.
+   */
+  candleNumber: string;
   /** Appears under the cake once the candles are out */
   cakeMessage: string;
   /** Fades in before the video */
   finaleIntro: string;
-  /** Video message. An .mp4 in public/for-her/video/ works best on phones. "" = no video step. */
+  /** Video message (an .mp4 works best on phones). If the file doesn't exist, the video step is skipped. */
   finaleVideoUrl: string;
-  /** Still image shown on the video before it plays */
+  /** Still image shown on the video before it plays. If missing, a soft gradient shows instead. */
   finaleVideoPoster: string;
   /** Revealed line by line. Each line break is a new line; a blank line adds a pause/gap. */
   finaleLetter: string;
   /** Sealed letters she can open any time after the finale */
   openWhen: OpenWhenLetter[];
-  /** Looping background music. Leave as "" for no music. */
+  /** Looping background music. If the file doesn't exist, the journey runs silently. */
   musicUrl: string;
   /**
    * The live site's address, no trailing slash. Link previews (WhatsApp, iMessage) need the
@@ -80,129 +81,151 @@ export interface BirthdayConfig {
 }
 
 export const config: BirthdayConfig = {
-  herName: "[HER NAME]",
-  myName: "[YOUR NAME]",
-  birthdayDate: "2026-12-01",
+  herName: "Olive ❤️",
+  myName: "Babe ❤️",
 
   welcomeLetter:
-    "[YOUR WELCOME LETTER — replace this]\n\n" +
-    "I made you a small world for today, one page at a time. Take it slowly. Every page you open unlocks the next.\n\n" +
-    "There's music, a few questions only you can answer, some of our favourite moments, and something at the very end I've been saving for you.\n\n" +
-    "Ready when you are.",
+    "I took my time to put together these memories for you, something you can come back to at any point in your life.\n\n" +
+    "Everything here is sincere. It's how I really think about you, and how happy I am to celebrate this day with you.",
 
   quiz: [
     {
-      question: "[QUESTION 1] Where did we first meet?",
-      options: ["[Right answer]", "[Wrong answer]", "[Wrong answer]"],
-      correctIndex: 0,
-      wrongReaction: "[Playful reaction] Excuse me?? Try again 😤",
-      unlockPhoto: "https://picsum.photos/seed/quiz-1/800/1000",
-      unlockCaption: "[Caption for the photo this unlocks]",
-    },
-    {
-      question: "[QUESTION 2] What did I order on our first date?",
-      options: ["[Wrong answer]", "[Right answer]", "[Wrong answer]"],
-      correctIndex: 1,
-      wrongReaction: "[Playful reaction] I'm wounded. Deeply.",
-      unlockPhoto: "https://picsum.photos/seed/quiz-2/800/1000",
-      unlockCaption: "[Caption for the photo this unlocks]",
-    },
-    {
-      question: "[QUESTION 3] Which song is 'ours'?",
-      options: ["[Wrong answer]", "[Wrong answer]", "[Right answer]"],
+      question: "Where did we first meet?",
+      options: ["In NH1 hall", "At SSNIT Hostel", "Under a tree close to the chemistry lab", "At a party"],
       correctIndex: 2,
-      wrongReaction: "[Playful reaction] We need to talk about this.",
-      unlockPhoto: "https://picsum.photos/seed/quiz-3/800/1000",
-      unlockCaption: "[Caption for the photo this unlocks]",
+      wrongReaction: "Hmm… are you sure that wasn't your other boyfriend? 😂 Try again!",
+      unlockPhoto: "/for-her/photos/quiz1.jpg",
+      unlockCaption: "That tree has no idea what it started 🌳❤️",
     },
     {
-      question: "[QUESTION 4] Who said 'I love you' first?",
-      options: ["[Right answer]", "[Wrong answer]"],
+      question: "What did I order on our first date?",
+      options: ["Fried rice", "Banku and tilapia", "Pizza, Coke and fruit juice", "Waakye"],
+      correctIndex: 2,
+      wrongReaction: "Babe… I was trying to impress you, not fill my stomach 😂",
+      unlockPhoto: "/for-her/photos/quiz2.jpg",
+      unlockCaption: "Pizza, Coke, juice… and the best company 🍕",
+    },
+    {
+      question: "What song is “our song”?",
+      options: ["Perfect by Ed Sheeran", "A love song from the radio", "We don't have one… yet 😂", "Every song when we're together"],
+      correctIndex: 2,
+      wrongReaction: "Nice try 😂 Tell me when you heard us agree on that!",
+      unlockPhoto: "/for-her/photos/quiz3.jpg",
+      unlockCaption: "No song yet. Maybe we pick one today? 🎶",
+    },
+    {
+      question: "Who said “I love you” first?",
+      options: ["I did", "You did", "We said it at the same time"],
       correctIndex: 0,
-      wrongReaction: "[Playful reaction] Rewriting history, are we? 👀",
-      unlockPhoto: "https://picsum.photos/seed/quiz-4/800/1000",
-      unlockCaption: "[Caption for the photo this unlocks]",
+      wrongReaction: "Lies! 😂 I remember exactly who was brave first.",
+      unlockPhoto: "/for-her/photos/quiz4.jpg",
+      unlockCaption: "I said it first, and I'd say it first again 💛",
     },
     {
-      question: "[QUESTION 5] What's my favourite thing about you?",
-      options: ["[Wrong answer]", "[Wrong answer]", "[Wrong answer]", "[Right answer]"],
+      question: "What's my favourite thing about you?",
+      options: ["Your smile", "The way you love me", "Your thoughtfulness", "All of the above"],
       correctIndex: 3,
-      wrongReaction: "[Playful reaction] Close… but there's something I love even more.",
-      unlockPhoto: "https://picsum.photos/seed/quiz-5/800/1000",
-      unlockCaption: "[Caption for the photo this unlocks]",
+      wrongReaction: "Close… but it's not just one thing, babe 😌",
+      unlockPhoto: "/for-her/photos/quiz5.jpg",
+      unlockCaption: "Your smile, your love, your thoughtfulness: all of you ❤️",
     },
   ],
 
   quizVerdicts: {
-    perfect: "[PERFECT SCORE] Flawless. You clearly pay attention. 😌",
-    great: "[GREAT SCORE] Pretty impressive. I'll let the misses slide… this time.",
-    needMoreDates: "[LOW SCORE] Okay. We clearly need more dates. Lots more. 💌",
+    perfect: "You know us by heart 💛 I'm impressed, babe.",
+    great: "Almost perfect! I'll let the small slips slide… this time 😌",
+    needMoreDates: "Okay… we clearly need more dates 😂 I'm taking notes.",
   },
 
   // Oldest first: the timeline reads top to bottom
   memories: [
     {
-      date: "[DATE e.g. June 2023]",
-      title: "[MEMORY TITLE] The day we met",
-      caption: "[One or two sentences about this moment: what you remember, how it felt.]",
-      photo: "https://picsum.photos/seed/memory-1/800/1000",
+      title: "Under the Trees",
+      caption:
+        "You were walking by, saw me and called me “Elijah.” It was my name, but I told you it wasn't, because I didn't like being called that 😂 Somehow, that's how it all began. I still remember your smile and that innocent face. Now you just call me Babe ❤️",
+      photo: "/for-her/photos/memory1.jpg",
     },
     {
-      date: "[DATE e.g. June 2023]",
-      title: "[MEMORY TITLE] Our first date",
-      caption: "[One or two sentences about this moment: what you remember, how it felt.]",
-      photo: "https://picsum.photos/seed/memory-2/800/1000",
+      title: "Our First Date at Akayet",
+      caption:
+        "I'd had a rough day after trailing a course, but I didn't want anything to ruin our date, and nothing did. I enjoyed every bit of it… even when the car taking us home broke down 😂 You remember!",
+      photo: "/for-her/photos/memory2.jpg",
     },
     {
-      date: "[DATE e.g. June 2023]",
-      title: "[MEMORY TITLE] Our first trip together",
-      caption: "[One or two sentences about this moment: what you remember, how it felt.]",
-      photo: "https://picsum.photos/seed/memory-3/800/1000",
+      title: "Our First Trip: Prampram",
+      caption:
+        "Our first getaway together, and it felt like such a relief. The nights, the silly things we did… I loved every bit of it. We're doing another one soon, I promise.",
+      photo: "/for-her/photos/memory3.jpg",
     },
     {
-      date: "[DATE e.g. June 2023]",
-      title: "[MEMORY TITLE] A small moment I loved",
-      caption: "[One or two sentences about this moment: what you remember, how it felt.]",
-      photo: "https://picsum.photos/seed/memory-4/800/1000",
+      title: "When I Wanted to Resign",
+      caption:
+        "When I was ready to give up on that job, you came all the way to me, just to look out for me. I'll never forget that.",
+      photo: "/for-her/photos/memory4.jpg",
     },
     {
-      date: "[DATE e.g. June 2023]",
-      title: "[MEMORY TITLE] A hard season, and how we got through it",
-      caption: "[One or two sentences about this moment: what you remember, how it felt.]",
-      photo: "https://picsum.photos/seed/memory-5/800/1000",
+      title: "All Night, Right Beside Me",
+      caption:
+        "When I trailed that course, you stayed up the whole night with me while I studied. You didn't have to, but you did. That's who you are.",
+      photo: "/for-her/photos/memory5.jpg",
     },
     {
-      date: "[DATE e.g. June 2023]",
-      title: "[MEMORY TITLE] Today",
-      caption: "[One or two sentences about this moment: what you remember, how it felt.]",
-      photo: "https://picsum.photos/seed/memory-6/800/1000",
+      title: "That Kiss at Savanna",
+      caption: "Some moments just stay with you. That kiss at Savanna is one of mine 💋",
+      photo: "/for-her/photos/memory6.jpg",
+    },
+    {
+      title: "The Hard Season",
+      caption:
+        "We went days without talking, and meeting up at Printex wasn't easy. But we came through it, together. And I'm so proud of where we are now.",
+      photo: "/for-her/photos/memory7.jpg",
     },
   ],
 
-  timelineOutro: "...and this is only the beginning 💛",
+  timelineOutro: "…and this is only the beginning 💛",
 
-  candleCount: 5,
-  cakeMessage: "[CAKE MESSAGE] Make a wish, then blow out the candles.",
+  candleNumber: "30",
+  cakeMessage:
+    "Whatever you wished for, I hope it finds you, and I'll be right here helping it come true. Happy Birthday, Olive 🎂",
 
-  finaleIntro: "I have something to tell you...",
-  // Placeholder: a short public-domain sample clip so you can see the video step. Replace with yours.
-  finaleVideoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-  finaleVideoPoster: "/for-her/video/poster.jpg",
+  finaleIntro: "I have something to tell you…",
+  finaleVideoUrl: "/for-her/video.mp4",
+  finaleVideoPoster: "/for-her/video-poster.jpg",
 
   finaleLetter:
-    "[YOUR FINAL LOVE LETTER — replace this]\n" +
-    "Each line appears one at a time,\n" +
-    "so write it the way you'd say it out loud.\n" +
+    "Olive,\n" +
     "\n" +
-    "A blank line makes a small pause.\n" +
+    "From the day you called me “Elijah” under those trees and I pretended that wasn't my name, my life has been better with you in it. You found a better name for me anyway: Babe ❤️\n" +
     "\n" +
-    "Write the thing you most want her to read last.",
+    "You've seen me on my good days and on my hard ones. You stayed up all night when I was struggling, you came all the way to me when I wanted to give up, and even when we went through our hard season, we found our way back to each other. That means everything to me.\n" +
+    "\n" +
+    "I love your smile, your thoughtfulness, the way you love me, and how you always find a way to make me laugh. I don't say it enough, but I see all of it, and I'm grateful for you every day.\n" +
+    "\n" +
+    "Today you turn 30, and I hope this year brings you everything you've been praying for. I hope I get to be right beside you for all of it.\n" +
+    "\n" +
+    "Happy Birthday, my love. ❤️",
 
   openWhen: [
-    { label: "Open when you miss me", letter: "[LETTER] What to read when I'm not there." },
-    { label: "Open when you can't sleep", letter: "[LETTER] Something soft for 2am." },
-    { label: "Open when you need a laugh", letter: "[LETTER] That story you always make me retell." },
-    { label: "Open when you're having a bad day", letter: "[LETTER] Reminders of how amazing you are." },
+    {
+      label: "Open when you miss me",
+      letter:
+        "Close your eyes and think about Prampram: the nights, the silly things we did, how free it felt. That's us. Wherever I am, I'm thinking about you too, and I'm already counting down to our next trip. Call me. I'll pick up. ❤️",
+    },
+    {
+      label: "Open when you can't sleep",
+      letter:
+        "If you're awake right now, I hope you're smiling a little, because somewhere I'm probably dreaming about you 😌 Remember that night you stayed up with me while I studied? Tonight, I'm staying up with you in this letter. Breathe slowly, rest your mind, and know you're loved. Goodnight, my love 🌙",
+    },
+    {
+      label: "Open when you need a laugh",
+      letter:
+        "Remember when you tickled me and I couldn't stop laughing? 😂 I was completely helpless, and you were enjoying every second of it. Or when you called me “Elijah” and I acted like that wasn't my name? Or when the car broke down after our first date at Akayet? Our story is full of moments like these, and I wouldn't trade a single one. Now go find me so I can get my revenge 😂😂",
+    },
+    {
+      label: "Open when you're having a bad day",
+      letter:
+        "Today might be hard, but you are not. You're thoughtful, strong and beautiful, and you've carried me through my own bad days without even being asked. Let me carry you through this one. Whatever it is, we'll get through it together, like we always do. I'm proud of you, always. 💛",
+    },
   ],
 
   musicUrl: "/for-her/music.mp3",

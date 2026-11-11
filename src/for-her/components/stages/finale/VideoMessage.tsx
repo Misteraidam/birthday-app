@@ -16,6 +16,8 @@ interface VideoMessageProps {
 export function VideoMessage({ src, poster, onEnded, onFailed }: VideoMessageProps) {
   const video = useRef<HTMLVideoElement>(null);
   const [started, setStarted] = useState(false);
+  // Portrait until the video says otherwise, so the frame has a sensible size from the start
+  const [aspect, setAspect] = useState(9 / 16);
 
   const play = () => {
     const v = video.current;
@@ -28,7 +30,8 @@ export function VideoMessage({ src, poster, onEnded, onFailed }: VideoMessagePro
 
   return (
     <motion.div
-      className="relative mx-auto w-fit max-w-full rounded-[26px] bg-gradient-to-b from-gold-light via-gold/80 to-gold-light/70 p-[3px] shadow-[0_0_60px_-6px_rgba(232,211,162,0.55),0_30px_60px_-20px_rgba(0,0,0,0.6)]"
+      className="relative mx-auto max-w-full rounded-[26px] bg-gradient-to-b from-gold-light via-gold/80 to-gold-light/70 p-[3px] shadow-[0_0_60px_-6px_rgba(232,211,162,0.55),0_30px_60px_-20px_rgba(0,0,0,0.6)]"
+      style={{ aspectRatio: aspect, width: `min(86vw, calc(58dvh * ${aspect}))` }}
       initial={{ opacity: 0, scale: 0.96, y: 16 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ duration: 1, ease: EASE_SOFT }}
@@ -41,6 +44,10 @@ export function VideoMessage({ src, poster, onEnded, onFailed }: VideoMessagePro
         playsInline
         preload="metadata"
         controls={started}
+        onLoadedMetadata={(event) => {
+          const { videoWidth, videoHeight } = event.currentTarget;
+          if (videoWidth && videoHeight) setAspect(videoWidth / videoHeight);
+        }}
         onPlay={() => {
           setStarted(true);
           setMusicLevel("off", 300);
@@ -50,7 +57,9 @@ export function VideoMessage({ src, poster, onEnded, onFailed }: VideoMessagePro
           onEnded();
         }}
         onError={onFailed}
-        className="block max-h-[58dvh] w-auto max-w-full rounded-[23px] bg-[#170B0D] object-contain"
+        className="block size-full rounded-[23px] object-contain"
+        // Shows when there's no poster: a soft warm gradient rather than a black box
+        style={{ background: "radial-gradient(120% 80% at 50% 30%, #6B3A3E 0%, #3A1E21 55%, #1C0D0F 100%)" }}
       />
 
       {!started && (

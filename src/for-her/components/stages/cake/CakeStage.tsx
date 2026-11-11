@@ -11,7 +11,10 @@ import { StageLoading } from "../../ui/StageLoading";
 import { BreathMeter } from "./BreathMeter";
 import { CakeScene } from "./CakeScene";
 
-const CANDLES = Math.max(1, Math.min(24, Math.round(config.candleCount)));
+/** One candle per character of candleNumber ("30" → a gold 3 and a gold 0), blown out left to right */
+const chars = [...config.candleNumber].slice(0, 24);
+const CANDLE_CHARS = chars.length ? chars : [" "]; // always at least one candle to blow out
+const CANDLES = CANDLE_CHARS.length;
 const FINAL_BUTTON_DELAY_MS = 3500;
 
 export default function CakeStage() {
@@ -98,6 +101,7 @@ export default function CakeStage() {
         transition={{ duration: 0.8 }}
       >
         <CakeScene
+          candles={CANDLE_CHARS}
           lit={lit}
           blow={mic.intensity}
           reduceMotion={reduceMotion}
@@ -124,7 +128,8 @@ export default function CakeStage() {
         animate={{ opacity: sceneReady ? 1 : 0, y: sceneReady ? 0 : 10 }}
         transition={{ duration: 1.2, delay: revisiting ? 0 : 0.9, ease: EASE_SOFT }}
       >
-        Make a wish, {config.herName} ✨
+        {/* Her name already ends in ❤️, so no second emoji */}
+        Make a wish, {config.herName}
       </motion.h1>
 
       {/* Controls under the cake */}

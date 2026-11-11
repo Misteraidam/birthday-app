@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { usePhotoSrc } from "../../lib/usePhotoSrc";
 
 interface PolaroidProps {
   src: string;
@@ -19,6 +20,7 @@ const DEVELOP_SECONDS = 1.5;
 export function Polaroid({ src, caption, tilt = 0, develop = false, className = "", captionClassName = "" }: PolaroidProps) {
   // Wait for the photo to arrive before developing it, so the effect isn't wasted on a blank frame
   const [loaded, setLoaded] = useState(false);
+  const [photoSrc, onPhotoError] = usePhotoSrc(src);
   const developing = develop && loaded;
 
   return (
@@ -28,10 +30,10 @@ export function Polaroid({ src, caption, tilt = 0, develop = false, className = 
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-[#EDE3D6]">
         <motion.img
-          src={src}
+          src={photoSrc}
           alt={caption}
           onLoad={() => setLoaded(true)}
-          onError={() => setLoaded(true)}
+          onError={onPhotoError}
           className="size-full object-cover"
           initial={false}
           animate={{ filter: !develop || developing ? DEVELOPED : UNDEVELOPED }}

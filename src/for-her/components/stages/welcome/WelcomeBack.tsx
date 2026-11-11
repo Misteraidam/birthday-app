@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { config } from "../../../content/config";
 import { useJourney } from "../../../lib/journey";
+import { useMediaExists } from "../../../lib/media";
 import { EASE_SOFT } from "../../../lib/motion";
 import { PrimaryButton } from "../../ui/PrimaryButton";
 
@@ -11,6 +12,7 @@ const SECONDARY =
 export default function WelcomeBack() {
   const { herName, finaleVideoUrl, openWhen } = config;
   const { startExperience, relive, revisitFinale } = useJourney();
+  const hasVideo = useMediaExists(finaleVideoUrl, "video") === true;
 
   // Every choice is her first tap of the visit, so it also starts the music
   const choose = (action: () => void) => () => {
@@ -30,14 +32,14 @@ export default function WelcomeBack() {
         <h1 className="mt-3 font-display text-[2.6rem] font-medium leading-tight text-ink">
           Welcome back,
           <br />
-          {herName} 💛
+          {herName}
         </h1>
 
         <div className="mt-10 flex w-full flex-col items-center gap-3.5">
           <PrimaryButton onClick={choose(relive)} className="w-full max-w-[280px]">
             Relive it from the start
           </PrimaryButton>
-          {finaleVideoUrl && (
+          {hasVideo && (
             <motion.button type="button" whileTap={{ scale: 0.97 }} onClick={choose(() => revisitFinale("video"))} className={SECONDARY}>
               Watch your video again
             </motion.button>

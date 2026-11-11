@@ -5,9 +5,12 @@ import type { MotionValue } from "framer-motion";
 import { MathUtils, Vector3, type AmbientLight, type DirectionalLight, type Group, type PerspectiveCamera, type PointLight } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { CAKE, Cake } from "./Cake";
-import { CANDLE_HEIGHT, Candle } from "./Candle";
+import { Candle } from "./Candle";
+import { getDigitGeometry } from "./digits";
 
 interface CakeSceneProps {
+  /** One character per candle, e.g. ["3", "0"] */
+  candles: string[];
   lit: boolean[];
   blow: MotionValue<number>;
   reduceMotion: boolean;
@@ -19,9 +22,16 @@ interface CakeSceneProps {
 
 const TARGET: [number, number, number] = [0, 0.75, 0];
 
-/** One ring of up to 12 candles; any extra go in a smaller inner ring. */
-function candlePositions(count: number): [number, number, number][] {
-  const y = CAKE.surface + 0.03 + CANDLE_HEIGHT / 2;
+/**
+ * Where each candle's base sits. Number candles stand side by side so they read as "30";
+ * classic candles go in a ring of up to 12, any extra in a smaller inner ring.
+ */
+function candlePositions(candles: string[]): [number, number, number][] {
+  const y = CAKE.surface + 0.03;
+  const count = candles.length;
+  if (candles.every((c) => getDigitGeometry(c))) {
+    return candles.map((_, i) => [(i - (count - 1) / 2) * 0.48, y, 0.08]);
+  }
   if (count === 1) return [[0, y, 0]];
   const outer = Math.min(count, 12);
   const inner = count - outer;
@@ -95,8 +105,8 @@ function Lights({ litFraction, celebrating, reduceMotion }: { litFraction: numbe
   );
 }
 
-export function CakeScene({ lit, blow, reduceMotion, tappable, onTapCandle, celebrating, onReady }: CakeSceneProps) {
-  const positions = candlePositions(lit.length);
+export function CakeScene({ candles, lit, blow, reduceMotion, tappable, onTapCandle, celebrating, onReady }: CakeSceneProps) {
+  const positions = candlePositions(candles);
   const litFraction = lit.filter(Boolean).length / lit.length;
 
   return (
@@ -120,6 +130,7 @@ export function CakeScene({ lit, blow, reduceMotion, tappable, onTapCandle, cele
         {positions.map((position, i) => (
           <Candle
             key={i}
+            char={candles[i]}
             position={position}
             lit={lit[i]}
             seed={i * 1.7}

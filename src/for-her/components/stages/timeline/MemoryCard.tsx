@@ -3,6 +3,7 @@ import { motion, useMotionValueEvent, useScroll, useTransform } from "framer-mot
 import type { Memory } from "../../../content/config";
 import { EASE_SOFT } from "../../../lib/motion";
 import { useCardTilt } from "../../../lib/useCardTilt";
+import { usePhotoSrc } from "../../../lib/usePhotoSrc";
 import type { GyroTilt } from "../../../lib/useGyroTilt";
 
 interface MemoryCardProps {
@@ -24,6 +25,7 @@ export function MemoryCard({ memory, side, gyro, tiltEnabled, onOpenPhoto }: Mem
   const ref = useRef<HTMLLIElement>(null);
   const [lit, setLit] = useState(false);
   const { x, y, rotateX, rotateY, handlers } = useCardTilt(gyro, tiltEnabled);
+  const [photoSrc, onPhotoError] = usePhotoSrc(memory.photo);
 
   // The dot lights once the card's top crosses the middle of the screen
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start center", "end center"] });
@@ -74,7 +76,8 @@ export function MemoryCard({ memory, side, gyro, tiltEnabled, onOpenPhoto }: Mem
                   className="block aspect-[4/5] w-full cursor-zoom-in overflow-hidden rounded-[14px] bg-[#EDE3D6]"
                 >
                   <motion.img
-                    src={memory.photo}
+                    src={photoSrc}
+                    onError={onPhotoError}
                     alt=""
                     loading="lazy"
                     draggable={false}
@@ -86,10 +89,12 @@ export function MemoryCard({ memory, side, gyro, tiltEnabled, onOpenPhoto }: Mem
 
               {/* Layer 3: the words, closest to her */}
               <motion.div variants={layer} className="px-2.5 pt-5" style={{ z: 40 }}>
-                <p className="font-display text-[0.8rem] font-semibold uppercase tracking-[0.25em] text-gold-ink">
-                  {memory.date}
-                </p>
-                <h3 className="mt-1.5 font-display text-[1.75rem] font-medium leading-[1.12] text-ink">
+                {memory.date && (
+                  <p className="mb-1.5 font-display text-[0.8rem] font-semibold uppercase tracking-[0.25em] text-gold-ink">
+                    {memory.date}
+                  </p>
+                )}
+                <h3 className="font-display text-[1.75rem] font-medium leading-[1.12] text-ink">
                   {memory.title}
                 </h3>
                 <p className="mt-2.5 font-body text-[0.98rem] leading-[1.7] text-ink-soft">{memory.caption}</p>

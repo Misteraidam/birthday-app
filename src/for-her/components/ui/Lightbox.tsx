@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { EASE_SOFT } from "../../lib/motion";
+import { usePhotoSrc } from "../../lib/usePhotoSrc";
 
 export interface LightboxPhoto {
   src: string;
@@ -15,6 +16,7 @@ export function Lightbox({ photo, onClose }: { photo: LightboxPhoto | null; onCl
     onCloseRef.current = onClose;
   }, [onClose]);
 
+  const [photoSrc, onPhotoError] = usePhotoSrc(photo?.src ?? "");
   const isOpen = photo !== null;
   useEffect(() => {
     if (!isOpen) return;
@@ -48,7 +50,8 @@ export function Lightbox({ photo, onClose }: { photo: LightboxPhoto | null; onCl
           transition={{ duration: 0.3 }}
         >
           <motion.img
-            src={photo.src}
+            src={photoSrc}
+            onError={onPhotoError}
             alt={photo.caption}
             className="max-h-[78dvh] max-w-full rounded-xl object-contain shadow-[0_30px_80px_-20px_rgba(40,10,20,0.7)]"
             initial={{ scale: 0.88, y: 16 }}

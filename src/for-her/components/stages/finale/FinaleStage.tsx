@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { config } from "../../../content/config";
 import { snowfall } from "../../../lib/confetti";
 import { useJourney } from "../../../lib/journey";
+import { useMediaExists } from "../../../lib/media";
 import { EASE_SOFT } from "../../../lib/motion";
 import { setMusicLevel } from "../../../lib/music";
 import { GoldDust } from "../../ui/GoldDust";
@@ -13,19 +14,21 @@ import { VideoMessage } from "./VideoMessage";
 
 type Step = "intro" | "video" | "letter";
 
-const HAS_VIDEO = Boolean(config.finaleVideoUrl);
 /** How long the intro line holds before the video (or the letter) appears */
-const INTRO_MS = HAS_VIDEO ? 2600 : 3800;
+const INTRO_MS = 3000;
 
 export default function FinaleStage() {
   const { finaleSeen, finaleEntry, markFinaleSeen } = useJourney();
   // Captured on arrival: a rewatch gets the skip link and the letter shown in full
   const [rewatching] = useState(finaleSeen);
   const [step, setStep] = useState<Step>(() => {
-    if (finaleEntry === "letters" || (rewatching && !HAS_VIDEO)) return "letter";
-    if (finaleEntry === "video" || rewatching) return HAS_VIDEO ? "video" : "letter";
+    if (finaleEntry === "letters") return "letter";
+    if (finaleEntry === "video" || rewatching) return "video";
     return "intro";
   });
+  // null while checking. A missing video skips straight to the letter; a missing poster gets a gradient.
+  const hasVideo = useMediaExists(config.finaleVideoUrl, "video");
+  const hasPoster = useMediaExists(config.finaleVideoPoster, "image") === true;
   const [signed, setSigned] = useState(false);
   const lettersRef = useRef<HTMLDivElement>(null);
   const stopSnow = useRef<() => void>(() => {});
@@ -45,9 +48,13 @@ export default function FinaleStage() {
 
   useEffect(() => {
     if (step !== "intro") return;
-    const timer = setTimeout(() => setStep(HAS_VIDEO ? "video" : "letter"), INTRO_MS);
+    const timer = setTimeout(() => setStep("video"), INTRO_MS);
     return () => clearTimeout(timer);
   }, [step]);
+
+  useEffect(() => {
+    if (step === "video" && hasVideo === false) setStep("letter");
+  }, [step, hasVideo]);
 
   // From the welcome-back screen's "Open a letter": land on the letters
   useEffect(() => {
@@ -99,11 +106,11 @@ export default function FinaleStage() {
                 {config.finaleIntro}
               </motion.p>
 
-              {step === "video" && (
+              {step === "video" && hasVideo && (
                 <>
                   <VideoMessage
                     src={config.finaleVideoUrl}
-                    poster={config.finaleVideoPoster}
+                    poster={hasPoster ? config.finaleVideoPoster : ""}
                     onEnded={() => setStep("letter")}
                     onFailed={() => setStep("letter")}
                   />
